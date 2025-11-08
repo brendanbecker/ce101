@@ -203,11 +203,11 @@ Update work item 12345:
 
 ### Monitoring Context Usage
 
-Most tools show context usage. Watch for crossing 50%.
+Most tools show context usage. Keep an eye on it - when it starts feeling cluttered or you notice it climbing, consider a handoff.
 
 ### Handoff Workflow
 
-**Step 1**: When approaching 50%, prepare to handoff
+**Step 1**: When context is getting full, prepare to handoff
 ```
 Give me a handoff prompt I can copy into a new Codex session to continue this work.
 ```

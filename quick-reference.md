@@ -11,7 +11,7 @@ One-page cheat sheet for working with AI coding assistants.
 | **SELECT** | Point to relevant info | "Check /terraform/main.tf for AKS config" |
 | **WRITE** | Save for later | Build local work item inventory |
 | **ISOLATE** | Separate concerns | One tab per helm chart update |
-| **COMPRESS** | Context limit approaching | Generate handoff prompt at 50% |
+| **COMPRESS** | Context getting full | Generate handoff prompt when needed |
 
 ---
 
@@ -47,7 +47,7 @@ Independent tasks?           → Separate tabs
 Tasks share context?         → Same tab
 Long investigation?          → Dedicated tab
 Quick one-off?              → Master tab is fine
-Context approaching 50%?    → Generate handoff, new tab
+Context getting full?       → Generate handoff, new tab
 ```
 
 ---
@@ -76,9 +76,9 @@ Context approaching 50%?    → Generate handoff, new tab
 
 ## Handoff Prompt Technique
 
-**When**: Context usage crosses 50%
+**When**: Context usage is getting high or session feels cluttered
 
-**How**: 
+**How**:
 ```
 Give me a handoff prompt I can copy into a new Codex session to continue this work.
 ```

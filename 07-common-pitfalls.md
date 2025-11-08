@@ -164,18 +164,20 @@ You work in a session until it crashes or becomes unusable. When you start fresh
 
 ### The Fix
 
-**Use handoff prompts at 50% context**
+**Use handoff prompts when context gets high**
 
 ```
 # Monitor context usage
 Most tools show: "Context: 47,000 / 100,000 tokens"
 
-# At 50%, generate handoff
+# When it's climbing and feeling cluttered, generate handoff
 "Give me a handoff prompt I can copy to continue this work"
 
 # Start new session with that prompt
 → Seamless continuation with full context
 ```
+
+**Guideline**: Many people find 40-60% a good range to start thinking about handoffs, but it's not a hard rule. Trust your judgment.
 
 ---
 
@@ -235,7 +237,7 @@ Trying to minimize tokens at all costs:
 
 **Tokens are cheap, clarity is expensive**
 
-Don't compress unless you're truly hitting limits (50%+ context usage). Provide rich context upfront.
+Don't compress unless you're truly hitting limits. Provide rich context upfront.
 
 **Instead of compressing, use isolation**: Split into multiple tabs rather than cramming everything into compressed context.
 

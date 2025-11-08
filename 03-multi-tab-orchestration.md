@@ -343,6 +343,138 @@ Executed by: [name]
 
 ---
 
+### Pattern 6: Orchestrator Tab for Prompt Generation
+
+**Scenario**: Complex task that needs to be broken down into multiple parallel subtasks
+
+**Use case**: Instead of manually designing each tab's prompt, use one tab to analyze the task and generate optimized prompts for other tabs.
+
+**Tab Structure**:
+```
+Tab 1 (Blue): Orchestrator/Planner
+  Location: /company/SRE/
+  Task: Analyze overall task and generate prompts for worker tabs
+  Stays open: Yes - for coordination
+
+Tabs 2-N (Green): Worker tabs
+  Created based on orchestrator's recommendations
+  Each receives custom-generated prompt from Tab 1
+```
+
+**Workflow**:
+
+**Step 1: Task Analysis (Orchestrator Tab)**
+```
+I need to perform a blue-green cluster swap with infrastructure upgrades.
+
+Analyze this task and break it down into independent subtasks that can be worked on in parallel.
+
+For each subtask:
+1. Identify what needs to be done
+2. Determine the working directory
+3. List relevant files/contexts
+4. Generate a complete, context-rich prompt I can paste into a new tab
+
+Generate 3-5 prompts for me to open in new tabs.
+```
+
+**Step 2: Orchestrator Generates Prompts**
+```
+Based on your task, here are the subtasks:
+
+=== TAB 2: Helm Chart A Updates ===
+Working directory: /company/SRE/helm/charts/
+Setup: Create git worktree
+
+Prompt to paste:
+---
+Set up git worktree for service-a helm chart updates:
+git worktree add ../charts-worktree-a
+
+Task: Update service-a chart for new cluster
+Changes needed:
+- Update cluster endpoints in values.yaml
+- Modify ingress for new domain
+- Update resource limits (new cluster has better nodes)
+
+Files to modify:
+- values.yaml
+- templates/ingress.yaml
+
+Color: Green
+---
+
+=== TAB 3: Helm Chart B Updates ===
+[Similar detailed prompt]
+
+=== TAB 4: Sync Script Updates ===
+[Detailed prompt for script changes]
+
+=== TAB 5: Work Item Search ===
+[Prompt for finding related work items]
+```
+
+**Step 3: Create Worker Tabs**
+- Open new tabs
+- Paste generated prompts
+- Color code as recommended
+- Begin parallel work
+
+**Step 4: Return to Orchestrator for Coordination**
+After workers complete, return to Tab 1:
+```
+Worker tabs have completed:
+
+Tab 2 results: [paste summary]
+Tab 3 results: [paste summary]
+Tab 4 results: [paste summary]
+
+Now:
+1. Identify dependencies between these changes
+2. Create deployment plan
+3. Generate wiki documentation
+4. Create PR descriptions
+```
+
+**Why This Pattern Works**:
+- **Reduces cognitive load**: You don't have to design each prompt manually
+- **Consistency**: Orchestrator ensures all worker tabs have proper context
+- **Optimization**: Orchestrator can identify the best way to split the work
+- **Context preservation**: Orchestrator maintains the big picture while workers focus on details
+
+**Example: Real-World Usage**
+```
+Task given to orchestrator:
+"I need to migrate user-api, billing-api, and auth-api services to the new Kubernetes cluster. Each needs helm chart updates, terraform changes, and testing."
+
+Orchestrator generates 9 prompts:
+- 3 for helm updates (one per service)
+- 3 for terraform changes (one per service)
+- 3 for testing (one per service)
+
+Plus 1 coordination prompt for the master tab.
+
+You paste these into 10 tabs and work in parallel.
+```
+
+**Advanced: Iterative Refinement**
+```
+If worker tabs hit issues, return to orchestrator:
+
+"Tab 3 (billing-api helm) found an issue: chart depends on a shared ConfigMap that doesn't exist in new cluster.
+
+How should I handle this? Update the orchestration plan."
+
+Orchestrator:
+"Good catch. Here's the updated plan:
+1. Tab 3 should pause
+2. Open new Tab 10: Create shared ConfigMap
+3. Here's the prompt for Tab 10: [detailed prompt]
+4. After Tab 10 completes, Tab 3 can proceed"
+```
+
+---
+
 ## Setting Up Git Worktrees for Parallel Work
 
 When you need to work on the same repository in multiple tabs:
@@ -647,10 +779,10 @@ echo -e "\033]0;Investigation\007"
 
 ### Problem: Context Overflow in Multiple Tabs
 
-**Symptoms**: All tabs hitting 50% context simultaneously
+**Symptoms**: Multiple tabs have high context usage simultaneously
 
 **Solutions**:
-- Generate handoffs for each tab
+- Generate handoffs for each tab that needs it
 - Consider if tasks can be consolidated
 - Close and summarize completed tabs
 - Start fresh tabs with handoff prompts
@@ -739,6 +871,310 @@ Tab N+1: Master coordination
 
 ---
 
+## Session Persistence and Resume
+
+One of the most powerful features of modern AI coding assistants like Codex and Claude Code: **session persistence**.
+
+### The Problem: Human Context Loss
+
+**Scenario**: You're working on a complex migration. It's 5 PM, you need to leave.
+
+**Traditional approach**:
+- Close all tabs
+- Tomorrow: "What was I doing? Where did I leave off?"
+- Spend 20 minutes getting back into context
+- Lose momentum and mental state
+
+**Better approach**: Session persistence
+
+---
+
+### What is Session Resume?
+
+Both Codex and Claude Code can save and resume sessions:
+- **Full conversation history preserved**
+- **Working directory remembered**
+- **File context maintained**
+- **Mental model retained**
+
+**Think of it as**: Hibernating your work, not closing it.
+
+---
+
+### When to Use Resume
+
+✅ **End of day**
+```
+Tab 1: Investigation in progress - 30 messages deep
+Tab 2: Implementation - partially complete
+Tab 3: Reference docs loaded
+
+Don't close. Let them persist.
+Tomorrow: Resume all three tabs right where you left off.
+```
+
+✅ **Context switching**
+```
+Working on migration project.
+Urgent production issue interrupts.
+
+Pause migration tabs (don't close).
+Open new tabs for incident.
+After incident: Resume migration tabs with full context intact.
+```
+
+✅ **Long-running projects**
+```
+Week-long migration project.
+Multiple tabs with accumulated knowledge.
+
+Each day: Resume tabs from yesterday.
+No rebuilding context.
+Continuous workflow.
+```
+
+✅ **Complex investigations**
+```
+Deep dive into codebase structure.
+Loaded multiple files, explored patterns, built understanding.
+
+Resume tomorrow: All that context is still there.
+No need to re-explore.
+```
+
+---
+
+### The Real Benefit: Human Context Recovery
+
+**The AI isn't the only one lacking context** - humans forget too.
+
+**Example workflow**:
+
+**Friday 5 PM**:
+```
+Tab 1 (Investigation): 50 messages exploring helm chart dependencies
+Tab 2 (Implementation): 30 messages updating charts
+Tab 3 (Reference): Architecture docs loaded
+
+You: "I need to leave. We'll continue Monday."
+→ Tabs persist
+```
+
+**Monday 9 AM**:
+```
+You: "What was I working on again?"
+
+Resume Tab 1:
+- Scroll up through conversation history
+- "Oh right, we found that Chart A depends on ConfigMap X"
+- "And we determined Chart B needs updating first"
+- Full context restored
+
+Resume Tab 2:
+- "We were updating the values.yaml"
+- "We had decided to use 8Gi memory based on metrics"
+- Continue exactly where you left off
+```
+
+**The AI remembers what you've forgotten.**
+
+---
+
+### Practical Patterns
+
+#### Pattern 1: Daily Resume
+
+```
+End of day:
+- Leave tabs open
+- Notes in tab names (if using terminal tab naming)
+- Color coding already in place
+
+Next morning:
+- Resume all tabs
+- Quick scroll through recent messages to remember context
+- Continue work immediately
+```
+
+#### Pattern 2: Multi-Project Management
+
+```
+Project A tabs (migration):
+- Tab 1-3: Migration work
+- Leave open/resumed when not active
+
+Project B tabs (optimization):
+- Tab 4-6: Optimization work
+- Leave open/resumed when not active
+
+Switch between projects:
+- Resume relevant tabs
+- Full context for each project maintained
+```
+
+#### Pattern 3: Investigation Preservation
+
+```
+Deep investigation:
+- Tab explores complex codebase
+- Builds understanding over 100+ messages
+- Loads many files for reference
+
+Without resume:
+- Would need to reload everything
+- Lose accumulated insights
+- Rebuild mental model
+
+With resume:
+- Return to investigation anytime
+- All context preserved
+- Reference what AI discovered last week
+```
+
+---
+
+### Best Practices
+
+**1. Name your tabs/sessions meaningfully**
+```
+Bad: "Tab 1", "Session 2"
+Good: "Migration-HelmCharts", "Investigation-AuthFlow"
+```
+
+**2. Add a summary comment before pausing**
+```
+Before ending session:
+"Summarize where we are and what's next for when I resume this tomorrow."
+
+AI provides checkpoint summary.
+First thing you see when resuming.
+```
+
+**3. Use resume for reference tabs**
+```
+Tab with 40-page architecture doc loaded:
+Don't close and reload daily.
+Keep resumed for the entire week/project.
+```
+
+**4. Resume trumps handoff for same session**
+```
+Same tab, continuing work tomorrow:
+→ Use Resume (preserves everything)
+
+Different tab, transferring context:
+→ Use Handoff (fresh start with summary)
+```
+
+---
+
+### When NOT to Resume
+
+❌ **Task completely finished**
+- Close and free up mental space
+
+❌ **Context is stale**
+- Week-old investigation, information changed
+- Better to start fresh
+
+❌ **You need a clean slate**
+- Previous approach didn't work
+- Want to rethink from scratch
+
+---
+
+### Resume vs. Handoff: Decision Tree
+
+```
+Need to continue this exact conversation?
+├─ Yes → Resume the session
+└─ No → Need to transfer context to new session/tab?
+    ├─ Yes → Use Handoff
+    └─ No → Start fresh
+```
+
+**Examples**:
+
+**Resume**:
+- "Continue investigating this issue tomorrow"
+- "Come back to this implementation next week"
+- "Reference this analysis again later"
+
+**Handoff**:
+- "Move to new tab to implement findings"
+- "Share context with teammate"
+- "Context too full, need fresh session"
+
+**Fresh Start**:
+- "Previous approach failed, trying new direction"
+- "Task complete, starting different work"
+
+---
+
+### Combining Resume with Other Patterns
+
+**Resume + Orchestrator**:
+```
+Orchestrator tab generates prompts for 5 worker tabs.
+All 6 tabs remain open/resumed throughout the project.
+Orchestrator tracks overall state.
+Workers handle specific subtasks.
+```
+
+**Resume + Reference Tabs**:
+```
+Yellow reference tab with docs loaded.
+Keep resumed for entire project (days/weeks).
+Query it whenever needed.
+Never reload the same docs.
+```
+
+**Resume + Investigation**:
+```
+Blue investigation tab.
+Resume daily as you explore.
+Builds accumulated knowledge.
+Review history to see how understanding evolved.
+```
+
+---
+
+### Advanced: Session Libraries
+
+**Create a "shelf" of resumed sessions**:
+```
+Active Projects:
+- Migration project (3 tabs resumed)
+- Optimization work (2 tabs resumed)
+- Documentation update (1 tab resumed)
+
+Reference Sessions:
+- Architecture analysis (1 tab, resumed monthly)
+- Incident patterns (1 tab, updated weekly)
+
+On Ice:
+- Future projects (tabs saved, not actively resumed)
+```
+
+**Jump between projects**: Resume relevant tabs, pause others.
+
+---
+
+### Key Insight
+
+**You're not just preserving AI context - you're preserving YOUR context.**
+
+The conversation history in a resumed session is documentation of:
+- What you discovered
+- Decisions you made
+- Why you made them
+- What you tried
+- What worked and what didn't
+
+**Resume isn't just a feature - it's a knowledge management tool.**
+
+---
+
 ## Key Takeaways
 
 1. **One tab, one job** - Keep focus tight
@@ -746,8 +1182,10 @@ Tab N+1: Master coordination
 3. **2-5 active tabs** - Sweet spot for most work
 4. **Use git worktrees** - Parallel work on same repo
 5. **Master + workers** - Coordination pattern for complex tasks
-6. **Close completed tabs** - Reduce cognitive load
-7. **Handoff when needed** - Each tab can handoff independently
+6. **Orchestrator for complex tasks** - Let one tab generate prompts for others
+7. **Resume sessions** - Preserve context across days/weeks, for both AI and human
+8. **Close completed tabs** - Reduce cognitive load
+9. **Handoff when needed** - Each tab can handoff independently
 
 ---
 

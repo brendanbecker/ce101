@@ -129,13 +129,13 @@ Tab 5: Aggregate and create documentation
 **When to use**: Rarely. Modern context windows are large enough that isolation is usually better.
 
 **When you might need it**:
-- Context window approaching limits (50%+)
+- Context window filling up (watch the usage meter)
 - Handoff prompts between sessions
 - Very large documents that must be in one session
 
-**Our approach**: 
+**Our approach**:
 - **Don't preemptively compress**. Tokens are cheap, clarity is expensive.
-- **Use handoff prompts** when crossing 50% context utilization
+- **Use handoff prompts** when context starts feeling cluttered (typically 40-60% as a guideline)
 - **Prefer isolation** over compression - split into multiple agents instead
 
 **Example of good compression**:
