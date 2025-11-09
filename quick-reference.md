@@ -241,7 +241,7 @@ Prod:    Final dry-run, execute with confidence
 **Alternatives**:
 - [ ] Can AI's built-in tools do this?
 - [ ] Can I use CLI + AI assistance instead?
-- [ ] Would a local data store work? (Module 4)
+- [ ] Would a local data store work? (create searchable inventories)
 
 **Context Cost**:
 - [ ] How many tools does it expose? (1-5 reasonable, 30+ expensive)
@@ -339,9 +339,9 @@ Show me the current limits first."
 
 **By Module**:
 - **Module 1**: Core Concepts - Space Jam, Accountability, Natural Language
-- **Module 4**: Local Data Stores - Verification patterns
-- **Module 6**: Practical Patterns - Dry-run, progressive verification, safety
-- **Module 8**: MCP Servers - When to use, evaluation framework
+- **Module 4**: Integration Patterns - Live queries, local data, MCP decisions
+- **Module 5**: Practical Patterns - Dry-run, progressive verification, safety
+- **Module 7**: MCP Servers - When to use, evaluation framework
 
 **Quick Access**:
 - Full course materials in training repo

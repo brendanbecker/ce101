@@ -16,28 +16,31 @@ ce101/
 ├── 01-core-concepts.md                 # Module 1: Four context strategies
 ├── 02-filesystem-organization.md       # Module 2: Directory structure as context
 ├── 03-multi-tab-orchestration.md       # Module 3: Multiple specialized agents
-├── 04-local-data-stores.md            # Module 4: Searchable inventories
-├── 05-integration-patterns.md         # Module 5: Live queries vs local data
-├── 06-practical-patterns.md           # Module 6: Real-world workflows
-├── 07-common-pitfalls.md              # Module 7: What to avoid
-├── quick-reference.md                 # One-page cheat sheet
-├── workshop-exercises.md              # Hands-on practice activities
-├── example-prompts.md                 # Copy-paste starting points
-├── slides/                            # PowerPoint presentations (complete deck)
-│   ├── CE101-Session1-CoreConcepts.pptx
-│   ├── CE101_Session2_Filesystem_Organization.pptx
-│   ├── CE101_Session3_Multi_Tab_Orchestration.pptx
-│   ├── CE101_Session4_Local_Data_Stores.pptx
-│   ├── CE101_Session5_Integration_Patterns.pptx
-│   ├── CE101_Session6_Practical_Patterns.pptx
-│   └── CE101_Session7_Common_Pitfalls.pptx
-└── drafts/                            # Work-in-progress concepts for future integration
-    ├── concepts-overview.md           # How new concepts relate to each other
-    ├── integration-plan.md            # Strategy for curriculum updates
-    ├── learning-while-working.md      # AI as teacher, dry-run patterns
-    ├── mcp-servers-module.md          # Module 8: MCP server evaluation
+├── 04-integration-patterns.md          # Module 4: Live queries vs local data
+├── 05-practical-patterns.md            # Module 5: Real-world workflows
+├── 06-common-pitfalls.md               # Module 6: What to avoid
+├── 07-mcp-servers.md                   # Module 7: MCP server evaluation
+├── quick-reference.md                  # One-page cheat sheet
+├── workshop-exercises.md               # Hands-on practice activities
+├── example-prompts.md                  # Copy-paste starting points
+├── docs/                               # Workflow documentation and handoff notes
+│   ├── SLIDE_WORKFLOW.md
+│   ├── MARP_SLIDE_STANDARD.md
+│   ├── HANDOFF_COMPLETE.md
+│   └── EMOJI_ANALYSIS_REPORT.md
+├── scripts/                            # Presentation generation scripts
+│   ├── generate-slides.sh
+│   ├── pptx-to-png.sh
+│   └── view-slides.sh
+├── archive/                            # Archived modules
+│   └── 04-local-data-stores.md         # Archived: Module 4 (searchable inventories)
+└── drafts/                             # Work-in-progress concepts for future integration
+    ├── concepts-overview.md            # How new concepts relate to each other
+    ├── integration-plan.md             # Strategy for curriculum updates
+    ├── learning-while-working.md       # AI as teacher, dry-run patterns
+    ├── mcp-servers-module.md           # Module 8: MCP server evaluation (draft)
     ├── natural-language-communication.md  # Effective AI interaction patterns
-    ├── space-jam-theory.md            # Empowerment and exploration
+    ├── space-jam-theory.md             # Empowerment and exploration
     └── verification-accountability-patterns.md  # Safety and responsibility
 ```
 

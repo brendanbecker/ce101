@@ -15,10 +15,12 @@ This document outlines how to integrate new concepts into the CE101 curriculum:
 1. Core Concepts - Four context strategies
 2. Filesystem Organization - Directory structure as context
 3. Multi-Tab Orchestration - Multiple specialized agents
-4. Local Data Stores - Searchable inventories
-5. Integration Patterns - Live queries vs local data
-6. Practical Patterns - Real-world workflows
-7. Common Pitfalls - What to avoid
+4. Integration Patterns - Live queries vs local data (includes local data stores)
+5. Practical Patterns - Real-world workflows
+6. Common Pitfalls - What to avoid
+7. MCP Servers - When and why to use
+
+**Note**: Module 4 (Local Data Stores) has been archived and integrated into Module 4 (Integration Patterns)
 
 ## Proposed Integration Strategy
 
@@ -41,7 +43,7 @@ This document outlines how to integrate new concepts into the CE101 curriculum:
 - Reduces false confidence hallucinations
 - Applies to human communication too
 
-**MCP Servers (New Module 8)**:
+**MCP Servers (New Module 7)**:
 - What they are and how they work
 - When to consider using them
 - Warning: Don't install servers you won't use intentionally
@@ -55,7 +57,7 @@ This document outlines how to integrate new concepts into the CE101 curriculum:
 - Manual first, automate second
 - Progressive verification: Dev → Review → Prod
 
-**Verification Patterns (Expand Module 6 or New Section)**:
+**Verification Patterns (Expand Module 5 or New Section)**:
 - Script generation for auditability
 - Dry-run mode requirement (from Learning While Working)
 - Peer review workflows
@@ -97,7 +99,7 @@ Keep current flow, add bookends:
 
 8. **MCP Servers** (NEW)
 
-9. **Advanced Patterns** (NEW or expanded from Module 6)
+9. **Advanced Patterns** (NEW or expanded from Module 5)
    - Verification workflows
    - Script generation patterns
    - Creation vs verification advantage
@@ -121,7 +123,7 @@ Keep current flow, add bookends:
 - Both?
 
 **Q: Verification patterns:**
-- Expand Practical Patterns (Module 6)?
+- Expand Practical Patterns (Module 5)?
 - New advanced module at end?
 - Spread across relevant modules?
 
@@ -138,14 +140,14 @@ I'm leaning toward **Option A with elements of C**:
    - Show effective communication patterns in context
    - Use "doubt triggers explanation" in real scenarios
 
-3. **Expand Module 6** (Practical Patterns) to include:
+3. **Expand Module 5** (Practical Patterns) to include:
    - Script generation workflows
    - Verification and peer review
    - Creation vs verification advantage
 
-4. **Add Module 8** for MCP Servers
+4. **Add Module 7** for MCP Servers
 
-5. **Update Module 7** (Common Pitfalls) to include:
+5. **Update Module 6** (Common Pitfalls) to include:
    - Over-reliance on MCP servers
    - Skipping verification
    - Blind trust in outputs
@@ -156,7 +158,7 @@ This preserves the current flow while integrating new concepts where they're mos
 
 1. Draft expanded Module 1 with Space Jam + Accountability
 2. Draft MCP Servers module
-3. Draft verification patterns section for Module 6
+3. Draft verification patterns section for Module 5
 4. Create natural language examples for integration
 5. Review and refine based on feedback
 6. Update CLAUDE.md with new structure

@@ -13,10 +13,10 @@ This training consists of seven modules designed for SRE teams:
 1. **[Core Concepts](01-core-concepts.md)** - The four context strategies and foundational principles
 2. **[Filesystem Organization](02-filesystem-organization.md)** - Using your directory structure as context architecture
 3. **[Multi-Tab Orchestration](03-multi-tab-orchestration.md)** - Managing multiple specialized agents
-4. **[Local Data Stores](04-local-data-stores.md)** - Building searchable inventories and references
-5. **[Integration Patterns](05-integration-patterns.md)** - When to use live queries vs. local data
-6. **[Practical Patterns](06-practical-patterns.md)** - Real-world workflows and examples
-7. **[Common Pitfalls](07-common-pitfalls.md)** - What to avoid and how to fix it
+4. **[Integration Patterns](04-integration-patterns.md)** - When to use live queries vs. local data
+5. **[Practical Patterns](05-practical-patterns.md)** - Real-world workflows and examples
+6. **[Common Pitfalls](06-common-pitfalls.md)** - What to avoid and how to fix it
+7. **[MCP Servers](07-mcp-servers.md)** - When and why to use Model Context Protocol servers
 
 ## Quick Start
 
@@ -29,7 +29,7 @@ If you're new to AI-assisted development:
 If you're already using AI assistants:
 
 1. Jump to **Multi-Tab Orchestration** to level up your workflow
-2. Explore **Local Data Stores** to build better context infrastructure
+2. Explore **Integration Patterns** to optimize how you connect AI to your systems
 3. Review **Common Pitfalls** to avoid typical mistakes
 
 ## Key Takeaways
@@ -94,7 +94,7 @@ This will:
 
 ### Source Files (Edit These)
 
-- `01-core-concepts.md` through `08-mcp-servers.md` - Curriculum modules
+- `01-core-concepts.md` through `07-mcp-servers.md` - Curriculum modules
 - `CE101-Master-Presentation.md` - Master slide deck markdown
 
 ### Generated Files (Don't Edit)

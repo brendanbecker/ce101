@@ -1,4 +1,4 @@
-# Module 8: MCP Servers - When and Why
+# Module 7: MCP Servers - When and Why
 
 ## Learning Objectives
 
@@ -446,7 +446,7 @@ MCP server approach:
 - Live queries every time
 - Network dependency
 
-Local data store approach: (See Module 4)
+Local data store approach: (Create searchable inventories)
 - Export CMDB to JSON quarterly
 - Fast local searches
 - No context cost
@@ -491,7 +491,7 @@ Before installing an MCP server, ask yourself these questions:
   - `az` for Azure
   - AI can help you use these tools
 
-- [ ] **Could I create a local data store instead?** (See Module 4)
+- [ ] **Could I create a local data store instead?** (Create searchable inventories)
   - Export data periodically
   - Fast local searches
   - No context cost
@@ -776,7 +776,7 @@ This keeps context clean when you don't need those capabilities.
 
 ### Pattern: Local Data Instead
 
-Before installing an MCP server for read-only data access, consider creating a local data store (Module 4):
+Before installing an MCP server for read-only data access, consider creating a local data store (create searchable inventories):
 
 **MCP Server approach:**
 ```
@@ -1171,7 +1171,7 @@ Visual decision framework for evaluating MCP server installation:
               ▼
     ┌─────────────────────────┐
     │ Does this need live/    │ ──No───> Consider local data
-    │ real-time data?         │          store (Module 4)
+    │ real-time data?         │          store (inventories)
     └─────────┬───────────────┘
               │ Yes
               ▼
@@ -1416,9 +1416,8 @@ Result: Fast searches, no context cost
 3. Default to "no" for new installations until proven necessary
 
 **Further reading**:
-- **[Module 4: Local Data Stores](04-local-data-stores.md)** - Alternative to MCP for read-heavy workflows
-- **[Module 5: Integration Patterns](05-integration-patterns.md)** - When to use live queries vs local data
-- **[Module 7: Common Pitfalls](07-common-pitfalls.md)** - Avoiding MCP-related anti-patterns
+- **[Module 4: Integration Patterns](04-integration-patterns.md)** - When to use live queries vs local data
+- **[Module 6: Common Pitfalls](06-common-pitfalls.md)** - Avoiding MCP-related anti-patterns
 
 ---
 

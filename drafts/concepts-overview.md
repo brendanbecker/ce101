@@ -166,17 +166,13 @@ Verification & Accountability: "AI generates, you verify and execute"
 **Keep**: Technical orchestration patterns
 **Result**: More effective tab communication
 
-### Module 4: Local Data Stores
-**Add**: Verification patterns for data accuracy
-**Keep**: Technical implementation
-**Result**: Better accountability for data quality
-
-### Module 5: Integration Patterns
+### Module 4: Integration Patterns (formerly Module 5)
 **Add**: MCP server considerations
-**Keep**: Live query vs local data trade-offs
+**Keep**: Live query vs local data trade-offs, local data store concepts
 **Result**: Complete picture including MCP servers
+**Note**: Local data stores content integrated here (Module 4: Local Data Stores archived)
 
-### Module 6: Practical Patterns
+### Module 5: Practical Patterns (formerly Module 6)
 **Expand significantly**: Add verification workflows
 - Script generation pattern
 - Peer review integration
@@ -185,7 +181,7 @@ Verification & Accountability: "AI generates, you verify and execute"
 **Keep**: Existing workflows
 **Result**: Safe production practices
 
-### Module 7: Common Pitfalls
+### Module 6: Common Pitfalls (formerly Module 7)
 **Add**:
 - Over-installing MCP servers
 - Skipping verification
@@ -194,7 +190,7 @@ Verification & Accountability: "AI generates, you verify and execute"
 **Keep**: Existing pitfalls
 **Result**: Comprehensive warnings
 
-### Module 8: MCP Servers (NEW)
+### Module 7: MCP Servers (formerly Module 8)
 **Content**: Full module on MCP server evaluation and use
 **Focus**: When to use, when to avoid, context cost awareness
 **Result**: Informed decisions about tool installation

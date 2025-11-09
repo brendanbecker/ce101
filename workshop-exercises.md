@@ -363,7 +363,7 @@ Pick one rewritten prompt and actually test it:
 
 ## Exercise 9: Dry-Run Script Generation (40 minutes)
 
-**Module/Concept**: Module 6 - The Dry-Run Pattern
+**Module/Concept**: Module 5 - The Dry-Run Pattern
 
 **Objective**: Make dry-run mode standard practice by generating and testing operational scripts safely.
 
@@ -452,7 +452,7 @@ Based on dry-run output:
 
 ## Exercise 10: Progressive Verification Workflow (60 minutes)
 
-**Module/Concept**: Module 6 - Progressive Verification Workflow
+**Module/Concept**: Module 5 - Progressive Verification Workflow
 
 **Objective**: Practice the Dev → Review → Prod pattern with a real infrastructure change.
 
@@ -566,7 +566,7 @@ Document:
 
 ## Exercise 11: MCP Server Evaluation (30 minutes)
 
-**Module/Concept**: Module 8 - MCP Servers Evaluation Framework
+**Module/Concept**: Module 7 - MCP Servers Evaluation Framework
 
 **Objective**: Make intentional decisions about MCP server installation using the evaluation framework.
 
@@ -610,7 +610,7 @@ Can AI do this with built-in tools?
 Is there a CLI tool I could use instead?
 [List CLI options: gh, kubectl, az, etc.]
 
-Could I create a local data store? (Module 4)
+Could I create a local data store? (create searchable inventories)
 [Would periodic export work? How often updated?]
 
 Could a simple script solve this?
@@ -634,7 +634,7 @@ Is time saved worth context cost?
 
 **Step 5: Make Decision** (5 minutes)
 
-Use the decision tree from Module 8:
+Use the decision tree from Module 7:
 
 ```
 Decision: [ ] Install  [ ] Don't Install  [ ] Conditional
@@ -675,7 +675,7 @@ If Conditional:
 
 ## Exercise 12: Verification Pattern Practice (45 minutes)
 
-**Module/Concept**: Module 6 - Script Generation, Read vs Execute, Accountability
+**Module/Concept**: Module 5 - Script Generation, Read vs Execute, Accountability
 
 **Objective**: Develop critical review skills for AI-generated scripts before production use.
 

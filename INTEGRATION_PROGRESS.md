@@ -2,6 +2,16 @@
 
 This document tracks changes made during the integration of draft concepts into the main curriculum. Use this as a reference when updating PowerPoint presentations.
 
+## Module Renumbering (2025-11-09)
+
+**Module 4 (Local Data Stores) has been archived**. Modules have been renumbered:
+- Module 5 → Module 4 (Integration Patterns)
+- Module 6 → Module 5 (Practical Patterns)
+- Module 7 → Module 6 (Common Pitfalls)
+- Module 8 → Module 7 (MCP Servers)
+
+**Note**: Historical entries below refer to old module numbers for accuracy of the integration work performed. Current module references in the actual curriculum files have been updated.
+
 ## Session 1 / Module 1: Core Concepts
 
 ### Changes Made
