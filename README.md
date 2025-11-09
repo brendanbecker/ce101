@@ -58,6 +58,53 @@ If you're already using AI assistants:
 - [Workshop Exercises](workshop-exercises.md) - Hands-on practice activities
 - [Example Prompts](example-prompts.md) - Copy-paste starting points
 
+## Slide Generation Workflow
+
+The course includes presentation slides that are generated from a master markdown file.
+
+### Workflow
+
+1. **Edit curriculum modules** (01-08.md) - These are the source of truth
+2. **Update master presentation** with Claude Code's help:
+   - Edit `CE101-Master-Presentation.md`
+   - Extract key concepts from curriculum modules
+   - Create slide-friendly versions of content
+3. **Generate slides automatically**:
+   ```bash
+   ./scripts/generate-slides.sh
+   ```
+
+This will:
+- Generate styled PowerPoint: `CE101-Master-Presentation-Styled.pptx`
+- Create PNG previews: `workspace/thumbnails/`
+- Build HTML index for browsing slides
+
+### Quick Commands
+
+```bash
+# Generate PowerPoint and PNG previews
+./scripts/generate-slides.sh
+
+# View slides in browser
+./scripts/view-slides.sh
+
+# Convert any PowerPoint to PNGs
+./scripts/pptx-to-png.sh <file.pptx> [output-dir]
+```
+
+### Source Files (Edit These)
+
+- `01-core-concepts.md` through `08-mcp-servers.md` - Curriculum modules
+- `CE101-Master-Presentation.md` - Master slide deck markdown
+
+### Generated Files (Don't Edit)
+
+- `CE101-Master-Presentation-Styled.pptx` - PowerPoint output
+- `workspace/thumbnails/` - PNG preview images
+- `workspace/slides-html/` - Intermediate HTML files
+
+Generated files are in `.gitignore` and should not be committed.
+
 ## Getting Help
 
 Questions or feedback? Add them to the team wiki discussion page or bring them to office hours.

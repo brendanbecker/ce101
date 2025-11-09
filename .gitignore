@@ -1,0 +1,21 @@
+# Generated presentation files (source is CE101-Master-Presentation.md)
+CE101-Master-Presentation.pptx
+CE101-Master-Presentation-Styled.pptx
+CE101-Master-Presentation-Improved.pptx
+
+# Generated workspace (thumbnails, HTML, unpacked presentations)
+workspace/
+
+# Temporary files
+.~lock.*
+*.tmp
+
+# Python virtual environments
+venv/
+__pycache__/
+*.pyc
+
+# Keep local skills available
+!.claude/
+!.claude/skills/
+!.claude/skills/ce101-slides/

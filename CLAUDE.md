@@ -154,6 +154,11 @@ Supporting Python scripts for PowerPoint analysis:
 
 These are utility scripts for content management, not core curriculum.
 
+**Virtual Environment**:
+- Python scripts require `python-pptx` package
+- Virtual environment located at: `~/venvs/pptx-tools`
+- Usage: `source ~/venvs/pptx-tools/bin/activate && python3 read_pptx.py <file>`
+
 ## Target Audience
 
 **Primary**: SREs, DevOps engineers, platform engineers
