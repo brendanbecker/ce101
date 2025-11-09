@@ -158,6 +158,32 @@ Tab 3 (Green): Chart C - git worktree
 
 **Why it works**: Each chart update is independent. No need to wait for one to finish before starting another.
 
+**Natural language coordination** for parallel work:
+```
+Tab 1 prompt (command-style):
+"Update service-a chart for new cluster"
+
+Tab 1 prompt (natural language - better):
+"I'm working in a worktree for Chart A (service-a). This is part of a migration
+to a new Kubernetes cluster, and I'm coordinating with two other tabs working
+on Charts B and C simultaneously.
+
+For this chart specifically, I need to:
+- Update cluster endpoints in values.yaml
+- Modify resource limits (new cluster has larger nodes)
+- Update ingress for new domain
+
+The other tabs are making similar changes to their charts. If you find any
+shared dependencies or common configurations, flag them so I can make sure
+all three charts stay in sync."
+```
+
+**What natural language adds to parallel coordination**:
+- Explains the broader context (part of migration)
+- Acknowledges the multi-tab setup (coordinating with other tabs)
+- Asks AI to watch for cross-dependencies
+- Helps maintain consistency across parallel work
+
 ---
 
 ### Pattern 2: Investigation → Implementation → Documentation
@@ -189,6 +215,41 @@ Tab 3 (Yellow): Documentation
 4. Tab 3 aggregates everything at the end
 
 **Why it works**: Separation of concerns. Investigation context doesn't clutter implementation. Documentation can happen in parallel.
+
+**Natural language handoff** from investigation to implementation:
+```
+Command-style handoff (minimal):
+"Found root cause: memory leak in worker process. Fix needed in Chart."
+
+Natural language handoff (better):
+"I've completed investigation in another tab and found the root cause. Let me
+give you the context for implementing the fix:
+
+**What we discovered:**
+Pods are crashlooping because of a memory leak in the background worker process.
+The investigation showed memory usage climbing from 200Mi to 1.5Gi over 6 hours,
+then OOMKill.
+
+**Root cause:**
+The worker doesn't properly close database connections after processing jobs.
+This has been happening since we increased job concurrency last week.
+
+**What needs to be fixed:**
+1. Update the helm chart to reduce worker concurrency from 10 to 5 (immediate mitigation)
+2. Add connection pool management (proper fix, but takes longer)
+
+**Files involved:**
+/company/SRE/helm/charts/my-service/values.yaml - worker concurrency setting
+
+I'm keeping the investigation tab open in case you need to reference the logs
+or metrics we looked at. Let me know if you need more context."
+```
+
+**Why this natural language handoff works**:
+- Provides complete context for the next person/session
+- Explains not just what, but why
+- Separates immediate mitigation from long-term fix
+- Offers continued support (investigation tab still open)
 
 ---
 
@@ -266,26 +327,49 @@ Tab 5 (Green): Master - Coordination
 
 **Coordination Prompt** (in Tab 5):
 ```
-I've completed work in multiple tabs:
+Command-style aggregation (minimal):
+"Here are summaries from Tabs 1-4. Create deployment docs."
 
-Tab 1 - Helm updates:
-[paste summary]
+Natural language aggregation (more effective):
+"I've been coordinating work across multiple tabs for this cluster migration,
+and I need help synthesizing everything into coherent deliverables. Let me give
+you what each tab accomplished:
 
-Tab 2 - Terraform changes:
-[paste summary]
+**Tab 1 - Helm updates (completed):**
+Updated 3 charts (service-a, service-b, service-c) with new cluster endpoints
+and resource limits. All charts rendered successfully. Found one shared
+ConfigMap that needs to be created in the new cluster first.
 
-Tab 3 - Testing results:
-[paste summary]
+**Tab 2 - Terraform changes (completed):**
+Created infrastructure for new cluster: 3 node pools (system, app, database).
+Applied successfully in staging. Ready for production apply.
 
-Related work items (from Tab 4):
-[paste relevant items]
+**Tab 3 - Testing results (completed):**
+Deployed all services to staging cluster. Smoke tests passed. Load testing
+showed 15% better performance than old cluster due to larger nodes.
 
-Now:
-1. Identify any dependencies or conflicts between these changes
-2. Create a deployment checklist
-3. Generate comprehensive documentation for the wiki
-4. Draft PR description with all context
+**Tab 4 - Related work items:**
+Found WORK-12345 which has additional requirements: need to update monitoring
+dashboards for new cluster. This wasn't in original scope.
+
+**What I need from you:**
+1. Review these summaries and flag any dependencies or risks I might have missed
+2. Create a deployment checklist with proper ordering (e.g., ConfigMap before charts)
+3. Draft comprehensive documentation explaining the migration approach
+4. Generate a PR description that captures all this work with proper context
+
+**What I'm uncertain about:**
+- Whether we should deploy to prod in one go or service-by-service
+- If the monitoring dashboard update (WORK-12345) should block this deployment
+- Whether the ConfigMap issue is a blocker or just a quick fix
 ```
+
+**What natural language adds to aggregation**:
+- Provides rich context about each tab's work
+- Explicitly identifies discovered issues (ConfigMap, monitoring)
+- Expresses uncertainty about deployment strategy
+- Asks for risk analysis, not just documentation
+- Makes it easy for AI to provide strategic guidance
 
 ---
 
@@ -317,7 +401,7 @@ Tab 3 (Blue): Investigation
 3. Tab 3: Investigate cause in parallel
 4. Post-incident: Tab 2 aggregates into final report
 
-**Tab 1 Example**:
+**Tab 1 Example** (Command-style):
 ```
 URGENT: Need to rollback user-api deployment
 
@@ -328,18 +412,55 @@ Location: /company/SRE/helm/charts/user-api/
 Execute rollback immediately. Show commands before running.
 ```
 
-**Tab 2 Example**:
+**Tab 1 Example** (Natural language - better for incidents):
 ```
-Document incident in progress:
+URGENT INCIDENT - I need help executing a rollback quickly but safely.
 
-Service: user-api
-Time started: 14:23 UTC
-Symptom: 500 error rate 85%
-Action: Rollback v2.1.0 → v2.0.3
-Executed by: [name]
+**Situation:**
+user-api v2.1.0 deployed 10 minutes ago (14:13 UTC) is returning 500 errors at
+85% rate. Users are affected. I need to rollback to v2.0.3 which was stable.
 
-[Keep updating as actions taken in Tab 1]
+**What I need:**
+Generate the helm rollback commands for me to review and execute. Include:
+1. Commands to verify current state
+2. The actual rollback command
+3. How to verify rollback succeeded
+4. How to check error rate is dropping
+
+**What I'm unsure about:**
+- Whether there are database migrations in v2.1.0 that might break if we rollback
+- If we need to coordinate with the dev team first or just roll back
+
+We're in an active incident - I need to move fast but not break things worse.
+Show me the commands and any warnings, I'll make the call.
 ```
+
+**Tab 2 Example** (Natural language documentation):
+```
+I'm documenting an incident that's happening right now in Tab 1 (execution tab).
+I need you to help me maintain a structured incident log as I feed you updates.
+
+**Start the incident log with what I know:**
+- Service: user-api
+- Time started: 14:23 UTC
+- Symptom: 500 error rate jumped from 2% to 85%
+- Suspected cause: Recent deployment of v2.1.0 (10 minutes ago)
+- Action being taken: Rollback to v2.0.3 in progress (Tab 1)
+- Incident commander: [my name]
+
+I'll keep you updated with actions as they happen. After each update, show me
+the current state of the incident log so I can verify it's accurate.
+
+Also flag anything that seems important for the post-mortem - things we should
+have done differently or questions we need to answer later.
+```
+
+**Why natural language helps in emergencies**:
+- Reduces cognitive load (AI handles structure)
+- Expresses uncertainty without shame (database migrations?)
+- Gets AI to think about risks (warnings)
+- Parallel documentation captures real-time timeline
+- AI can flag process improvements even during the incident
 
 ---
 
@@ -423,18 +544,46 @@ Color: Green
 **Step 4: Return to Orchestrator for Coordination**
 After workers complete, return to Tab 1:
 ```
-Worker tabs have completed:
+Command-style coordination:
+"Worker tabs done. Tab 2: helm updates. Tab 3: terraform done. Create docs."
 
-Tab 2 results: [paste summary]
-Tab 3 results: [paste summary]
-Tab 4 results: [paste summary]
+Natural language coordination (better):
+"The worker tabs have finished their tasks. Let me give you detailed summaries
+so you can help me coordinate the final deliverables.
 
-Now:
-1. Identify dependencies between these changes
-2. Create deployment plan
-3. Generate wiki documentation
-4. Create PR descriptions
+**Tab 2 (Helm Chart Updates) - Completed:**
+All three charts updated successfully. Each is ready for commit. Discovered
+that service-c needs a new ConfigMap that doesn't exist yet - added TODO to
+create it first.
+
+**Tab 3 (Terraform Infrastructure) - Completed:**
+Created the new cluster infrastructure. Everything applied cleanly in staging.
+Found one issue: need to add network peering to existing VPC, but that's
+documented in the terraform output.
+
+**Tab 4 (Sync Script) - Completed:**
+Updated sync script to handle both old and new clusters during migration.
+Includes dry-run mode and rollback capability. Tested successfully.
+
+**What I need your help synthesizing:**
+1. Create a deployment sequence that accounts for dependencies (ConfigMap first,
+   then network peering, then charts, then sync)
+2. Identify any risks or gaps in our approach
+3. Draft documentation that explains the overall migration strategy
+4. Generate PR descriptions for each component with proper context
+
+**What I'm concerned about:**
+The ConfigMap dependency wasn't in our original plan. Should this be a
+separate PR, or folded into one of the chart updates? What's the cleanest
+approach from a review standpoint?"
 ```
+
+**Why this natural language approach works for orchestration**:
+- Provides rich context about each worker's results
+- Flags discovered issues (ConfigMap, network peering)
+- Asks for strategic thinking (deployment sequence)
+- Expresses uncertainty (separate PR or not?)
+- Helps orchestrator make informed recommendations
 
 **Why This Pattern Works**:
 - **Reduces cognitive load**: You don't have to design each prompt manually
@@ -623,13 +772,42 @@ All tabs can read this file for context.
 
 **Master tab updates it** as decisions are made:
 ```
+Command-style:
 "Update /tmp/current-task-context.md with our decision to use ClusterIP instead of LoadBalancer"
+
+Natural language (more effective):
+"We just decided to use ClusterIP instead of LoadBalancer for internal services
+because of cost concerns and network architecture.
+
+Can you update /tmp/current-task-context.md to document this decision? Include:
+- The decision (ClusterIP for internal services)
+- The reasoning (cost + network architecture)
+- What this affects (any service that doesn't need external access)
+
+This will help the other tabs working on different services make consistent
+choices."
 ```
 
 **Worker tabs reference it**:
 ```
+Command-style:
 "Check /tmp/current-task-context.md for any relevant constraints before proceeding"
+
+Natural language:
+"Before I modify this service's ingress configuration, I want to make sure I'm
+following the team's current decisions. Can you:
+
+1. Check /tmp/current-task-context.md for any relevant constraints
+2. Let me know if there are decisions about LoadBalancer vs ClusterIP
+3. Flag anything else in there that might affect ingress configuration
+
+I want to stay consistent with what the other tabs are doing."
 ```
+
+**Why natural language helps with shared context**:
+- Explains the "why" behind decisions (helps future tabs understand)
+- Asks for relevant filtering (not just "read the file")
+- Shows awareness of coordination needs (stay consistent)
 
 ---
 
@@ -1043,11 +1221,46 @@ Good: "Migration-HelmCharts", "Investigation-AuthFlow"
 
 **2. Add a summary comment before pausing**
 ```
-Before ending session:
+Command-style:
 "Summarize where we are and what's next for when I resume this tomorrow."
 
-AI provides checkpoint summary.
+Natural language (more effective):
+"I need to stop for the day, but I'll be resuming this work tomorrow morning.
+Can you create a comprehensive checkpoint summary that will help me (and you)
+get back into context quickly?
+
+Include:
+1. What we've completed so far
+2. What we're in the middle of (current state)
+3. What's left to do (next steps)
+4. Any decisions we made that I might forget overnight
+5. Any blockers or questions that came up
+
+I want tomorrow-me to be able to read this summary and pick up exactly where
+we left off without having to scroll through our entire conversation.
+
+Also, if there's anything I should think about or research overnight (like that
+database migration question we had), flag it."
+
+AI provides comprehensive checkpoint summary.
 First thing you see when resuming.
+```
+
+**When you resume** (natural language):
+```
+Command-style resume:
+"Continue from yesterday"
+
+Natural language resume:
+"I'm resuming work on the cluster migration we were working on yesterday.
+Before we dive back in, can you:
+
+1. Give me a quick refresher on where we left off
+2. Remind me of any important decisions we made
+3. Let me know what our next step was going to be
+
+I've had a night's sleep and some context has faded - help me get back up to
+speed efficiently."
 ```
 
 **3. Use resume for reference tabs**

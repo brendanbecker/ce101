@@ -4,6 +4,43 @@ One-page cheat sheet for working with AI coding assistants.
 
 ---
 
+## Core Mindset
+
+**Space Jam Theory**: If you can dream it, you can at least start it
+- Don't self-limit based on complexity
+- AI helps break down big problems into small ones
+- You bring expertise, AI brings generation speed
+
+**Accountability Framework**: AI generates, you verify and execute
+- You are responsible for everything that runs in prod
+- Same standards as human-written code
+- Creation is fast, verification is your job
+- Empowered but responsible
+
+---
+
+## Natural Language Communication
+
+**Talk like a human, not a command prompt**
+
+✅ **Effective**:
+```
+I need to update disk space alerts from 80% to 85%. We've been getting
+too many false positives. I'm not sure if threshold adjustment or
+rate-of-change would be better. Current alert in /monitoring/alerts.yaml.
+```
+
+❌ **Ineffective**: "Fix disk space alert threshold to 85%"
+
+**Key patterns**:
+- Express uncertainty - triggers better explanations
+- Provide context (what, why, where)
+- Ask AI to teach while doing
+- Natural > formal for explanations
+- Structured > natural for specifications
+
+---
+
 ## The Four Strategies
 
 | Strategy | When to Use | Example |
@@ -163,14 +200,83 @@ Save to: [exact path]
 
 ---
 
+## Safety Patterns
+
+**Dry-Run is Mandatory**:
+- Every operational script needs `--dry-run` mode
+- Test in non-prod before prod
+- Show what WOULD happen without doing it
+
+**Progressive Verification Workflow**:
+```
+Dev → Review → Prod
+
+Dev:     Learn, test logic, fix issues
+Review:  Test with realistic data, verify scale
+Prod:    Final dry-run, execute with confidence
+```
+
+**Script Generation Pattern**:
+- AI generates scripts, you review and execute
+- Include verbose comments explaining each step
+- Peer review like any other code
+- Version control operational scripts
+
+**Read vs Execute Boundaries**:
+- ✅ AI can READ from production (safe)
+- ✅ AI can GENERATE scripts (safe, you review)
+- ❌ AI should NOT EXECUTE in production (you execute after review)
+
+---
+
+## MCP Server Evaluation
+
+**Before installing an MCP server, ask:**
+
+**Frequency**:
+- [ ] Will I use this daily? (Good candidate)
+- [ ] Weekly? (Maybe)
+- [ ] Monthly or less? (Probably not worth it)
+
+**Alternatives**:
+- [ ] Can AI's built-in tools do this?
+- [ ] Can I use CLI + AI assistance instead?
+- [ ] Would a local data store work? (Module 4)
+
+**Context Cost**:
+- [ ] How many tools does it expose? (1-5 reasonable, 30+ expensive)
+- [ ] Do I need ALL of them or just some?
+- [ ] Is context cost justified by usage frequency?
+
+**Rule of thumb**: If you can't quantify daily/weekly usage with specific examples, don't install it.
+
+**Audit monthly**: Remove unused servers. Context is precious.
+
+---
+
 ## Red Flags
 
-🚩 Prompts without file paths  
-🚩 Mixing 3+ different tasks in one tab  
-🚩 Data stores not updated in months  
-🚩 Starting sessions in root directory  
-🚩 No handoffs despite many messages  
+**Context & Communication**:
+🚩 Prompts without file paths
+🚩 Command-style instead of natural language
+🚩 Hiding uncertainty instead of expressing it
+
+**Organization**:
+🚩 Mixing 3+ different tasks in one tab
+🚩 Starting sessions in root directory
+🚩 No handoffs despite many messages
 🚩 Asking agent to "remember" from previous sessions
+
+**Data & Tools**:
+🚩 Data stores not updated in months
+🚩 MCP servers installed "just in case"
+🚩 Can't remember when you last used an installed server
+
+**Safety**:
+🚩 Running AI-generated scripts without review
+🚩 Testing in prod first (or not at all)
+🚩 Skipping dry-run testing
+🚩 Blind trust in AI outputs
 
 ---
 
@@ -206,19 +312,41 @@ Show me the current limits first."
 
 ## Remember
 
+**Core Principles**:
+- **If you can dream it, you can start it** - Don't self-limit
+- **You are accountable** - AI generates, you verify and execute
+- **Talk naturally** - Express uncertainty, provide context
 - **Tokens are cheap** - Don't over-optimize, provide good context
+
+**Organization**:
 - **Isolation beats compression** - Use multiple tabs before compressing
-- **Be specific** - File paths, not descriptions
-- **Let the agent navigate** - It can find files, you guide the search
 - **One agent, one job** - Separate tabs for separate concerns
+- **Be specific** - File paths, not descriptions
+
+**Safety**:
+- **Dry-run everything** - Test before executing
+- **Dev → Review → Prod** - Progressive verification
+- **AI reads and generates, you execute** - Maintain control
+
+**Tools**:
+- **Built-in first** - Check native tools before installing MCP servers
+- **Context cost matters** - MCP servers consume tokens every conversation
+- **Audit monthly** - Remove unused tools and servers
 
 ---
 
 ## Learn More
 
+**By Module**:
+- **Module 1**: Core Concepts - Space Jam, Accountability, Natural Language
+- **Module 4**: Local Data Stores - Verification patterns
+- **Module 6**: Practical Patterns - Dry-run, progressive verification, safety
+- **Module 8**: MCP Servers - When to use, evaluation framework
+
+**Quick Access**:
 - Full course materials in training repo
 - Practice exercises in `workshop-exercises.md`
-- Real-world patterns in `06-practical-patterns.md`
+- Example prompts in `example-prompts.md`
 
 ---
 

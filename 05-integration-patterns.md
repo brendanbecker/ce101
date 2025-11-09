@@ -6,17 +6,49 @@ Connecting AI agents to live systems via MCP servers, CLIs, and APIs.
 
 ## The Integration Landscape
 
-You have three ways to give AI access to external systems:
+You have three fundamental approaches for giving AI access to external system information:
 
-1. **Local Data Stores** - Static snapshots (covered in Module 4)
-2. **CLI Tools** - Command-line interfaces (az, kubectl, etc.)
-3. **MCP Servers** - Model Context Protocol integrations
+### The Three Integration Options
 
-Each has its place.
+**1. Local Data Stores** - Efficient, offline snapshots
+- Periodic exports of system state
+- Fast local searches with no API calls
+- No context cost (data read only when needed)
+- Covered in detail in **[Module 4](04-local-data-stores.md)**
+
+**2. Live Queries** - Real-time access via CLI tools or APIs
+- Command-line tools (az, kubectl, terraform, etc.)
+- Direct API calls for current state
+- No context overhead (tools invoked only when needed)
+- Real-time data, higher latency per query
+
+**3. MCP Servers** - Protocol-based integrations
+- Standardized tool interfaces
+- Live access to external systems
+- **Context cost every conversation** (tool schemas always loaded)
+- Covered in depth in **[Module 8](08-mcp-servers.md)**
+
+### The Critical Trade-off: Context Cost
+
+**Local data stores and live CLI queries** share a key advantage: **zero persistent context cost**. You only pay tokens when you actually read the data or invoke the tool.
+
+**MCP servers** trade context efficiency for convenience: their tool schemas consume context in every conversation, whether you use them or not.
+
+**The decision framework**: Choose based on frequency of use, need for real-time data, and context budget.
+
+| Approach | Context Cost | Data Freshness | Query Speed | Best For |
+|----------|-------------|----------------|-------------|----------|
+| **Local Data** | None (data read as needed) | Periodic snapshots | Very fast | Frequent queries, historical data |
+| **Live CLI** | None (tools invoked as needed) | Real-time | Moderate (API latency) | On-demand current state |
+| **MCP Server** | Every conversation | Real-time | Fast | High-frequency daily use |
+
+Each has its place. The key is matching the approach to your usage pattern.
 
 ---
 
-## Decision Framework: Live vs. Local
+## Decision Framework: Three Integration Approaches
+
+Choosing between local data, live CLI queries, and MCP servers depends on **frequency**, **freshness requirements**, and **context budget**.
 
 ### Use Live Queries When:
 
@@ -70,16 +102,151 @@ Each has its place.
 
 ---
 
-### Hybrid Approach: The Best Pattern
+### Use MCP Servers When:
 
-Use **local for discovery, live for action**:
+✅ **High-frequency daily use**
+```
+"I query incident management 20+ times during my on-call shift"
+"I check GitHub PRs 15 times per day"
+"I need deployment status constantly throughout the day"
+```
+
+✅ **Complex multi-step workflows benefit from standardization**
+```
+"Updating work items involves checking status, reading comments, updating fields"
+"Deployment verification needs status + logs + metrics from one system"
+"Incident coordination requires alerts + tickets + team communications"
+```
+
+✅ **Real-time data critical AND used constantly**
+```
+"On-call week: PagerDuty queries every hour"
+"Active project: deployment status checks 10+ times daily"
+"Security audit: vulnerability scans multiple times per day"
+```
+
+⚠️ **Context cost warning**:
+- Each MCP server consumes tokens every conversation
+- Multiple servers compound the cost
+- Only worth it if you use the tools **daily** and **intentionally**
+- See **[Module 8](08-mcp-servers.md)** for detailed evaluation framework
+
+---
+
+### Three-Way Comparison: Real SRE Scenarios
+
+**Scenario 1: Checking cloud resource inventory**
+
+| Approach | How It Works | Context Cost | When to Use |
+|----------|-------------|--------------|-------------|
+| **Local Data** | Export resources weekly to JSON, search locally | None | You query resource lists 5+ times per day (dev work, planning, audits) |
+| **Live CLI** | Run `az resource list` when needed | None | You check resources occasionally (1-2 times per week) |
+| **MCP Server** | MCP provides live resource queries | ~2-5k tokens/conversation | You query resources 20+ times daily AND need real-time state |
+
+**Best choice for most teams**: Local data (frequent queries, data doesn't change hourly)
+
+---
+
+**Scenario 2: Incident management during on-call**
+
+| Approach | How It Works | Context Cost | When to Use |
+|----------|-------------|--------------|-------------|
+| **Local Data** | Historical incidents in markdown files | None | Researching past incidents, finding patterns |
+| **Live CLI** | Use incident system CLI or web UI | None | Not on-call, occasional lookups |
+| **MCP Server** | PagerDuty/incident tool MCP server | ~3-8k tokens/conversation | **On-call week**: querying incidents 15+ times per day |
+
+**Best choice**:
+- **On-call week**: Install MCP server for high-frequency use
+- **Off-call**: Remove MCP, use local incident history for research
+- **Occasional lookup**: Use web UI or CLI
+
+---
+
+**Scenario 3: Service catalog and dependency information**
+
+| Approach | How It Works | Context Cost | When to Use |
+|----------|-------------|--------------|-------------|
+| **Local Data** | Export service catalog monthly, search locally | None | Planning, architecture reviews, general reference (most common use) |
+| **Live CLI** | Query service catalog API when needed | None | Occasional verification of current service state |
+| **MCP Server** | Service catalog MCP providing live queries | ~2-4k tokens/conversation | You reference service catalog 20+ times daily |
+
+**Best choice for most teams**: Local data (catalog doesn't change frequently, queried often)
+
+---
+
+**Scenario 4: Deployment and release status**
+
+| Approach | How It Works | Context Cost | When to Use |
+|----------|-------------|--------------|-------------|
+| **Local Data** | Snapshot deployment state daily | None | Historical "what was deployed when" queries |
+| **Live CLI** | `kubectl get deployments`, `helm list` | None | Occasional verification, troubleshooting |
+| **MCP Server** | K8s/deployment status MCP | ~5-10k tokens/conversation | Active deployment day: checking status 30+ times |
+
+**Best choice**:
+- **Normal operations**: Live CLI (real-time when needed, no context cost)
+- **Active deployment project**: Consider temporary MCP installation
+- **Historical analysis**: Local data snapshots
+
+---
+
+**Scenario 5: Work item and ticket management**
+
+| Approach | How It Works | Context Cost | When to Use |
+|----------|-------------|--------------|-------------|
+| **Local Data** | Export your work items daily to JSON | None | Quick reference to your task list, planning |
+| **Live CLI** | Use Azure DevOps/Jira CLI | None | Updating tickets occasionally |
+| **MCP Server** | Work item system MCP | ~3-6k tokens/conversation | You update tickets 15+ times daily, every conversation |
+
+**Best choice for most people**:
+- Local data for reference (your task list)
+- CLI for updates (simple commands)
+- MCP only if you're doing heavy ticket management as primary work
+
+---
+
+### The Context Cost Reality
+
+**Example: Three MCP servers installed**
 
 ```
-Step 1: Search local inventory
+Your setup:
+- PagerDuty MCP (8 tools) → ~3k tokens
+- GitHub MCP (15 tools) → ~5k tokens
+- AWS MCP (30 tools) → ~8k tokens
+Total context cost: ~16k tokens per conversation
+
+Your usage:
+- PagerDuty: Used daily during on-call week (1 week/month)
+- GitHub: Used 3-4 times per week
+- AWS: Installed 2 months ago, used twice
+
+Analysis:
+- PagerDuty: Good value during on-call, remove when off-call
+- GitHub: Moderate use - consider CLI + AI instead
+- AWS: Pure waste - remove immediately, use 'aws' CLI
+
+Action: Remove AWS MCP, reclaim 8k tokens
+Consider: Remove PagerDuty between on-call rotations
+```
+
+**The principle**: Every MCP server should justify its context cost through **daily, intentional use**. If you're using it weekly or monthly, alternatives are more efficient.
+
+See **[Module 8](08-mcp-servers.md)** for comprehensive evaluation framework and audit process.
+
+---
+
+### Hybrid Approach: The Best Pattern
+
+**Combine all three approaches** strategically:
+
+**Pattern: Local discovery → Live verification → Action**
+
+```
+Step 1: Search local inventory (fast, no context cost)
 "Search azure-resources.json for all VMs tagged environment=staging"
 → Fast, finds candidates: vm-staging-1, vm-staging-2
 
-Step 2: Verify live
+Step 2: Verify live (current state, no context cost)
 "Using az cli, check current status of vm-staging-1 and vm-staging-2"
 → Confirms they still exist and gets current state
 
@@ -89,9 +256,39 @@ Step 3: Take action
 ```
 
 **Why this works**:
-- Fast initial search (local)
-- Verified before action (live)
+- Fast initial search (local data)
+- Verified before action (live CLI)
 - Reduced API calls (efficiency)
+- Zero persistent context cost (no MCP needed)
+
+---
+
+**Pattern: MCP for high-frequency active work, local for research**
+
+```
+On-call week scenario:
+
+Active incident management (MCP):
+"Using PagerDuty MCP, show current P1 incidents"
+→ Used 20+ times during shift, context cost justified
+
+Historical pattern research (local):
+"Search local incident files for similar database timeout issues"
+→ Fast searches, no API calls, no context cost
+
+Combined value:
+- MCP for real-time active work
+- Local data for research and patterns
+- Remove MCP when off-call rotation ends
+```
+
+**The principle**:
+- **Default to local data** for frequent reference queries
+- **Use live CLI** for on-demand current state
+- **Install MCP** only for high-frequency daily use during active work periods
+- **Remove MCP** when that work period ends
+
+See **[Module 8: MCP Servers](08-mcp-servers.md)** for task-specific installation patterns.
 
 ---
 
@@ -315,18 +512,25 @@ Maintain existing formatting."
 
 ---
 
-### When to Use MCP vs. CLI
+### When to Use MCP vs. CLI vs. Local Data
 
-| Scenario | MCP | CLI | Reason |
-|----------|-----|-----|--------|
-| Query Azure resources | ✅ Prefer | ✅ Works | MCP might be more structured |
-| Complex az commands | ❌ No | ✅ Prefer | CLI more flexible |
-| Update work items | ✅ Prefer | ✅ Works | MCP designed for this |
-| Execute kubectl | ❌ No | ✅ Only option | MCP doesn't support |
-| Search wiki | ✅ Prefer | ❌ Hard | MCP understands wiki structure |
-| Git operations | ❌ No | ✅ Only option | Use git CLI |
+**Context-aware decision matrix:**
 
-**Reality**: You'll often default to CLI because it's familiar and flexible. Use MCP when it offers clear advantages.
+| Scenario | Local Data | CLI | MCP Server | Context Cost Winner |
+|----------|-----------|-----|------------|-------------------|
+| Query Azure resources | ✅ Best for repeated queries | ✅ Best for occasional | ⚠️ Only if 20+ queries/day | **Local** (zero cost) |
+| Complex az commands | N/A | ✅ Preferred | ❌ No | **CLI** (zero cost) |
+| Update work items | For reference only | ✅ Simple updates | ⚠️ Only if constant use | **CLI** (zero cost) |
+| Execute kubectl | N/A | ✅ Only option | ❌ No | **CLI** (zero cost) |
+| Search wiki | ✅ Export wiki periodically | ❌ Hard | ⚠️ Only if daily searches | **Local** (zero cost) |
+| Git operations | N/A | ✅ Only option | ❌ No | **CLI** (zero cost) |
+| Historical incident patterns | ✅ Best | N/A | N/A | **Local** (zero cost) |
+
+**Key insight**: Notice how **CLI and local data** win most scenarios due to **zero context cost**. MCP servers need **very high frequency** to justify their context overhead.
+
+**Reality**: Default to CLI and local data. Only install MCP servers when you can justify daily, high-frequency use (15-20+ queries per day).
+
+> ⚠️ **Accountability**: Installing MCP servers without considering context cost is like deploying services without resource limits. Every MCP server you install reduces context available for your actual work. Be intentional about what tools live in your context window.
 
 ---
 
@@ -719,55 +923,125 @@ Solutions:
 
 ### Integration Decision Tree
 
+**Updated decision flow with MCP considerations:**
+
 ```
 Need current state?
-├─ Yes → Live query (MCP/CLI)
-└─ No → Check local data store
+├─ Yes → Continue to frequency check
+└─ No → Use local data store (Module 4)
+
+How often will you query this?
+├─ 20+ times per day, every day → Consider MCP (Module 8 evaluation)
+├─ Few times per day → Live CLI (az, kubectl, etc.)
+└─ Few times per week → Live CLI as needed
+
+If considering MCP:
+├─ Can you quantify daily usage? (Be honest)
+│   ├─ Yes, 15+ uses daily → MCP might make sense
+│   └─ "Frequently" (vague) → Use CLI instead
+│
+├─ Is this temporary high-frequency work? (on-call, project)
+│   ├─ Yes → Install MCP temporarily, remove after
+│   └─ No, ongoing → MCP might make sense
+│
+├─ Could local data + periodic refresh work?
+│   ├─ Yes → Use local data (better efficiency)
+│   └─ No, need real-time → MCP might make sense
+│
+└─ Context cost justified? (Module 8 framework)
+    ├─ Yes → Install MCP with audit schedule
+    └─ No → Use CLI + AI instead
 
 Making changes?
-├─ Yes → Use CLI (more control)
-└─ No → MCP or CLI both fine
+├─ Yes → Use CLI (more control, verification)
+└─ No → Any approach works
 
 Large dataset?
 ├─ Yes → Pull once, save locally, query local
 └─ No → Direct query fine
-
-Queried frequently?
-├─ Yes → Local data store
-└─ No → Live query acceptable
 
 Destructive operation?
 ├─ Yes → Multi-step verification + CLI
 └─ No → Standard workflow
 ```
 
+**Key principle**: Default to local data or CLI. Only install MCP servers when you can justify the context cost with **daily, intentional, high-frequency use**.
+
+**See also**:
+- **[Module 4](04-local-data-stores.md)**: Building local data stores for efficient queries
+- **[Module 8](08-mcp-servers.md)**: Complete MCP evaluation framework and decision criteria
+
 ---
 
 ## Summary
 
-**Integration types**:
-- Local data stores (fast, historical, bulk queries)
-- CLI tools (flexible, full control)
-- MCP servers (structured, AI-friendly)
+**Three integration approaches**:
+1. **Local data stores** (Module 4)
+   - No context cost
+   - Fast queries
+   - Periodic snapshots
+   - Best for: Frequent reference queries, historical data
 
-**Best practice**: Combine all three
-- Local for discovery
-- MCP for verification
-- CLI for action
+2. **Live CLI queries**
+   - No context cost
+   - Real-time data
+   - API latency per query
+   - Best for: On-demand current state, occasional queries
+
+3. **MCP servers** (Module 8)
+   - Context cost every conversation
+   - Real-time data
+   - Standardized tool interfaces
+   - Best for: High-frequency daily use (20+ queries/day)
+
+**The context cost trade-off**:
+- Local data and CLI: Pay tokens only when used
+- MCP servers: Pay tokens every conversation
+- Choose MCP only when daily usage justifies context cost
+
+**Best practice**: Strategic combination
+- **Default**: Local data for frequent queries, CLI for current state
+- **High-frequency work**: Install MCP temporarily for active periods
+- **Always verify**: Local for discovery, live for action verification
 
 **Safety**:
 - Read operations: generally safe
 - Write operations: review first
 - Destructive operations: multi-step verification
 
+**Decision framework**: Match approach to usage frequency and freshness needs
+- See **[Module 4](04-local-data-stores.md)** for building efficient local stores
+- See **[Module 8](08-mcp-servers.md)** for MCP evaluation and management
+
 ---
 
 ## Next Steps
 
-1. Identify which MCPs you have access to
-2. Test MCP queries vs. equivalent CLI commands
-3. Build local data stores for frequently queried data
-4. Create integration workflows for your common tasks
+1. **Audit your current integration approach**:
+   - What systems do you query repeatedly?
+   - How often? (Be specific: times per day/week)
+   - Could local data stores work? (See Module 4)
+
+2. **Evaluate any installed MCP servers**:
+   - When did you last use each one?
+   - How often do you actually use it?
+   - Does daily usage justify context cost?
+   - See **[Module 8](08-mcp-servers.md)** for audit framework
+
+3. **Build strategic local data stores**:
+   - Start with most frequently queried data
+   - See **[Module 4](04-local-data-stores.md)** for patterns
+
+4. **Test the three-way comparison**:
+   - Pick one task you do regularly
+   - Try local data, CLI, and MCP approaches (if applicable)
+   - Measure: context cost, query speed, your preference
+   - Choose based on actual usage patterns
+
+5. **Create integration workflows** matching your needs:
+   - Local discovery + Live verification pattern
+   - Task-specific MCP installation for high-frequency periods
+   - Default to zero-context-cost approaches
 
 ---
 

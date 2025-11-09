@@ -218,6 +218,19 @@ Agent immediately knows:
 - Specific service
 - Expects Chart.yaml, values.yaml, templates/
 
+**Natural language enhancement**:
+```
+I need to update resource limits for my-service. We've been seeing OOMKilled
+pods in production, and I think we need to increase memory from 512Mi to 1Gi.
+
+The chart is right here in this directory. Can you:
+1. Show me the current resource limits
+2. Suggest appropriate values based on our production node capacity
+3. Update the values.yaml file
+```
+
+This combines the right starting location with natural language that provides context about *why* you're making changes.
+
 ---
 
 ### ✅ Even Better for Investigation
@@ -228,6 +241,26 @@ cd /company/SRE/
 ```
 
 Broad enough for searching, specific enough for context.
+
+**Natural language version** (more effective):
+```
+I'm trying to understand which of our services are using nginx-ingress, because
+we're planning to upgrade to a new version and I want to assess the impact.
+
+Starting here in /company/SRE/, can you:
+1. Search through all helm charts for nginx-ingress references
+2. List which services are affected
+3. Note what versions they're currently using
+
+I'm not sure if all references will be obvious - some might use annotations
+or custom ingress classes instead of directly referencing nginx-ingress.
+```
+
+**Why this works better**:
+- Explains the goal (upgrade planning)
+- Acknowledges uncertainty (might use annotations)
+- Asks for organized output (list, note versions)
+- Provides context about your starting location
 
 ---
 
@@ -350,6 +383,28 @@ find /tmp -type f -atime +7 -delete
 - Searchable by symptoms, causes, solutions
 - Links to historical incidents
 
+**Communicating about runbooks with AI** (natural language):
+```
+Command-style (less effective):
+"Check runbook for disk space"
+
+Natural language (more effective):
+"We're getting the DiskSpaceHigh alert again. I know we have a runbook for this
+in the runbooks directory, but I can't remember the exact filename. Can you:
+1. Find the disk space runbook
+2. Show me the investigation steps
+3. Let me know if there's anything about Docker image cleanup specifically
+
+I think the issue might be related to old images, but I want to follow the
+proper procedure first."
+```
+
+**What natural language adds**:
+- Context about the current situation (alert firing)
+- Admission of uncertainty (can't remember filename, "I think")
+- Specific question about subset of content (Docker cleanup)
+- Commitment to proper procedure
+
 ---
 
 ### Incident Log Format
@@ -464,10 +519,31 @@ We will use the following sizing strategy:
 2025-02-01 (3 months)
 ```
 
-**AI Usage**:
+**AI Usage with natural language**:
 ```
-"Search our decision logs for anything related to cluster sizing or resource allocation"
+Terse command (works, but limited):
+"Search decision logs for cluster sizing"
+
+Natural language (better results):
+"I'm working on right-sizing our new Kubernetes cluster and want to understand
+the reasoning behind our current cluster architecture. Can you search through
+the decision logs in /notes/decisions/ for anything related to cluster sizing,
+node pools, or resource allocation?
+
+I'm particularly interested in:
+- Why we chose separate node pools for system vs application workloads
+- What scaling thresholds we decided on and why
+- Any alternatives we considered but rejected
+
+This will help me avoid repeating past mistakes or reinventing solutions we've
+already evaluated."
 ```
+
+**What the natural language version accomplishes**:
+- Explains the broader context (right-sizing new cluster)
+- Specifies what aspects matter most (node pools, scaling)
+- Shows awareness of organizational learning (past decisions)
+- Makes it clear why this information is needed (avoid mistakes)
 
 ---
 
@@ -541,10 +617,28 @@ Point agents to specific subdirectories:
 cd /company/SRE/notes/
 # Start AI session
 
+Command-style test:
 "Describe what kind of documentation lives here based on the directory structure"
+
+Natural language test (better):
+"I just reorganized our documentation into this directory structure. Based on
+what you can see here, can you tell me:
+
+1. What kinds of documentation we have
+2. How you would find information about a specific topic (like database failovers)
+3. Whether the organization makes sense or if you'd suggest improvements
+
+I want to make sure this structure is intuitive not just for me, but for anyone
+(human or AI) who needs to find information quickly during an incident."
 ```
 
-If the agent can figure it out, your structure is working.
+**Why the natural language version is better**:
+- Explains the context (just reorganized)
+- Asks for specific feedback (what, how to find, improvements)
+- Shows the intended use case (finding info during incidents)
+- Invites collaborative improvement
+
+If the agent can figure it out AND provides useful structural feedback, your organization is working.
 
 ---
 
@@ -598,14 +692,40 @@ git worktree add ../helm-worktree-service-b
 
 **AI prompt for each tab**:
 ```
-Tab 1:
+Tab 1 (command-style):
 "Working on service-a helm chart in this worktree.
 Update resource limits based on recent metrics."
 
-Tab 2:
-"Working on service-b helm chart in this worktree.
-Update ingress configuration for new domain."
+Tab 1 (natural language - better):
+"I'm in a git worktree for service-a's helm chart. We've been monitoring
+resource usage for the past week, and I can see in Grafana that we're
+consistently using about 80% of our memory limits during peak hours.
+
+Can you:
+1. Show me the current resource limits in values.yaml
+2. Suggest new limits with appropriate headroom
+3. Make sure requests/limits ratio makes sense
+
+I want to avoid OOMKills, but also not over-provision since our nodes are
+already pretty packed."
+
+Tab 2 (natural language):
+"This worktree is for service-b's helm chart. We're migrating to a new domain
+(new-domain.company.com) and I need to update the ingress configuration.
+
+The current ingress is set up for old-domain.company.com. I'm not sure if we
+need to support both domains during the migration period or if we can do a
+hard cutover.
+
+Can you show me the current ingress config and suggest how to handle the
+domain migration? Include any considerations about certificate management."
 ```
+
+**What natural language adds to worktree coordination**:
+- Explains why you're in a worktree (parallel work context)
+- Provides business context for changes (metrics, migration)
+- Expresses uncertainty where it exists (support both domains?)
+- Helps AI understand constraints (nodes are packed)
 
 ---
 
@@ -625,9 +745,34 @@ helm/charts/my-service/
 
 **AI Usage**:
 ```
+Command-style:
 "Compare resource limits across all environment value files.
 Ensure production has at least 2x the resources of staging."
+
+Natural language (more effective):
+"I want to verify our environment progression for resource limits. We should
+have production running with at least 2x the resources of staging, and staging
+with at least 2x dev.
+
+Can you compare the resource limits (CPU and memory) across:
+- values/dev.yaml
+- values/staging.yaml
+- values/production.yaml
+
+I'm particularly concerned about whether we've maintained this ratio as we've
+been updating charts over time. If you find any violations of the 2x rule,
+flag them and suggest appropriate values.
+
+Also, let me know if you see any environments where limits and requests are
+significantly different - that might indicate we're not getting realistic
+resource usage data."
 ```
+
+**What natural language adds**:
+- Explains the principle (environment progression, 2x rule)
+- Shows awareness of drift over time
+- Asks for specific analysis (violations, suggestions)
+- Adds a second concern based on operational experience (limits vs requests)
 
 ---
 
