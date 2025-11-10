@@ -158,53 +158,67 @@ terraform plan
 
 ---
 
-### Real Example: Multi-Project Repository
+### Example: Multi-Project Portfolio
 
-Here's an actual AGENTS.md from a multi-project portfolio:
+Here's an example AGENTS.md for a portfolio with multiple projects:
 
 ```markdown
 # AGENTS.md
 
 ## Project Portfolio Overview
 
-This is a multi-project repository containing:
-- **mtg_dev_agents**: Multi-agent system for game development
-- **beckerkube**: Kubernetes infrastructure (GitOps)
-- **montecarlo**: Simulation engine
-- **mtgadvsim**: Game simulator core
+This is a multi-project workspace containing:
+- **infrastructure**: Cloud infrastructure and Kubernetes (GitOps)
+- **web-app**: Main customer-facing web application
+- **api-services**: Backend microservices
+- **data-pipeline**: ETL and analytics pipeline
 
 ## ⚠️ CRITICAL: Project-Specific AGENTS.md Files
 
 Each project has its own detailed AGENTS.md:
-- `mtg_dev_agents/AGENTS.md` - Agent protocols, testing patterns
-- `beckerkube/AGENTS.md` - Security policies, GitOps workflows
+- `infrastructure/AGENTS.md` - Security policies, GitOps workflows, deployment
+- `web-app/AGENTS.md` - Frontend build process, testing, deployment
+- `api-services/AGENTS.md` - Service architecture, API testing, contracts
+- `data-pipeline/AGENTS.md` - Pipeline workflows, data quality checks
 
 **Before working on any project, read the relevant subdirectory
 AGENTS.md file first.**
 
 ## Common Commands by Project
 
-### beckerkube (Kubernetes Infrastructure)
+### infrastructure (Kubernetes/Cloud)
 ```bash
-# Security validation
-./scripts/sec-lint.sh
+# Validate security policies
+./scripts/security-check.sh
 
-# Flux reconciliation
-flux reconcile kustomization clusters-minikube
+# Sync GitOps changes
+flux reconcile kustomization production
 ```
 
-### montecarlo (Simulation Engine)
+### web-app (Frontend)
 ```bash
-# Run simulations
-python phase4_simulation.py
+# Run tests
+npm test
+
+# Build for production
+npm run build
+```
+
+### api-services (Backend)
+```bash
+# Run integration tests
+pytest tests/integration/
+
+# Start local dev environment
+docker-compose up
 ```
 
 ## Key File Locations
 
-### beckerkube
-- Infrastructure manifests: `infra/` directory
-- Security policies: `infra/security/`
-- Cluster configs: `clusters/minikube/`
+### infrastructure
+- Kubernetes manifests: `k8s/` directory
+- Terraform modules: `terraform/`
+- Security policies: `policies/`
 ```
 
 **What this accomplishes**:
@@ -1123,7 +1137,7 @@ cd terraform/ && terraform plan
 helmfile -e production sync
 
 # Flux
-flux reconcile kustomization clusters-minikube
+flux reconcile kustomization production
 ```
 
 ## Key Conventions
