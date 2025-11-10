@@ -161,18 +161,24 @@ Verification & Accountability: "AI generates, you verify and execute"
 **Keep**: Existing technical content
 **Result**: Better communication about filesystem context
 
-### Module 3: Multi-Tab Orchestration
+### Module 3: MCP Servers (moved up from Module 7/8)
+**Content**: Full module on MCP server evaluation and use
+**Focus**: When to use, when to avoid, context cost awareness
+**Result**: Informed decisions about tool installation
+**Position**: Early in curriculum to inform later decisions about integration patterns
+
+### Module 4: Multi-Tab Orchestration (was Module 3)
 **Add**: Examples using natural language to coordinate agents
 **Keep**: Technical orchestration patterns
 **Result**: More effective tab communication
 
-### Module 4: Integration Patterns (formerly Module 5)
+### Module 5: Integration Patterns (was Module 4/5)
 **Add**: MCP server considerations
 **Keep**: Live query vs local data trade-offs, local data store concepts
 **Result**: Complete picture including MCP servers
 **Note**: Local data stores content integrated here (Module 4: Local Data Stores archived)
 
-### Module 5: Practical Patterns (formerly Module 6)
+### Module 6: Practical Patterns (was Module 5/6)
 **Expand significantly**: Add verification workflows
 - Script generation pattern
 - Peer review integration
@@ -181,7 +187,7 @@ Verification & Accountability: "AI generates, you verify and execute"
 **Keep**: Existing workflows
 **Result**: Safe production practices
 
-### Module 6: Common Pitfalls (formerly Module 7)
+### Module 7: Common Pitfalls (was Module 6/7)
 **Add**:
 - Over-installing MCP servers
 - Skipping verification
@@ -189,11 +195,6 @@ Verification & Accountability: "AI generates, you verify and execute"
 - Command-style communication anti-patterns
 **Keep**: Existing pitfalls
 **Result**: Comprehensive warnings
-
-### Module 7: MCP Servers (formerly Module 8)
-**Content**: Full module on MCP server evaluation and use
-**Focus**: When to use, when to avoid, context cost awareness
-**Result**: Informed decisions about tool installation
 
 ## Teaching Sequence
 

@@ -1,4 +1,4 @@
-# Module 6: Common Pitfalls
+# Module 7: Common Pitfalls
 
 Learn from these mistakes so you don't have to make them yourself.
 
@@ -927,9 +927,9 @@ Exploration is fine, but:
 
 ✅ **Better**: Trial period pattern. Install → Test for 1 week → Decide (keep/remove) → Default to remove.
 
-### Reference Module 7 for Deep Dive
+### Reference Module 3 for Deep Dive
 
-This pitfall is covered in depth in **Module 7: MCP Servers - When and Why**, which includes:
+This pitfall is covered in depth in **Module 3: MCP Servers - When and Why**, which includes:
 - Full evaluation framework for deciding to install
 - Technical deep-dive on context cost
 - Decision trees and usage patterns
@@ -1087,7 +1087,7 @@ When AI generates code:
 
 **Standard 2: Test before production**
 
-From Module 5 Progressive Verification:
+From Module 6 Progressive Verification:
 
 ```
 1. Dev environment: Test with dry-run, then actual run
@@ -1318,7 +1318,7 @@ Script: Done. Deleted 15 resources.
 
 ### The Fix
 
-**Implement the verification workflow from Module 5**
+**Implement the verification workflow from Module 6**
 
 **Layer 1: Dry-Run Testing**
 
@@ -1348,7 +1348,7 @@ You: ./scale-down.sh
 Result: Safe, verified operation
 ```
 
-**From Module 5 Dry-Run Pattern:**
+**From Module 6 Dry-Run Pattern:**
 > Dry-run is crucial for safety, learning, verification, and communication. **Running scripts in production without first testing with dry-run is negligent.**
 
 **Layer 2: Progressive Verification (Dev → Review → Prod)**
@@ -1779,4 +1779,4 @@ Master these five first, then worry about advanced pitfalls.
 
 ---
 
-**[← Back to Practical Patterns](05-practical-patterns.md)** | **[Quick Reference →](quick-reference.md)**
+**[← Back to Practical Patterns](06-practical-patterns.md)** | **[Quick Reference →](quick-reference.md)**

@@ -1,4 +1,4 @@
-# Module 7: MCP Servers - When and Why
+# Module 3: MCP Servers - When and Why
 
 ## Learning Objectives
 
@@ -1416,8 +1416,8 @@ Result: Fast searches, no context cost
 3. Default to "no" for new installations until proven necessary
 
 **Further reading**:
-- **[Module 4: Integration Patterns](04-integration-patterns.md)** - When to use live queries vs local data
-- **[Module 6: Common Pitfalls](06-common-pitfalls.md)** - Avoiding MCP-related anti-patterns
+- **[Module 5: Integration Patterns](05-integration-patterns.md)** - When to use live queries vs local data
+- **[Module 7: Common Pitfalls](07-common-pitfalls.md)** - Avoiding MCP-related anti-patterns
 
 ---
 

@@ -1,4 +1,4 @@
-# Module 3: Multi-Tab Orchestration
+# Module 4: Multi-Tab Orchestration
 
 Managing multiple AI agents working on different aspects of complex tasks simultaneously.
 
@@ -1429,4 +1429,4 @@ Workflow:
 
 ---
 
-**[← Back to Filesystem Organization](02-filesystem-organization.md)** | **[Local Data Stores →](04-local-data-stores.md)**
+**[← Back to MCP Servers](03-mcp-servers.md)** | **[Integration Patterns →](05-integration-patterns.md)**

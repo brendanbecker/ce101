@@ -14,13 +14,13 @@ This document outlines how to integrate new concepts into the CE101 curriculum:
 
 1. Core Concepts - Four context strategies
 2. Filesystem Organization - Directory structure as context
-3. Multi-Tab Orchestration - Multiple specialized agents
-4. Integration Patterns - Live queries vs local data (includes local data stores)
-5. Practical Patterns - Real-world workflows
-6. Common Pitfalls - What to avoid
-7. MCP Servers - When and why to use
+3. MCP Servers - When and why to use (moved early to inform later decisions)
+4. Multi-Tab Orchestration - Multiple specialized agents
+5. Integration Patterns - Live queries vs local data (includes local data stores)
+6. Practical Patterns - Real-world workflows
+7. Common Pitfalls - What to avoid
 
-**Note**: Module 4 (Local Data Stores) has been archived and integrated into Module 4 (Integration Patterns)
+**Note**: Module 4 (Local Data Stores) has been archived and integrated into Module 5 (Integration Patterns). MCP Servers moved from Module 7/8 to Module 3 to establish tool understanding early.
 
 ## Proposed Integration Strategy
 

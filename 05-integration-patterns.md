@@ -1,4 +1,4 @@
-# Module 4: Integration Patterns
+# Module 5: Integration Patterns
 
 Connecting AI agents to live systems via MCP servers, CLIs, and APIs.
 
@@ -26,7 +26,7 @@ You have three fundamental approaches for giving AI access to external system in
 - Standardized tool interfaces
 - Live access to external systems
 - **Context cost every conversation** (tool schemas always loaded)
-- Covered in depth in **[Module 7](07-mcp-servers.md)**
+- Covered in depth in **[Module 3](03-mcp-servers.md)**
 
 ### The Critical Trade-off: Context Cost
 
@@ -129,7 +129,7 @@ Choosing between local data, live CLI queries, and MCP servers depends on **freq
 - Each MCP server consumes tokens every conversation
 - Multiple servers compound the cost
 - Only worth it if you use the tools **daily** and **intentionally**
-- See **[Module 7](07-mcp-servers.md)** for detailed evaluation framework
+- See **[Module 3](03-mcp-servers.md)** for detailed evaluation framework
 
 ---
 
@@ -231,7 +231,7 @@ Consider: Remove PagerDuty between on-call rotations
 
 **The principle**: Every MCP server should justify its context cost through **daily, intentional use**. If you're using it weekly or monthly, alternatives are more efficient.
 
-See **[Module 7](07-mcp-servers.md)** for comprehensive evaluation framework and audit process.
+See **[Module 3](03-mcp-servers.md)** for comprehensive evaluation framework and audit process.
 
 ---
 
@@ -288,7 +288,7 @@ Combined value:
 - **Install MCP** only for high-frequency daily use during active work periods
 - **Remove MCP** when that work period ends
 
-See **[Module 7: MCP Servers](07-mcp-servers.md)** for task-specific installation patterns.
+See **[Module 3: MCP Servers](03-mcp-servers.md)** for task-specific installation patterns.
 
 ---
 
@@ -931,7 +931,7 @@ Need current state?
 └─ No → Use local data store (Module 4)
 
 How often will you query this?
-├─ 20+ times per day, every day → Consider MCP (Module 7 evaluation)
+├─ 20+ times per day, every day → Consider MCP (Module 3 evaluation)
 ├─ Few times per day → Live CLI (az, kubectl, etc.)
 └─ Few times per week → Live CLI as needed
 
@@ -948,7 +948,7 @@ If considering MCP:
 │   ├─ Yes → Use local data (better efficiency)
 │   └─ No, need real-time → MCP might make sense
 │
-└─ Context cost justified? (Module 7 framework)
+└─ Context cost justified? (Module 3 framework)
     ├─ Yes → Install MCP with audit schedule
     └─ No → Use CLI + AI instead
 
@@ -968,7 +968,7 @@ Destructive operation?
 **Key principle**: Default to local data or CLI. Only install MCP servers when you can justify the context cost with **daily, intentional, high-frequency use**.
 
 **See also**:
-- **[Module 7](07-mcp-servers.md)**: Complete MCP evaluation framework and decision criteria
+- **[Module 3](03-mcp-servers.md)**: Complete MCP evaluation framework and decision criteria
 
 ---
 
@@ -987,7 +987,7 @@ Destructive operation?
    - API latency per query
    - Best for: On-demand current state, occasional queries
 
-3. **MCP servers** (Module 7)
+3. **MCP servers** (Module 3)
    - Context cost every conversation
    - Real-time data
    - Standardized tool interfaces
@@ -1009,7 +1009,7 @@ Destructive operation?
 - Destructive operations: multi-step verification
 
 **Decision framework**: Match approach to usage frequency and freshness needs
-- See **[Module 7](07-mcp-servers.md)** for MCP evaluation and management
+- See **[Module 3](03-mcp-servers.md)** for MCP evaluation and management
 
 ---
 
@@ -1024,7 +1024,7 @@ Destructive operation?
    - When did you last use each one?
    - How often do you actually use it?
    - Does daily usage justify context cost?
-   - See **[Module 7](07-mcp-servers.md)** for audit framework
+   - See **[Module 3](03-mcp-servers.md)** for audit framework
 
 3. **Build strategic local data stores**:
    - Start with most frequently queried data
