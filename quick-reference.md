@@ -341,7 +341,7 @@ Show me the current limits first."
 - **Module 1**: Core Concepts - Space Jam, Accountability, Natural Language
 - **Module 3**: MCP Servers - When to use, evaluation framework, context cost
 - **Module 4**: Multi-Tab Orchestration - One agent per job, orchestrator-worker pattern
-- **Module 5**: Practical Patterns - Dry-run, progressive verification, safety
+- **Module 5**: Patterns and Anti-Patterns - Dry-run, progressive verification, safety, common mistakes
 
 **Quick Access**:
 - Full course materials in training repo
