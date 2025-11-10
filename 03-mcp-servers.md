@@ -108,7 +108,7 @@ You're not making a permanent commitment. Just try it and see if it helps.
 
 ```bash
 # List servers
-cat ~/.claude-code/config.json | jq '.mcpServers | keys'
+cat ~/.codex/config.json | jq '.mcpServers | keys'
 ```
 
 **Quick audit**:
