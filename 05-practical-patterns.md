@@ -1794,4 +1794,4 @@ You built a local Azure inventory 3 months ago and never updated it.
 - Document what worked and what didn't
 - Share your experience with the team
 
-**[← Back to Multi-Tab Orchestration](04-multi-tab-orchestration.md)** | **[Common Pitfalls →](07-common-pitfalls.md)**
+**[← Back to Multi-Tab Orchestration](04-multi-tab-orchestration.md)** | **[Common Pitfalls →](06-common-pitfalls.md)**

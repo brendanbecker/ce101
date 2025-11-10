@@ -14,8 +14,8 @@ This training consists of six modules designed for SRE teams:
 2. **[Filesystem Organization](02-filesystem-organization.md)** - Using your directory structure as context architecture
 3. **[MCP Servers](03-mcp-servers.md)** - When and why to use Model Context Protocol servers
 4. **[Multi-Tab Orchestration](04-multi-tab-orchestration.md)** - Managing multiple specialized agents
-5. **[Practical Patterns](06-practical-patterns.md)** - Real-world workflows and examples
-6. **[Common Pitfalls](07-common-pitfalls.md)** - What to avoid and how to fix it
+5. **[Practical Patterns](05-practical-patterns.md)** - Real-world workflows and examples
+6. **[Common Pitfalls](06-common-pitfalls.md)** - What to avoid and how to fix it
 
 ## Quick Start
 

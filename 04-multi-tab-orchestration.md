@@ -888,4 +888,4 @@ Workflow:
 
 ---
 
-**[← Back to MCP Servers](03-mcp-servers.md)** | **[Practical Patterns →](06-practical-patterns.md)**
+**[← Back to MCP Servers](03-mcp-servers.md)** | **[Practical Patterns →](05-practical-patterns.md)**

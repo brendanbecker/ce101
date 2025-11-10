@@ -17,8 +17,8 @@ ce101/
 ├── 02-filesystem-organization.md       # Module 2: Directory structure as context
 ├── 03-mcp-servers.md                   # Module 3: MCP server evaluation
 ├── 04-multi-tab-orchestration.md       # Module 4: Multiple specialized agents
-├── 06-practical-patterns.md            # Module 5: Real-world workflows
-├── 07-common-pitfalls.md               # Module 6: What to avoid
+├── 05-practical-patterns.md            # Module 5: Real-world workflows
+├── 06-common-pitfalls.md               # Module 6: What to avoid
 ├── quick-reference.md                  # One-page cheat sheet
 ├── workshop-exercises.md               # Hands-on practice activities
 ├── example-prompts.md                  # Copy-paste starting points

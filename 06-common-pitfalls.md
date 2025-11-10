@@ -1779,4 +1779,4 @@ Master these five first, then worry about advanced pitfalls.
 
 ---
 
-**[← Back to Practical Patterns](06-practical-patterns.md)** | **[Quick Reference →](quick-reference.md)**
+**[← Back to Practical Patterns](05-practical-patterns.md)** | **[Quick Reference →](quick-reference.md)**
