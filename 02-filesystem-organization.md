@@ -15,16 +15,325 @@ Where you launch an AI session determines what context it naturally has. Startin
 
 ---
 
+## AGENTS.md as a First-Class Citizen
+
+Before diving into directory organization, there's one file that deserves special attention: **AGENTS.md** (or **CLAUDE.md** if you exclusively use Claude).
+
+This file is your AI harness's instruction manual for your codebase.
+
+### What is AGENTS.md?
+
+AGENTS.md is a markdown file that tells AI coding assistants how to work with your specific codebase. Think of it as:
+- Onboarding documentation for AI
+- A context guide that reduces token waste
+- Project-specific rules and conventions
+- A map of where things are and how they work
+
+**Key principle**: Every repository and major subsystem should have one.
+
+---
+
+### Why Make It a First-Class Citizen?
+
+**Without AGENTS.md**, the AI harness must:
+1. Explore your codebase blindly
+2. Guess at conventions and patterns
+3. Search inefficiently for relevant files
+4. Ask you clarifying questions repeatedly
+
+**With AGENTS.md**, the AI harness:
+1. Knows your project structure immediately
+2. Understands your team's conventions
+3. Finds the right files faster
+4. Provides contextually appropriate suggestions
+
+**Token savings**: A well-written AGENTS.md can save thousands of tokens per session by preventing exploration and wrong turns.
+
+---
+
+### Where to Place AGENTS.md Files
+
+**Root-level AGENTS.md** - Portfolio overview:
+```
+/company/
+├── AGENTS.md           # High-level: "This is a multi-project workspace"
+├── SRE/
+├── Dev/
+└── QA/
+```
+
+**Team-level AGENTS.md** - Team context:
+```
+/company/SRE/
+├── AGENTS.md           # SRE-specific: tools, workflows, conventions
+├── terraform/
+├── helm/
+└── ansible/
+```
+
+**Project-level AGENTS.md** - Detailed project rules:
+```
+/company/SRE/helm/
+├── AGENTS.md           # Helm-specific: chart standards, testing
+├── charts/
+└── values/
+```
+
+**Rule of thumb**:
+- Root AGENTS.md: "What lives here and how things are organized"
+- Team AGENTS.md: "How we work and what tools we use"
+- Project AGENTS.md: "Specific rules, commands, and workflows for this codebase"
+
+---
+
+### What Goes in AGENTS.md
+
+Here's a practical template based on real-world usage:
+
+```markdown
+# AGENTS.md
+
+## Project Overview
+Brief description: what this is, who owns it, primary purpose.
+
+## Repository Structure
+```
+key-directory-1/  # What lives here
+key-directory-2/  # What lives here
+key-directory-3/  # What lives here
+```
+
+## Common Commands
+```bash
+# Run tests
+pytest
+
+# Deploy to staging
+./scripts/deploy.sh staging
+
+# Check infrastructure status
+terraform plan
+```
+
+## Key File Locations
+- Main configuration: `config/production.yaml`
+- Test files: `tests/` (pytest)
+- Deployment scripts: `scripts/deploy/`
+- Documentation: `docs/`
+
+## Development Workflows
+1. Make changes in feature branch
+2. Run tests locally: `make test`
+3. Create PR against main
+4. Deploy via GitOps after merge
+
+## Testing Strategies
+- Unit tests: `pytest tests/unit/`
+- Integration tests: `pytest tests/integration/`
+- Load tests: `scripts/load-test.sh`
+
+## Important Conventions
+- Use kebab-case for file names
+- All scripts must have error handling
+- Terraform modules follow standard structure
+- Helm charts use values/ directory for environments
+
+## Environment Configuration
+- `DATABASE_URL`: Required for tests
+- `KUBE_CONTEXT`: Kubectl context to use
+- `TERRAFORM_WORKSPACE`: Which workspace to target
+
+## Common Pitfalls
+- Don't run terraform apply without reviewing plan first
+- Always test in dev environment before staging
+- Check CHANGELOG.md before updates
+
+## Related Documentation
+- Architecture decisions: `docs/architecture/`
+- Runbooks: `/company/SRE/notes/runbooks/`
+- Team wiki: https://wiki.company.com/sre
+```
+
+**Customize this template** for your specific needs. The goal is to answer: "What does someone (or something) need to know to work here effectively?"
+
+---
+
+### Real Example: Multi-Project Repository
+
+Here's an actual AGENTS.md from a multi-project portfolio:
+
+```markdown
+# AGENTS.md
+
+## Project Portfolio Overview
+
+This is a multi-project repository containing:
+- **mtg_dev_agents**: Multi-agent system for game development
+- **beckerkube**: Kubernetes infrastructure (GitOps)
+- **montecarlo**: Simulation engine
+- **mtgadvsim**: Game simulator core
+
+## ⚠️ CRITICAL: Project-Specific AGENTS.md Files
+
+Each project has its own detailed AGENTS.md:
+- `mtg_dev_agents/AGENTS.md` - Agent protocols, testing patterns
+- `beckerkube/AGENTS.md` - Security policies, GitOps workflows
+
+**Before working on any project, read the relevant subdirectory
+AGENTS.md file first.**
+
+## Common Commands by Project
+
+### beckerkube (Kubernetes Infrastructure)
+```bash
+# Security validation
+./scripts/sec-lint.sh
+
+# Flux reconciliation
+flux reconcile kustomization clusters-minikube
+```
+
+### montecarlo (Simulation Engine)
+```bash
+# Run simulations
+python phase4_simulation.py
+```
+
+## Key File Locations
+
+### beckerkube
+- Infrastructure manifests: `infra/` directory
+- Security policies: `infra/security/`
+- Cluster configs: `clusters/minikube/`
+```
+
+**What this accomplishes**:
+- Root-level AGENTS.md provides portfolio map
+- Points to project-specific AGENTS.md for details
+- Shows common commands for quick reference
+- Establishes the pattern: read subdirectory AGENTS.md
+
+---
+
+### AGENTS.md vs README.md
+
+**README.md** is for humans:
+- Project description and motivation
+- Installation instructions
+- Usage examples
+- Contributing guidelines
+
+**AGENTS.md** is for AI harnesses:
+- Where things are located
+- What commands to run
+- Project-specific rules
+- Context and conventions
+
+**Both are valuable**. README helps humans understand *what* and *why*. AGENTS.md helps AI understand *how* and *where*.
+
+**Example relationship**:
+```
+/company/SRE/helm/
+├── README.md      # "This is our Helm chart repository for..."
+├── AGENTS.md      # "Charts are in charts/, use helmfile for deploy..."
+├── charts/
+└── helmfile.yaml
+```
+
+---
+
+### Benefits for Context Engineering
+
+When you start a session at `/company/SRE/`:
+
+**Without AGENTS.md**:
+```
+You: "Update the user-api helm chart resource limits"
+AI: *searches entire SRE directory*
+AI: "I found several directories. Where are the helm charts located?"
+You: "In helm/charts/"
+AI: *searches helm/charts/*
+AI: "I found user-api. What resource limits did you want?"
+```
+
+**With AGENTS.md**:
+```
+You: "Update the user-api helm chart resource limits to 1Gi memory"
+AI: *reads AGENTS.md, knows charts are in helm/charts/*
+AI: *reads helm/charts/user-api/values.yaml*
+AI: "Current memory limit is 512Mi. I'll update to 1Gi.
+     Should I also adjust requests proportionally?"
+```
+
+**Token savings**: No exploration, no back-and-forth, context loaded immediately.
+
+---
+
+### How AGENTS.md Enables SRE-Level Starts
+
+This is crucial: **AGENTS.md lets you start sessions at the SRE level** instead of drilling down to specific subdirectories.
+
+**The traditional approach** (without AGENTS.md):
+```bash
+cd /company/SRE/helm/charts/user-api/  # Navigate deep
+# Start AI session here for context
+```
+
+**The context-engineered approach** (with AGENTS.md):
+```bash
+cd /company/SRE/  # Start where relevant context is
+# Start AI session here
+
+# In your prompt, be explicit:
+"Look in helm/charts/user-api/ and update the resource limits"
+```
+
+**Why this is better**:
+1. You stay at the level where related context lives
+2. You can reference multiple subsystems in one session
+3. You only navigate deeper when you want to limit scope
+4. AGENTS.md provides the map; you provide the specific directions
+
+---
+
+### Practical Tips
+
+**Start small**:
+Don't try to create the perfect AGENTS.md immediately. Begin with:
+1. Project overview (2-3 sentences)
+2. Directory structure (top-level only)
+3. 3-5 most common commands
+4. Key file locations
+
+**Iterate based on usage**:
+- Notice what questions AI asks repeatedly? Add to AGENTS.md.
+- See it searching in wrong places? Update the structure section.
+- Repeating the same context? Add to conventions.
+
+**Keep it current**:
+- Update AGENTS.md when you reorganize directories
+- Add new commands as workflows evolve
+- Remove outdated information promptly
+
+**Version control**:
+AGENTS.md should be committed to git alongside your code. It evolves with the project.
+
+---
+
 ## Recommended Structure for SRE Teams
 
 ```
 company/
+├── AGENTS.md                           # Portfolio-level context
 ├── SRE/
+│   ├── AGENTS.md                       # SRE team-level context
 │   ├── terraform/
+│   │   ├── AGENTS.md                   # Terraform-specific rules
 │   │   ├── azure-infrastructure/
 │   │   ├── kubernetes-clusters/
 │   │   └── networking/
 │   ├── helm/
+│   │   ├── AGENTS.md                   # Helm chart standards
 │   │   ├── charts/
 │   │   │   ├── service-a/
 │   │   │   ├── service-b/
@@ -34,31 +343,44 @@ company/
 │   │       ├── staging/
 │   │       └── production/
 │   ├── ansible/
+│   │   ├── AGENTS.md                   # Ansible conventions
 │   │   ├── playbooks/
 │   │   └── roles/
 │   ├── flux/
+│   │   ├── AGENTS.md                   # GitOps workflow
 │   │   └── clusters/
 │   ├── notes/
+│   │   ├── README.md                   # Human-readable guide
 │   │   ├── runbooks/
 │   │   ├── incidents/
 │   │   ├── inventory/
 │   │   └── decisions/
 │   ├── scripts/
+│   │   ├── README.md                   # Script organization guide
 │   │   ├── automation/
 │   │   ├── utilities/
 │   │   └── monitoring/
 │   └── tmp/
 ├── Dev/
+│   ├── AGENTS.md                       # Dev team context
 │   ├── app-repo-1/
 │   ├── app-repo-2/
 │   └── microservices/
 ├── QA/
+│   ├── AGENTS.md                       # QA team context
 │   ├── load-testing/
 │   └── automation/
 └── Release-Management/
+    ├── AGENTS.md                       # Release management context
     ├── deployment-scripts/
     └── release-notes/
 ```
+
+**Note**: Not every directory needs an AGENTS.md. Add them where you have:
+- Significant project-specific rules or conventions
+- Complex workflows that need explanation
+- Common commands that should be documented
+- Directory structures that aren't self-explanatory
 
 ---
 
@@ -183,6 +505,12 @@ decisions/
 
 ## Starting Sessions in the Right Place
 
+The right starting location depends on **where relevant context lives**, not how specific your task is.
+
+**Core principle**: Start at the team or domain level (like `/company/SRE/`) and use explicit path mentions + AGENTS.md to guide the AI. Only navigate deeper when you want to limit the scope of what the AI can see.
+
+---
+
 ### ❌ Too Broad
 ```bash
 cd /
@@ -190,7 +518,7 @@ cd /
 "Update the helm chart"
 ```
 
-Agent has to search everything. Slow and error-prone.
+Too much context. The AI has to search your entire filesystem. Slow and error-prone.
 
 ---
 
@@ -201,109 +529,291 @@ cd /company
 "Update the helm chart"
 ```
 
-Better, but which team? Which chart?
+Better, but still unclear. Which team owns this? Which subsystem?
 
 ---
 
-### ✅ Just Right
+### ✅ Just Right - Start Where Relevant Context Lives
+```bash
+cd /company/SRE/
+# Start AI here
+"Look in helm/charts/my-service/ and update resource limits to 1Gi memory"
+```
+
+**Why this works**:
+- You're at the SRE level where all your infrastructure context lives
+- Your AGENTS.md tells the AI about directory organization
+- You explicitly mention the path in your prompt
+- The AI can reference related SRE resources (runbooks, other charts, terraform)
+- You maintain flexibility to work across multiple subsystems
+
+**What the AI gets from this location**:
+- Reads `/company/SRE/AGENTS.md` for context
+- Knows this is infrastructure work (not dev/QA)
+- Has access to runbooks, scripts, notes if needed
+- Can compare across helm charts or reference terraform configs
+- Understands SRE conventions and workflows
+
+**Natural language enhancement**:
+```
+I need to update resource limits for my-service in helm/charts/my-service/.
+We've been seeing OOMKilled pods in production, and monitoring shows we're
+consistently hitting 80% of our 512Mi memory limit during peak hours.
+
+Can you:
+1. Look at helm/charts/my-service/values.yaml and show current limits
+2. Suggest new limits with appropriate headroom (thinking 1Gi memory)
+3. Make sure requests/limits ratio still makes sense
+
+I want to avoid OOMKills but also not over-provision since our nodes are
+already pretty packed.
+```
+
+---
+
+### ✅ When to Navigate Deeper - Limiting Scope
+
+Only navigate to a specific subdirectory when you want to **limit what the AI can access**:
+
 ```bash
 cd /company/SRE/helm/charts/my-service/
 # Start AI here
 "Update resource limits in this chart"
 ```
 
-Agent immediately knows:
-- SRE work (not dev)
-- Helm chart (not terraform)
-- Specific service
-- Expects Chart.yaml, values.yaml, templates/
+**Use this approach when**:
+- You want the AI to focus only on one specific component
+- You're working in a large monorepo and want to reduce noise
+- You need to prevent the AI from accidentally modifying other services
+- The specific directory has its own AGENTS.md with detailed rules
 
-**Natural language enhancement**:
-```
-I need to update resource limits for my-service. We've been seeing OOMKilled
-pods in production, and I think we need to increase memory from 512Mi to 1Gi.
-
-The chart is right here in this directory. Can you:
-1. Show me the current resource limits
-2. Suggest appropriate values based on our production node capacity
-3. Update the values.yaml file
-```
-
-This combines the right starting location with natural language that provides context about *why* you're making changes.
+**Trade-off**: You lose access to broader context (other charts, runbooks, related scripts).
 
 ---
 
-### ✅ Even Better for Investigation
+### 🎯 The SRE-Level Start Pattern (Recommended)
+
+For most SRE work, starting at `/company/SRE/` gives you the best balance:
+
 ```bash
 cd /company/SRE/
 # Start AI here
-"Search through our helm charts for services using nginx-ingress"
 ```
 
-Broad enough for searching, specific enough for context.
+**Example prompts from this location**:
 
-**Natural language version** (more effective):
+**Focused task with explicit path**:
 ```
-I'm trying to understand which of our services are using nginx-ingress, because
-we're planning to upgrade to a new version and I want to assess the impact.
+Look in helm/charts/user-api/ and update the ingress configuration to use
+the new domain new-domain.company.com instead of old-domain.company.com.
 
-Starting here in /company/SRE/, can you:
-1. Search through all helm charts for nginx-ingress references
-2. List which services are affected
-3. Note what versions they're currently using
-
-I'm not sure if all references will be obvious - some might use annotations
-or custom ingress classes instead of directly referencing nginx-ingress.
+I'm not sure if we need to support both domains during migration or if we
+can do a hard cutover. Check if there are any related runbooks in notes/runbooks/
+about domain migrations.
 ```
 
-**Why this works better**:
-- Explains the goal (upgrade planning)
-- Acknowledges uncertainty (might use annotations)
-- Asks for organized output (list, note versions)
-- Provides context about your starting location
+**Cross-system investigation**:
+```
+I'm trying to understand our database failover process. Can you:
+
+1. Search notes/runbooks/ for database failover procedures
+2. Check helm/charts/*/values.yaml for database connection configs
+3. Look in terraform/ for database infrastructure setup
+
+I need to see how all the pieces connect - the infrastructure, the app
+configuration, and the operational procedures.
+```
+
+**Exploratory search**:
+```
+Search through all helm charts for services that use nginx-ingress. We're
+planning to upgrade to version 1.5 and I want to assess the impact.
+
+Look for:
+- Direct nginx-ingress references in Chart.yaml dependencies
+- Ingress resources in templates/ directories
+- Annotations that might reference nginx-ingress classes
+
+List which services are affected and note what patterns they're using.
+```
+
+**Why these work**:
+- Started at SRE level for broad context access
+- Explicitly mentioned paths (helm/charts/, notes/runbooks/, terraform/)
+- AGENTS.md provides the directory map
+- Can reference multiple subsystems in one session
+- Natural language explains the goal and constraints
 
 ---
 
-## Repository Organization
+## Cross-Team Investigations: When to Use Subagents
 
-### Monorepo vs. Multiple Repos
+Starting at the SRE level gives you visibility into the entire infrastructure context. But sometimes an SRE problem requires investigating code in a dev repository.
 
-**Monorepo Approach**:
+**This is a perfect opportunity for multi-tab orchestration with handoff prompts.**
+
+### Real-World Scenario
+
+You're investigating a production issue from your SRE workspace:
+
+```bash
+cd /company/SRE/
+# Start AI session here
 ```
-/company/SRE/helm/
-├── charts/
-│   ├── service-a/
-│   ├── service-b/
-│   └── service-c/
-└── .git/
+
+**Initial investigation**:
+```
+We're seeing 500 errors from the user-api service. I've checked:
+
+1. helm/charts/user-api/ - deployment configuration looks correct
+2. notes/incidents/ - no similar recent incidents
+3. Prometheus metrics - shows errors started after last deploy
+
+The errors are "database connection timeout" but our database is healthy.
+I think the issue might be in how the application code is handling connection
+pooling, which would be in the dev repo at /company/Dev/user-api/.
+
+Can you summarize what we know so far and draft a handoff prompt for a
+subagent that will investigate the dev repo?
 ```
 
-**Pros**:
-- Centralized changes
-- Easier cross-chart updates
-- Consistent versioning
+**AI generates handoff prompt**:
+```
+Based on the SRE investigation, here's a handoff prompt for the dev repo:
 
-**AI Advantage**: Agent can compare across all charts easily.
+---
+I need to investigate a production issue with database connection timeouts
+in the user-api service.
+
+## Context from SRE investigation:
+- Errors started after deployment at 14:23 UTC today
+- Helm chart configuration shows correct connection pool settings (pool size: 50)
+- Database is healthy and responding normally
+- Error message: "database connection timeout after 5000ms"
+- Prometheus shows 500 error rate at 15% of requests
+
+## What I need from you:
+1. Look in the application code for database connection handling
+2. Check if there were recent changes to connection pooling logic
+3. Look for any hardcoded timeouts that might override the config
+4. Check if connection retry logic changed
+
+## Specific questions:
+- Is the app respecting the pool size from config?
+- Are connections being properly released back to the pool?
+- Did recent commits change transaction handling?
+
+The deployment that introduced this was commit abc123def.
+---
+```
+
+### Using the Handoff Pattern
+
+**Step 1: Generate handoff in SRE session**
+```
+"Draft a handoff prompt for investigating this issue in the dev repo"
+```
+
+**Step 2: Open new tab/session in dev repo**
+```bash
+cd /company/Dev/user-api/
+# Start new AI session here
+```
+
+**Step 3: Paste handoff prompt**
+The new session has:
+- Dev repo AGENTS.md context (code structure, testing patterns)
+- Git history access
+- Full source code
+- Focus on application-level investigation
+
+**Step 4: Investigation results come back**
+The dev-scoped agent finds:
+```
+Found the issue in src/database/pool.py:
+
+Recent commit abc123def changed connection pool from using config value
+to a hardcoded `max_connections=10`. This overrides the helm chart config
+of 50 connections.
+
+Line 42: pool = ConnectionPool(max_connections=10)  # BUG: should use config
+
+This was likely a debugging change that got committed by mistake.
+```
+
+**Step 5: Return to SRE session for fix**
+```bash
+cd /company/SRE/
+# Back to original session
+```
+
+Now you know the root cause and can coordinate the fix:
+- Dev team reverts the hardcoded value
+- You prepare for redeployment
+- Update incident log and runbook
 
 ---
 
-**Multi-Repo Approach**:
-```
-/company/SRE/helm/
-├── service-a-chart/  # separate repo
-├── service-b-chart/  # separate repo
-└── service-c-chart/  # separate repo
+### Why This Pattern Works
+
+**Keeps context scoped**:
+- SRE agent sees infrastructure, config, metrics
+- Dev agent sees code, git history, tests
+- Each agent reads the appropriate AGENTS.md
+
+**Enables focused investigation**:
+- Dev agent isn't distracted by helm charts and terraform
+- SRE agent isn't overwhelmed by application source code
+- Each agent operates in its domain
+
+**Handoff prompt captures essential context**:
+- What you've already ruled out
+- Specific questions to answer
+- Business context (production impact)
+- Technical constraints (timing, commit hash)
+
+**Prevents token waste**:
+- Don't load entire dev repo into SRE session
+- Don't load entire infrastructure into dev session
+- Each agent has focused, relevant context
+
+---
+
+### Practical Handoff Template
+
+When generating handoffs from SRE to dev investigations:
+
+```markdown
+## Problem Statement
+[Brief description of the production issue]
+
+## What We've Ruled Out
+- Infrastructure: [findings]
+- Configuration: [findings]
+- Database/External services: [findings]
+
+## What We Need to Investigate
+[Specific areas in the dev repo to examine]
+
+## Specific Questions
+1. [Question about code behavior]
+2. [Question about recent changes]
+3. [Question about configuration handling]
+
+## Context
+- Deployment: [commit hash, timestamp]
+- Error rate: [percentage, count]
+- Affected users: [scope]
+- Timeline: [when it started]
 ```
 
-**Pros**:
-- Independent versioning
-- Smaller, focused repos
-- Clearer ownership
+This pattern extends to any cross-team investigation:
+- SRE → Dev (application issues)
+- SRE → QA (load testing results)
+- Dev → SRE (deployment pipeline questions)
+- QA → Dev (test failure analysis)
 
-**AI Consideration**: Use git worktrees for parallel updates:
-```
-"Set up git worktrees for service-a and service-b charts so we can update both in parallel"
-```
+**Preview**: Module 4 (Multi-Tab Orchestration) covers this pattern in depth, including parallel investigations and result synthesis.
 
 ---
 
@@ -581,8 +1091,47 @@ mv scattered-doc-2.md SRE/notes/runbooks/pod-crashloop.md
 
 ---
 
-### Step 4: Create README Files
-Each major directory should have a README:
+### Step 4: Create AGENTS.md and README Files
+
+Create both AGENTS.md (for AI) and README.md (for humans) at appropriate levels:
+
+**Example: /company/SRE/AGENTS.md**
+```markdown
+# AGENTS.md
+
+## SRE Team Workspace
+
+This directory contains all SRE infrastructure and operations code.
+
+## Repository Structure
+```
+terraform/     # Infrastructure as Code
+helm/          # Kubernetes chart repository
+ansible/       # Configuration management
+flux/          # GitOps configurations
+notes/         # Runbooks, incidents, decisions, inventory
+scripts/       # Automation and utilities
+tmp/           # Temporary files (not committed)
+```
+
+## Common Commands
+```bash
+# Terraform
+cd terraform/ && terraform plan
+
+# Helm
+helmfile -e production sync
+
+# Flux
+flux reconcile kustomization clusters-minikube
+```
+
+## Key Conventions
+- All infrastructure changes require terraform plan review
+- Helm charts use values/ directory for environment configs
+- Scripts must include error handling and dry-run mode
+- Document major decisions in notes/decisions/
+```
 
 **Example: /company/SRE/notes/README.md**
 ```markdown
@@ -595,12 +1144,11 @@ Each major directory should have a README:
 - `inventory/` - Searchable data stores (Azure resources, work items, etc.)
 - `decisions/` - Architecture Decision Records (ADRs)
 
-## Usage with AI Assistants
+## For Human Readers
 
-Point agents to specific subdirectories:
-- "Search runbooks for database failover procedures"
-- "Check incidents log for similar errors"
-- "Look in inventory for Azure VM details"
+This directory contains our operational knowledge base. When responding to
+incidents, start with runbooks. When planning changes, review past incidents
+and decision records.
 
 ## Maintenance
 
@@ -609,6 +1157,10 @@ Point agents to specific subdirectories:
 - Review and update runbooks after each use
 - Decision logs reviewed quarterly
 ```
+
+**Key difference**:
+- **README.md**: Context for humans, describes *what* and *why*
+- **AGENTS.md**: Context for AI, describes *where* and *how*
 
 ---
 
@@ -644,35 +1196,88 @@ If the agent can figure it out AND provides useful structural feedback, your org
 
 ## Git Integration
 
-### Repository Structure
+### Repository Organization Pattern
 
-**Option 1: Separate repos for each tool**
+Use separate git repositories for each project or subsystem, organized by category in your filesystem.
+
+**Recommended structure**:
 ```
 /company/SRE/
-├── terraform/  (.git)
-├── helm/       (.git)
-├── ansible/    (.git)
-└── notes/      (.git)
-```
-
-**Option 2: Single SRE monorepo**
-```
-/company/SRE/  (.git)
+├── AGENTS.md                    # SRE team-level context
 ├── terraform/
+│   ├── AGENTS.md                # Maps terraform repos in this category
+│   ├── azure-infrastructure/    (.git - separate repo)
+│   ├── kubernetes-clusters/     (.git - separate repo)
+│   └── networking/              (.git - separate repo)
 ├── helm/
+│   ├── AGENTS.md                # Maps helm chart repos in this category
+│   ├── service-a-chart/         (.git - separate repo)
+│   ├── service-b-chart/         (.git - separate repo)
+│   └── monitoring-charts/       (.git - separate repo)
 ├── ansible/
-└── notes/
+│   ├── AGENTS.md                # Maps ansible repos in this category
+│   ├── base-config/             (.git - separate repo)
+│   └── app-deployment/          (.git - separate repo)
+└── notes/                       (.git - shared documentation repo)
 ```
 
-**Option 3: Mixed approach**
-```
-/company/SRE/
-├── infrastructure/  (.git - contains terraform + ansible)
-├── helm/           (.git - separate for deployment velocity)
-└── notes/          (.git - separate for easier sharing)
+**Why this works**:
+- **Separate repos**: Clear ownership, independent versioning, separate lifecycle
+- **Category organization**: Logically group related repos in filesystem
+- **Category-level AGENTS.md**: Explains which repos exist and how to use them
+- **Easy navigation**: Start at SRE level, navigate to category, AI reads AGENTS.md
+
+**Example category-level AGENTS.md**:
+
+**/company/SRE/terraform/AGENTS.md**:
+```markdown
+# Terraform Repositories
+
+This directory contains our infrastructure-as-code repositories.
+
+## Repositories
+
+### azure-infrastructure/
+- **Purpose**: Azure resource provisioning (VNets, storage, databases)
+- **Owner**: Platform team
+- **Deployment**: Manual apply after review
+
+### kubernetes-clusters/
+- **Purpose**: AKS cluster definitions and node pools
+- **Owner**: SRE team
+- **Deployment**: Automated via GitOps
+
+### networking/
+- **Purpose**: Network policies, DNS, load balancers
+- **Owner**: Network engineering team
+- **Deployment**: Manual apply after review
+
+## Common Commands
+
+```bash
+# Plan changes
+terraform plan -out=tfplan
+
+# Review plan
+terraform show tfplan
+
+# Apply after approval
+terraform apply tfplan
 ```
 
-Choose based on your team's workflow.
+## Conventions
+
+- All changes require plan review before apply
+- Use terraform workspaces for environments (dev/staging/prod)
+- State stored in Azure Storage backend
+- Lock files committed to repo
+```
+
+**Benefits of category-level AGENTS.md**:
+- AI understands the landscape of repos in a category
+- Documents ownership and deployment patterns
+- Provides common commands applicable to all repos in category
+- You can work across multiple repos from the category level
 
 ---
 
@@ -848,20 +1453,28 @@ Be consistent.
 
 ## Quick Wins
 
-### 1. Create a Notes Directory
+### 1. Create an AGENTS.md File
+Start with your team-level directory (like `/company/SRE/AGENTS.md`). Include:
+- Brief overview of what's here
+- Directory structure (top-level)
+- 3-5 most common commands
+
+This single file can save hundreds of tokens per session.
+
+### 2. Create a Notes Directory
 Even if nothing else, having `/notes/` for runbooks and incidents is huge.
 
-### 2. Use Consistent Naming
+### 3. Use Consistent Naming
 Pick a pattern and stick to it.
 
-### 3. Add README Files
-A README in each major directory helps humans AND AI.
+### 4. Add README Files for Humans
+A README in each major directory helps human collaborators understand context.
 
-### 4. Keep Tmp Clean
+### 5. Keep Tmp Clean
 Delete old files regularly. Don't let it become a dumping ground.
 
-### 5. Start Sessions Closer
-Navigate to specific directories before starting AI sessions.
+### 6. Start Sessions at the Right Level
+Start at team/domain level (like `/company/SRE/`) and use explicit paths in prompts. Only navigate deeper when you need to limit scope.
 
 ---
 
@@ -873,23 +1486,28 @@ Navigate to specific directories before starting AI sessions.
 - Has clear naming conventions
 - Includes searchable documentation
 - Separates long-term storage from temporary files
+- **Includes AGENTS.md files to guide AI harnesses**
 
 **Benefits for Context Engineering**:
-- AI knows where to look
-- Starting location provides implicit context
-- Easier to point to specific files
-- Better search results
+- AI knows where to look (via AGENTS.md)
+- Starting at team level provides broad context access
+- Use explicit paths to direct AI within that context
+- AGENTS.md reduces exploration time and token waste
+- Better search results from proper organization
 - Natural isolation of concerns
+
+**Key principle**: Start where relevant context lives (team/domain level), use AGENTS.md + explicit paths to guide the AI, only navigate deeper to limit scope.
 
 ---
 
 ## Next Steps
 
 1. Audit your current structure
-2. Create `/notes/` directories
-3. Move a few files to logical locations
-4. Test with AI - can it navigate?
-5. Iterate and improve
+2. Create your first AGENTS.md (start at team level)
+3. Create `/notes/` directories
+4. Move a few files to logical locations
+5. Test with AI from team-level directory - can it navigate with your AGENTS.md?
+6. Iterate: add to AGENTS.md based on questions AI asks repeatedly
 
 ---
 
