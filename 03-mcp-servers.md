@@ -107,8 +107,8 @@ You're not making a permanent commitment. Just try it and see if it helps.
 ### Periodic Cleanup
 
 ```bash
-# List servers
-cat ~/.codex/config.json | jq '.mcpServers | keys'
+# List servers (look for [mcpServers] section)
+grep -A 20 '\[mcpServers\]' ~/.codex/config.toml
 ```
 
 **Quick audit**:
