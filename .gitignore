@@ -1,10 +1,15 @@
-# Generated presentation files (source is CE101-Master-Presentation.md)
+# Generated presentation files at root (source is CE101-Master-Presentation.md)
+# These are working copies - final versions go in slides/
 CE101-Master-Presentation.pptx
 CE101-Master-Presentation-Styled.pptx
 CE101-Master-Presentation-Improved.pptx
 
 # Generated workspace (thumbnails, HTML, unpacked presentations)
 workspace/
+
+# Allow slides/ directory to be committed
+!slides/
+!slides/*.pptx
 
 # Temporary files
 .~lock.*

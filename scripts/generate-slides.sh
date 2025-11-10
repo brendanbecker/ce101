@@ -27,7 +27,7 @@ fi
 # Step 1: Generate PowerPoint from markdown
 echo -e "${YELLOW}Step 1/2: Generating PowerPoint from markdown...${NC}"
 NODE_PATH=/home/becker/.nvm/versions/node/v20.19.3/lib/node_modules \
-  node workspace/generate-presentation.js
+  node scripts/generate-presentation.js
 
 if [ ! -f "$OUTPUT_PPTX" ]; then
     echo "❌ Error: PowerPoint generation failed"

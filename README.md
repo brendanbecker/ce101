@@ -65,8 +65,10 @@ The course includes presentation slides that are generated from a master markdow
 1. **Edit curriculum modules** (01-08.md) - These are the source of truth
 2. **Update master presentation** with Claude Code's help:
    - Edit `CE101-Master-Presentation.md`
+   - Follow [CE101 Slide Style Guide](docs/CE101-SLIDE-STYLE-GUIDE.md) for formatting
    - Extract key concepts from curriculum modules
    - Create slide-friendly versions of content
+   - Generate in batches of 5-10 slides (see [workflow docs](docs/SLIDE_WORKFLOW.md))
 3. **Generate slides automatically**:
    ```bash
    ./scripts/generate-slides.sh
@@ -102,6 +104,12 @@ This will:
 - `workspace/slides-html/` - Intermediate HTML files
 
 Generated files are in `.gitignore` and should not be committed.
+
+### Documentation
+
+- **[CE101 Slide Style Guide](docs/CE101-SLIDE-STYLE-GUIDE.md)** - Markdown patterns, templates, and formatting rules
+- **[Slide Workflow](docs/SLIDE_WORKFLOW.md)** - Complete generation workflow with troubleshooting
+- **[Slide Creation Postmortem](docs/SLIDE_CREATION_POSTMORTEM.md)** - Lessons learned from initial creation
 
 ## Getting Help
 
