@@ -8,15 +8,14 @@ Context Engineering is the practice of providing AI assistants with the right in
 
 ## Course Structure
 
-This training consists of seven modules designed for SRE teams:
+This training consists of six modules designed for SRE teams:
 
 1. **[Core Concepts](01-core-concepts.md)** - The four context strategies and foundational principles
 2. **[Filesystem Organization](02-filesystem-organization.md)** - Using your directory structure as context architecture
 3. **[MCP Servers](03-mcp-servers.md)** - When and why to use Model Context Protocol servers
 4. **[Multi-Tab Orchestration](04-multi-tab-orchestration.md)** - Managing multiple specialized agents
-5. **[Integration Patterns](05-integration-patterns.md)** - When to use live queries vs. local data
-6. **[Practical Patterns](06-practical-patterns.md)** - Real-world workflows and examples
-7. **[Common Pitfalls](07-common-pitfalls.md)** - What to avoid and how to fix it
+5. **[Practical Patterns](06-practical-patterns.md)** - Real-world workflows and examples
+6. **[Common Pitfalls](07-common-pitfalls.md)** - What to avoid and how to fix it
 
 ## Quick Start
 
@@ -30,7 +29,7 @@ If you're already using AI assistants:
 
 1. Understand **MCP Servers** early to make informed tool decisions
 2. Jump to **Multi-Tab Orchestration** to level up your workflow
-3. Explore **Integration Patterns** to optimize how you connect AI to your systems
+3. Practice with **Practical Patterns** for real-world workflows
 4. Review **Common Pitfalls** to avoid typical mistakes
 
 ## Key Takeaways

@@ -216,7 +216,7 @@ Apply framework: Frequency? Alternatives with CLI + AI? Time saved? Need all 30 
 
 **Clean up**: Audit installations periodically → Remove forgotten servers
 
-**Further reading**: [Module 5: Integration Patterns](05-integration-patterns.md) | [Module 7: Common Pitfalls](07-common-pitfalls.md)
+**Further reading**: [Module 4: Multi-Tab Orchestration](04-multi-tab-orchestration.md) | [Module 6: Practical Patterns](06-practical-patterns.md) | [Module 7: Common Pitfalls](07-common-pitfalls.md)
 
 ---
 
