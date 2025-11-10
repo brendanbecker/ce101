@@ -129,6 +129,141 @@ Use consistent colors to quickly identify tab purposes.
 
 ---
 
+## The Orchestrator-Worker Pattern
+
+The most effective multi-tab workflow combines rich natural language prompts with intelligent context management.
+
+### How It Works
+
+```
+1. Orchestrator designs the work
+   ↓
+2. Start workers with detailed natural language prompts
+   ↓
+3. Workers execute autonomously (manage their own context)
+   ↓
+4. Workers complete and generate summaries
+   ↓
+5. Orchestrator aggregates summaries and coordinates next steps
+```
+
+### Key Principles
+
+**Use natural language when starting workers:**
+- Give complete context upfront
+- Explain the "why" not just the "what"
+- Describe how this work fits into the larger task
+- Specify what you need back (summary, specific outputs)
+
+**Let workers manage their own context:**
+- No need for elaborate mid-work coordination
+- Workers focus on their specific concern
+- The orchestrator pattern handles dependencies
+
+**Request summaries when work completes:**
+- Ask workers to summarize what they accomplished
+- Specify what information you need for coordination
+- Feed these summaries back to the orchestrator
+
+### Example: Starting a Worker
+
+**Command-style prompt (minimal):**
+```
+Update service-a helm chart for new cluster
+```
+
+**Natural language prompt (effective):**
+```
+I'm working on migrating our services to a new Kubernetes cluster. This tab
+is dedicated to updating the service-a helm chart as part of that migration.
+
+Context about the migration:
+- Moving from old-cluster to new-cluster
+- New cluster has larger nodes (we can increase resource limits)
+- New ingress domain: *.new.company.com
+- This is happening in parallel with service-b and service-c updates
+
+For this specific chart (service-a), I need you to:
+1. Update cluster endpoint in values.yaml
+2. Update ingress hostname for new domain
+3. Increase memory limit from 2Gi to 4Gi (new nodes support this)
+4. Verify the chart renders correctly
+
+When you're done, I'll need a summary to take back to my orchestrator tab
+that's coordinating all three service migrations. Include:
+- What files you changed
+- Any issues or dependencies you discovered
+- Whether the chart is ready for deployment
+```
+
+**Why this works:**
+- Worker has full context about the migration
+- Understands how it fits with other work (parallel migrations)
+- Knows what to deliver back (summary with specific info)
+- Can work autonomously without mid-work check-ins
+
+### Example: Collecting Summaries
+
+When workers complete, ask each for a summary:
+
+```
+You've completed the helm chart updates for service-a. Before I move to
+coordinating with the other workers, give me a summary I can take back to
+my orchestrator tab:
+
+1. What files did you modify?
+2. What changes did you make?
+3. Did you discover any dependencies or blockers?
+4. Is this chart ready for deployment, or is there follow-up work needed?
+```
+
+Then bring these summaries to your orchestrator:
+
+```
+I'm coordinating migrations for three services. Here are the summaries from
+each worker tab:
+
+[Tab 1 - service-a summary]
+[Tab 2 - service-b summary]
+[Tab 3 - service-c summary]
+
+Based on these results, help me:
+1. Identify any cross-service dependencies
+2. Determine the right deployment order
+3. Flag any risks or blockers
+4. Create a deployment checklist
+```
+
+### When NOT to Use This Pattern
+
+**Single simple task:**
+- One file to update, straightforward change
+- Use a single tab, no need for orchestration
+
+**Highly sequential work:**
+- Each step depends on previous step's detailed output
+- Better to work in one tab, build context progressively
+
+**Exploratory investigation:**
+- Don't know what you're looking for yet
+- Single tab lets you explore and pivot easily
+
+### The Power of This Approach
+
+**For students/practitioners:**
+- Natural language prompts are easier to write than command-style
+- No need to track complex handoffs mid-work
+- Orchestrator maintains the big picture
+- Workers stay focused on their specific concerns
+
+**For the AI:**
+- Clear scope per worker (better focus)
+- Orchestrator can reason about the whole system
+- Summaries provide exactly the context needed for coordination
+- No context pollution from unrelated work
+
+---
+
 ## Multi-Tab Patterns
 
 ### Pattern 1: Parallel Independent Work
@@ -153,36 +288,40 @@ Tab 3 (Green): Chart C - git worktree
 **Workflow**:
 1. Set up git worktrees (or have AI do it)
 2. Open separate tab for each worktree
-3. Work on each chart independently
-4. No blocking - all work happens in parallel
+3. Start each tab with rich natural language prompt
+4. Workers execute in parallel (no blocking)
+5. Collect summaries when complete
 
 **Why it works**: Each chart update is independent. No need to wait for one to finish before starting another.
 
-**Natural language coordination** for parallel work:
+**Example initial prompt for Tab 1:**
 ```
-Tab 1 prompt (command-style):
-"Update service-a chart for new cluster"
+I'm working on a multi-service migration to a new Kubernetes cluster. This tab
+is dedicated to updating the service-a helm chart.
 
-Tab 1 prompt (natural language - better):
-"I'm working in a worktree for Chart A (service-a). This is part of a migration
-to a new Kubernetes cluster, and I'm coordinating with two other tabs working
-on Charts B and C simultaneously.
+Context:
+- This is one of three services being migrated (service-a, service-b, service-c)
+- Each service has its own tab working in parallel via git worktrees
+- New cluster: prod-cluster-v2 (larger nodes, new ingress domain)
+- Goal: All three charts ready for coordinated deployment
 
-For this chart specifically, I need to:
-- Update cluster endpoints in values.yaml
-- Modify resource limits (new cluster has larger nodes)
-- Update ingress for new domain
+For service-a specifically:
+- Update cluster endpoint in values.yaml
+- Update ingress hostname to *.v2.company.com
+- Increase memory limit from 2Gi to 4Gi (new nodes support this)
+- Verify chart renders successfully
 
-The other tabs are making similar changes to their charts. If you find any
-shared dependencies or common configurations, flag them so I can make sure
-all three charts stay in sync."
+Watch for:
+- Shared ConfigMaps or dependencies that other services might need
+- Settings that should be consistent across all three services
+
+When complete, I'll need a summary including:
+- Files modified
+- Any shared dependencies discovered
+- Whether chart is deployment-ready
 ```
 
-**What natural language adds to parallel coordination**:
-- Explains the broader context (part of migration)
-- Acknowledges the multi-tab setup (coordinating with other tabs)
-- Asks AI to watch for cross-dependencies
-- Helps maintain consistency across parallel work
+**After all three tabs complete**, collect summaries and bring to orchestrator for coordination.
 
 ---
 
@@ -210,46 +349,61 @@ Tab 3 (Yellow): Documentation
 
 **Workflow**:
 1. Tab 1: Investigate until root cause found
-2. Tab 2: Start implementation (Tab 1 stays alive for questions)
-3. Tab 3: Document while Tab 2 implements
-4. Tab 3 aggregates everything at the end
+2. Tab 1: Generate investigation summary
+3. Tab 2: Start with summary, implement fix
+4. Tab 2: Generate implementation summary
+5. Tab 3: Start with both summaries, create documentation
 
-**Why it works**: Separation of concerns. Investigation context doesn't clutter implementation. Documentation can happen in parallel.
+**Why it works**: Separation of concerns. Investigation context doesn't clutter implementation. Each tab focuses on its specific task.
 
-**Natural language handoff** from investigation to implementation:
+**Step 1: Request summary from investigation tab**
 ```
-Command-style handoff (minimal):
-"Found root cause: memory leak in worker process. Fix needed in Chart."
+You've completed the investigation into the crashloop issue. Before I hand
+this off to an implementation tab, give me a comprehensive summary:
 
-Natural language handoff (better):
-"I've completed investigation in another tab and found the root cause. Let me
-give you the context for implementing the fix:
-
-**What we discovered:**
-Pods are crashlooping because of a memory leak in the background worker process.
-The investigation showed memory usage climbing from 200Mi to 1.5Gi over 6 hours,
-then OOMKill.
-
-**Root cause:**
-The worker doesn't properly close database connections after processing jobs.
-This has been happening since we increased job concurrency last week.
-
-**What needs to be fixed:**
-1. Update the helm chart to reduce worker concurrency from 10 to 5 (immediate mitigation)
-2. Add connection pool management (proper fix, but takes longer)
-
-**Files involved:**
-/company/SRE/helm/charts/my-service/values.yaml - worker concurrency setting
-
-I'm keeping the investigation tab open in case you need to reference the logs
-or metrics we looked at. Let me know if you need more context."
+1. What was the root cause?
+2. What evidence led to this conclusion?
+3. What needs to be fixed? (immediate mitigation vs long-term solution)
+4. Which files/components are involved?
+5. Any risks or considerations for the fix?
 ```
 
-**Why this natural language handoff works**:
-- Provides complete context for the next person/session
-- Explains not just what, but why
-- Separates immediate mitigation from long-term fix
-- Offers continued support (investigation tab still open)
+**Step 2: Start implementation tab with that summary**
+```
+I'm implementing a fix for a production issue. Another tab completed the
+investigation. Here's what they found:
+
+[Paste investigation summary]
+
+Based on this investigation, implement the immediate mitigation:
+- Reduce worker concurrency from 10 to 5 in values.yaml
+- Verify chart renders correctly
+- Note what still needs to be done for the long-term fix
+
+The investigation tab is still open if you need to reference it.
+```
+
+**Step 3: Start documentation tab with both summaries**
+```
+I need to document a production issue we just resolved. Here's what happened:
+
+Investigation findings:
+[Paste investigation summary]
+
+Fix implemented:
+[Paste implementation summary]
+
+Create:
+1. Runbook entry for this issue
+2. Incident log update
+3. TODO for long-term fix (connection pool management)
+```
+
+**Why this works**:
+- Each tab gets exactly the context it needs
+- No elaborate mid-work handoffs required
+- Summaries are reusable (documentation tab uses both)
+- Investigation and implementation contexts stay separate
 
 ---
 
@@ -319,57 +473,62 @@ Tab 5 (Green): Master - Coordination
 ```
 
 **Workflow**:
-1. Tabs 1-3: Work independently
-2. Tab 4: Provides reference context to others
-3. Workers complete their tasks
-4. Workers report to master (manual copy-paste or handoff)
+1. Tabs 1-3: Work independently with rich initial prompts
+2. Tab 4: Provides reference context (stays open)
+3. Each worker generates summary when complete
+4. Collect summaries and bring to master tab
 5. Master creates final deliverables
 
-**Coordination Prompt** (in Tab 5):
+**Step 1: Request summary from each worker when complete**
+
+Ask Tab 1 (Helm):
 ```
-Command-style aggregation (minimal):
-"Here are summaries from Tabs 1-4. Create deployment docs."
+You've completed the helm chart updates for this migration. Give me a summary
+for the master coordination tab:
 
-Natural language aggregation (more effective):
-"I've been coordinating work across multiple tabs for this cluster migration,
-and I need help synthesizing everything into coherent deliverables. Let me give
-you what each tab accomplished:
-
-**Tab 1 - Helm updates (completed):**
-Updated 3 charts (service-a, service-b, service-c) with new cluster endpoints
-and resource limits. All charts rendered successfully. Found one shared
-ConfigMap that needs to be created in the new cluster first.
-
-**Tab 2 - Terraform changes (completed):**
-Created infrastructure for new cluster: 3 node pools (system, app, database).
-Applied successfully in staging. Ready for production apply.
-
-**Tab 3 - Testing results (completed):**
-Deployed all services to staging cluster. Smoke tests passed. Load testing
-showed 15% better performance than old cluster due to larger nodes.
-
-**Tab 4 - Related work items:**
-Found WORK-12345 which has additional requirements: need to update monitoring
-dashboards for new cluster. This wasn't in original scope.
-
-**What I need from you:**
-1. Review these summaries and flag any dependencies or risks I might have missed
-2. Create a deployment checklist with proper ordering (e.g., ConfigMap before charts)
-3. Draft comprehensive documentation explaining the migration approach
-4. Generate a PR description that captures all this work with proper context
-
-**What I'm uncertain about:**
-- Whether we should deploy to prod in one go or service-by-service
-- If the monitoring dashboard update (WORK-12345) should block this deployment
-- Whether the ConfigMap issue is a blocker or just a quick fix
+1. What charts did you update?
+2. What specific changes were made?
+3. Any shared dependencies or blockers discovered?
+4. Is everything ready for deployment?
 ```
 
-**What natural language adds to aggregation**:
-- Provides rich context about each tab's work
-- Explicitly identifies discovered issues (ConfigMap, monitoring)
-- Expresses uncertainty about deployment strategy
-- Asks for risk analysis, not just documentation
-- Makes it easy for AI to provide strategic guidance
+Similarly for Tabs 2 (Terraform) and 3 (Testing).
+
+**Step 2: Aggregate summaries in master tab (Tab 5)**
+```
+I'm coordinating a cluster migration across multiple worker tabs. Each has
+completed its work and provided a summary. Help me synthesize these into
+final deliverables.
+
+**Tab 1 Summary - Helm updates:**
+[Paste summary from Tab 1]
+
+**Tab 2 Summary - Terraform changes:**
+[Paste summary from Tab 2]
+
+**Tab 3 Summary - Testing results:**
+[Paste summary from Tab 3]
+
+**Tab 4 Reference - Work items:**
+[Paste relevant findings from Tab 4]
+
+Based on these summaries:
+1. Flag any dependencies or risks across the work
+2. Determine the right deployment sequence
+3. Create a deployment checklist with proper ordering
+4. Draft comprehensive documentation
+5. Generate PR descriptions for each component
+
+I'm uncertain about:
+- Whether to deploy all at once or service-by-service
+- How to handle the ConfigMap dependency Tab 1 discovered
+```
+
+**Why this works**:
+- Workers provide structured summaries (you asked for specific info)
+- Master gets clean, focused context from each worker
+- You use natural language to ask for strategic synthesis
+- Expresses uncertainty so AI provides guidance, not just execution
 
 ---
 
@@ -541,49 +700,51 @@ Color: Green
 - Color code as recommended
 - Begin parallel work
 
-**Step 4: Return to Orchestrator for Coordination**
-After workers complete, return to Tab 1:
+**Step 4: Collect Summaries from Workers**
+After each worker completes, ask for a summary:
+
+Tab 2 (Helm Charts):
 ```
-Command-style coordination:
-"Worker tabs done. Tab 2: helm updates. Tab 3: terraform done. Create docs."
+You've finished the helm chart updates. Give me a summary to bring back
+to the orchestrator tab:
 
-Natural language coordination (better):
-"The worker tabs have finished their tasks. Let me give you detailed summaries
-so you can help me coordinate the final deliverables.
-
-**Tab 2 (Helm Chart Updates) - Completed:**
-All three charts updated successfully. Each is ready for commit. Discovered
-that service-c needs a new ConfigMap that doesn't exist yet - added TODO to
-create it first.
-
-**Tab 3 (Terraform Infrastructure) - Completed:**
-Created the new cluster infrastructure. Everything applied cleanly in staging.
-Found one issue: need to add network peering to existing VPC, but that's
-documented in the terraform output.
-
-**Tab 4 (Sync Script) - Completed:**
-Updated sync script to handle both old and new clusters during migration.
-Includes dry-run mode and rollback capability. Tested successfully.
-
-**What I need your help synthesizing:**
-1. Create a deployment sequence that accounts for dependencies (ConfigMap first,
-   then network peering, then charts, then sync)
-2. Identify any risks or gaps in our approach
-3. Draft documentation that explains the overall migration strategy
-4. Generate PR descriptions for each component with proper context
-
-**What I'm concerned about:**
-The ConfigMap dependency wasn't in our original plan. Should this be a
-separate PR, or folded into one of the chart updates? What's the cleanest
-approach from a review standpoint?"
+1. What charts were updated?
+2. What changes were made?
+3. Any dependencies or issues discovered?
+4. Ready for deployment?
 ```
 
-**Why this natural language approach works for orchestration**:
-- Provides rich context about each worker's results
-- Flags discovered issues (ConfigMap, network peering)
-- Asks for strategic thinking (deployment sequence)
-- Expresses uncertainty (separate PR or not?)
-- Helps orchestrator make informed recommendations
+Similarly for Tabs 3 (Terraform), 4 (Sync Script), etc.
+
+**Step 5: Return to Orchestrator with Summaries**
+```
+The worker tabs have completed. Here are their summaries:
+
+**Tab 2 - Helm Chart Updates:**
+[Paste summary]
+
+**Tab 3 - Terraform Infrastructure:**
+[Paste summary]
+
+**Tab 4 - Sync Script:**
+[Paste summary]
+
+Based on these results, help me:
+1. Create deployment sequence accounting for dependencies
+2. Identify risks or gaps in our approach
+3. Draft documentation explaining the migration strategy
+4. Generate PR descriptions for each component
+
+I'm uncertain about:
+- How to handle the ConfigMap dependency (separate PR or fold in?)
+- Whether we need additional coordination steps
+```
+
+**Why this works**:
+- Orchestrator generates rich prompts (Step 1-2)
+- Workers execute with clear context (Step 3)
+- Summaries bring focused results back (Step 4-5)
+- Orchestrator synthesizes without context pollution
 
 **Why This Pattern Works**:
 - **Reduces cognitive load**: You don't have to design each prompt manually
@@ -753,61 +914,26 @@ Now create: [combined deliverable]
 
 ---
 
-### Shared Context Files
+### Shared Context Files (Usually Not Needed)
 
-**When**: Multiple tabs need access to same information
+**Note**: With the orchestrator-worker pattern, you usually don't need shared context files. The orchestrator provides context when starting workers, and workers report back summaries.
 
-**How**:
+**However**, if you have long-running parallel workers that need to coordinate on emerging decisions:
+
 ```
-Create: /company/SRE/tmp/current-task-context.md
+Create: /tmp/current-task-context.md
 
-Contents:
-- Task description
-- Requirements
-- Constraints
-- Shared decisions
+Update it when decisions are made:
+"We decided to use ClusterIP for internal services due to cost concerns.
+Update /tmp/current-task-context.md to document this so other workers
+can follow the same pattern."
 
-All tabs can read this file for context.
-```
-
-**Master tab updates it** as decisions are made:
-```
-Command-style:
-"Update /tmp/current-task-context.md with our decision to use ClusterIP instead of LoadBalancer"
-
-Natural language (more effective):
-"We just decided to use ClusterIP instead of LoadBalancer for internal services
-because of cost concerns and network architecture.
-
-Can you update /tmp/current-task-context.md to document this decision? Include:
-- The decision (ClusterIP for internal services)
-- The reasoning (cost + network architecture)
-- What this affects (any service that doesn't need external access)
-
-This will help the other tabs working on different services make consistent
-choices."
+Workers can reference it:
+"Check /tmp/current-task-context.md for any design decisions I should
+follow for this service's configuration."
 ```
 
-**Worker tabs reference it**:
-```
-Command-style:
-"Check /tmp/current-task-context.md for any relevant constraints before proceeding"
-
-Natural language:
-"Before I modify this service's ingress configuration, I want to make sure I'm
-following the team's current decisions. Can you:
-
-1. Check /tmp/current-task-context.md for any relevant constraints
-2. Let me know if there are decisions about LoadBalancer vs ClusterIP
-3. Flag anything else in there that might affect ingress configuration
-
-I want to stay consistent with what the other tabs are doing."
-```
-
-**Why natural language helps with shared context**:
-- Explains the "why" behind decisions (helps future tabs understand)
-- Asks for relevant filtering (not just "read the file")
-- Shows awareness of coordination needs (stay consistent)
+**Better alternative**: Include such decisions in the orchestrator's initial prompts, or collect them during summary phase.
 
 ---
 
@@ -1391,14 +1517,14 @@ The conversation history in a resumed session is documentation of:
 ## Key Takeaways
 
 1. **One tab, one job** - Keep focus tight
-2. **Color code consistently** - Visual identification
-3. **2-5 active tabs** - Sweet spot for most work
-4. **Use git worktrees** - Parallel work on same repo
-5. **Master + workers** - Coordination pattern for complex tasks
-6. **Orchestrator for complex tasks** - Let one tab generate prompts for others
-7. **Resume sessions** - Preserve context across days/weeks, for both AI and human
-8. **Close completed tabs** - Reduce cognitive load
-9. **Handoff when needed** - Each tab can handoff independently
+2. **Use natural language prompts** - Give workers rich context when starting
+3. **Request summaries, not mid-work handoffs** - Let workers manage their own context
+4. **Orchestrator pattern** - Start workers with detailed prompts, collect summaries when done
+5. **Color code consistently** - Visual identification (Green/Blue/Yellow/Red)
+6. **2-5 active tabs** - Sweet spot for most work
+7. **Use git worktrees** - Parallel work on same repo
+8. **Resume sessions** - Preserve context across days/weeks, for both AI and human
+9. **Close completed tabs** - Reduce cognitive load
 
 ---
 
