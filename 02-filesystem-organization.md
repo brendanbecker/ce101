@@ -71,18 +71,16 @@ Keep it simple. Answer these questions:
 Infrastructure and operations for production systems.
 
 ## Structure
-```
 terraform/   # Infrastructure as Code (separate repos per project)
 helm/        # Kubernetes charts (separate repos per service)
 ansible/     # Configuration management
 notes/       # Runbooks, incidents, decisions
 scripts/     # Automation utilities
-```
 
 ## Common Commands
-- `terraform plan` - Preview infrastructure changes
-- `helmfile -e production sync` - Deploy to production
-- `flux reconcile kustomization production` - Sync GitOps
+- terraform plan - Preview infrastructure changes
+- helmfile -e production sync - Deploy to production
+- flux reconcile kustomization production - Sync GitOps
 
 ## Conventions
 - All terraform changes require plan review
