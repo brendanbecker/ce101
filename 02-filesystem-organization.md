@@ -361,38 +361,6 @@ Notice what questions AI asks repeatedly? Add those answers to AGENTS.md.
 
 ---
 
-## Common Mistakes
-
-### ❌ Flat Structure
-```
-/work/
-├── script1.sh
-├── chart-values.yaml
-├── runbook.md
-└── main.tf
-```
-No organization. AI can't determine context.
-
-### ❌ Too Deep
-```
-/company/teams/infrastructure/sre/kubernetes/helm/charts/apps/backend/user-api/
-```
-16 levels deep. Nobody knows where they are.
-
-**Rule of thumb**: 4-5 levels maximum.
-
-### ❌ Inconsistent Naming
-```
-/company/
-├── SRE/
-├── dev-team/
-├── QualityAssurance/
-└── release_management/
-```
-Pick one style (kebab-case, snake_case, PascalCase) and be consistent.
-
----
-
 ## Quick Wins
 
 1. **Create team-level AGENTS.md** - Single biggest impact. Takes 10 minutes, saves hundreds of tokens per session.
