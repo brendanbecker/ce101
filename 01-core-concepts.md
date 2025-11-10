@@ -683,7 +683,7 @@ In practice, you'll mostly use SELECT and ISOLATE. WRITE comes naturally as you 
 Now that you understand the core strategies, learn how to apply them:
 
 - **[Filesystem Organization →](02-filesystem-organization.md)** - Structure your workspace for optimal context
-- **[Multi-Tab Orchestration →](03-multi-tab-orchestration.md)** - Manage complex tasks across multiple agents
+- **[Multi-Tab Orchestration →](04-multi-tab-orchestration.md)** - Manage complex tasks across multiple agents
 
 ---
 

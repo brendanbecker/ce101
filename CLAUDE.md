@@ -32,7 +32,7 @@ ce101/
 │   ├── pptx-to-png.sh
 │   └── view-slides.sh
 ├── archive/                            # Archived modules
-│   └── 04-local-data-stores.md         # Archived: Module 4 (searchable inventories)
+│   └── 04-local-data-stores.md         # Archived: Old module on searchable inventories
 └── drafts/                             # Work-in-progress concepts for future integration
     ├── concepts-overview.md            # How new concepts relate to each other
     ├── integration-plan.md             # Strategy for curriculum updates
