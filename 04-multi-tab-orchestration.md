@@ -532,94 +532,33 @@ I'm uncertain about:
 
 ---
 
-### Pattern 5: Emergency Response with Parallel Documentation
+### Pattern 5: Emergency Response
 
 **Scenario**: Production incident requiring immediate action
 
 **Tab Structure**:
 ```
-Tab 1 (Red): Execution
-  Location: /company/SRE/helm/charts/my-service/
-  Task: Execute rollback NOW
-  Characteristic: Speed matters
-
-Tab 2 (Yellow): Documentation
-  Location: /company/SRE/notes/incidents/
-  Task: Document actions in real-time
-  Updates: As Tab 1 progresses
-
-Tab 3 (Blue): Investigation
-  Location: /company/SRE/
-  Task: Determine what went wrong
-  Starts: After rollback initiated
+Tab 1 (Red): Execution - Execute rollback/fix NOW
+Tab 2 (Yellow): Documentation - Real-time incident log
+Tab 3 (Blue): Investigation - Root cause analysis (starts after mitigation)
 ```
 
-**Workflow**:
-1. Tab 1: Immediate action (rollback, scale down, etc.)
-2. Tab 2: Document every step as it happens
-3. Tab 3: Investigate cause in parallel
-4. Post-incident: Tab 2 aggregates into final report
-
-**Tab 1 Example** (Command-style):
+**Example execution prompt** (Tab 1):
 ```
-URGENT: Need to rollback user-api deployment
+URGENT - user-api v2.1.0 deployed 10 mins ago is returning 500s at 85% rate.
+Need to rollback to v2.0.3 (last stable).
 
-Current: v2.1.0 (deployed 10 minutes ago, causing 500s)
-Previous stable: v2.0.3
-Location: /company/SRE/helm/charts/user-api/
+Generate rollback commands with:
+- Current state verification
+- The rollback command
+- Success verification
+- Error rate check
 
-Execute rollback immediately. Show commands before running.
+I'm unsure if there are DB migrations that might break. Flag any warnings.
+Need to move fast but safely.
 ```
 
-**Tab 1 Example** (Natural language - better for incidents):
-```
-URGENT INCIDENT - I need help executing a rollback quickly but safely.
-
-**Situation:**
-user-api v2.1.0 deployed 10 minutes ago (14:13 UTC) is returning 500 errors at
-85% rate. Users are affected. I need to rollback to v2.0.3 which was stable.
-
-**What I need:**
-Generate the helm rollback commands for me to review and execute. Include:
-1. Commands to verify current state
-2. The actual rollback command
-3. How to verify rollback succeeded
-4. How to check error rate is dropping
-
-**What I'm unsure about:**
-- Whether there are database migrations in v2.1.0 that might break if we rollback
-- If we need to coordinate with the dev team first or just roll back
-
-We're in an active incident - I need to move fast but not break things worse.
-Show me the commands and any warnings, I'll make the call.
-```
-
-**Tab 2 Example** (Natural language documentation):
-```
-I'm documenting an incident that's happening right now in Tab 1 (execution tab).
-I need you to help me maintain a structured incident log as I feed you updates.
-
-**Start the incident log with what I know:**
-- Service: user-api
-- Time started: 14:23 UTC
-- Symptom: 500 error rate jumped from 2% to 85%
-- Suspected cause: Recent deployment of v2.1.0 (10 minutes ago)
-- Action being taken: Rollback to v2.0.3 in progress (Tab 1)
-- Incident commander: [my name]
-
-I'll keep you updated with actions as they happen. After each update, show me
-the current state of the incident log so I can verify it's accurate.
-
-Also flag anything that seems important for the post-mortem - things we should
-have done differently or questions we need to answer later.
-```
-
-**Why natural language helps in emergencies**:
-- Reduces cognitive load (AI handles structure)
-- Expresses uncertainty without shame (database migrations?)
-- Gets AI to think about risks (warnings)
-- Parallel documentation captures real-time timeline
-- AI can flag process improvements even during the incident
+**Why this works**: Execution tab focuses on speed, documentation tab captures timeline for post-mortem, investigation happens in parallel after mitigation starts
 
 ---
 
@@ -836,681 +775,75 @@ Create:
 
 ---
 
-## Tab Management Strategies
+## Practical Guidance
 
 ### How Many Tabs?
 
 **Sweet spot**: 2-5 active tabs
 
-**Rules**:
 - **1 tab**: Simple, single-focus tasks
 - **2-3 tabs**: Most common workflows
 - **4-5 tabs**: Complex multi-component work
-- **6+ tabs**: Probably too many - consider if tasks can be serialized
+- **6+ tabs**: Too many - consider serializing or consolidating
 
-**Warning signs**:
-- Forgetting which tab is for what
-- Constantly switching to find the right tab
-- Duplicate work happening in multiple tabs
+**Warning signs**: Forgetting which tab is for what, constantly searching for the right tab, duplicate work
 
----
+### Coordination Techniques
 
-### Tab Lifecycle
+**Copy-paste summaries**: Simple and effective. Collect worker summaries and paste into orchestrator/master tab.
 
-**Opening**:
-- Open when you identify independent work
-- Name/color immediately
-- Start with clear context
-
-**During**:
-- Keep focused on single concern
-- Use handoffs if context fills
-- Update status (what's done, what's left)
-
-**Closing**:
-- Close when task complete
-- Extract important information first
-- Reference tabs can stay open longer
-
-**Example**:
-```
-Tab 1: Investigation (Blue)
-- Open: Start of incident
-- During: Gather findings
-- Close: After root cause found, findings copied to implementation tab
-
-Tab 2: Implementation (Green)
-- Open: After investigation complete
-- During: Build and test fix
-- Close: After fix deployed and verified
-
-Tab 3: Documentation (Yellow)
-- Open: Early in process
-- During: Accumulate notes throughout
-- Close: After final documentation committed
-```
-
----
-
-## Coordination Techniques
-
-### Manual Copy-Paste Aggregation
-
-**When**: You need to combine outputs from multiple tabs
-
-**How**:
-```
-Master tab:
-I've completed work across multiple tabs. Here are the summaries:
-
-[Tab 1 output]
-[Tab 2 output]
-[Tab 3 output]
-
-Now create: [combined deliverable]
-```
-
-**Simple and effective**. No complex tooling needed.
-
----
-
-### Shared Context Files (Usually Not Needed)
-
-**Note**: With the orchestrator-worker pattern, you usually don't need shared context files. The orchestrator provides context when starting workers, and workers report back summaries.
-
-**However**, if you have long-running parallel workers that need to coordinate on emerging decisions:
-
-```
-Create: /tmp/current-task-context.md
-
-Update it when decisions are made:
-"We decided to use ClusterIP for internal services due to cost concerns.
-Update /tmp/current-task-context.md to document this so other workers
-can follow the same pattern."
-
-Workers can reference it:
-"Check /tmp/current-task-context.md for any design decisions I should
-follow for this service's configuration."
-```
-
-**Better alternative**: Include such decisions in the orchestrator's initial prompts, or collect them during summary phase.
-
----
-
-### Sequential Handoffs
-
-**When**: Work must flow from tab to tab
-
-**Pattern**:
-```
-Tab 1: Investigation
-  → Generates summary
-
-Tab 2: Receives summary, implements fix
-  → Generates change summary
-
-Tab 3: Receives change summary, creates documentation
-  → Generates final deliverables
-```
-
-Each tab adds to the story.
-
----
-
-## Common Workflows
-
-### Daily Standup Workflow
-```
-Tab 1 (Yellow): Work Item Search
-  "Search my work items for anything in progress or blocked"
-  Stays open for reference
-
-Tab 2 (Green): Primary Work
-  Based on highest priority item from Tab 1
-  Main work happens here
-
-Tab 3 (Green): Secondary Work
-  Based on second priority item
-  Switch to when blocked on Tab 2
-```
-
----
-
-### Code Review Workflow
-```
-Tab 1 (Blue): PR Review
-  "Load PR #123 and analyze the changes"
-  Stays open during review
-
-Tab 2 (Blue): Related Code Search
-  "Search codebase for similar patterns"
-  Reference for review
-
-Tab 3 (Green): Test Creation
-  "Create tests for the changes in this PR"
-  If you're adding tests during review
-```
-
----
-
-### Migration Workflow
-```
-Tab 1 (Blue): Source Analysis
-  Location: Old system
-  "Understand current implementation"
-
-Tab 2 (Green): Target Implementation
-  Location: New system
-  "Implement equivalent in new system"
-  References Tab 1 findings
-
-Tab 3 (Green): Migration Script
-  Location: /scripts/
-  "Create migration script for data/config"
-
-Tab 4 (Blue): Validation
-  "Compare old vs new to verify equivalence"
-```
-
----
-
-## Troubleshooting Multi-Tab Workflows
-
-### Problem: Lost Track of Tabs
-
-**Symptoms**: Can't remember which tab is for what
-
-**Solutions**:
-- Use color coding consistently
-- Keep count low (2-5 active)
-- Close completed tabs promptly
-- Use terminal's tab naming feature
-
-**Terminal tab naming**:
-```bash
-# In bash
-echo -e "\033]0;Investigation\007"
-
-# Or have AI do it
-"Set this terminal tab's title to 'Helm Updates - Service A'"
-```
-
----
-
-### Problem: Duplicating Work
-
-**Symptoms**: Doing same thing in multiple tabs
-
-**Solutions**:
-- Start each tab with clear, specific purpose
-- Review tab purposes before opening new one
-- Consolidate if you catch duplication
-
----
-
-### Problem: Can't Synthesize Results
-
-**Symptoms**: Have outputs from multiple tabs but can't combine them
-
-**Solutions**:
-- Create master/coordination tab
-- Use structured output format
-- Have each worker tab summarize its results
-- Copy-paste summaries into master tab
-
-**Worker summary format**:
-```
-## Tab N: [Task Name]
-
-### Completed
-- Item 1
-- Item 2
-
-### Changed Files
-- /path/to/file1
-- /path/to/file2
-
-### Key Decisions
-- Decision 1: Rationale
-- Decision 2: Rationale
-
-### Remaining Work
-- Next step 1
-- Next step 2
-```
-
----
-
-### Problem: Context Overflow in Multiple Tabs
-
-**Symptoms**: Multiple tabs have high context usage simultaneously
-
-**Solutions**:
-- Generate handoffs for each tab that needs it
-- Consider if tasks can be consolidated
-- Close and summarize completed tabs
-- Start fresh tabs with handoff prompts
-
----
-
-## Decision Tree: When to Split into Multiple Tabs?
-
-```
-Are the tasks independent? (can work in parallel)
-├─ YES → Separate tabs
-└─ NO → Can they share context efficiently?
-    ├─ YES → Same tab
-    └─ NO → Would separate tabs reduce confusion?
-        ├─ YES → Separate tabs
-        └─ NO → Same tab
-```
-
-**Examples**:
-
-**Independent tasks** → Separate:
-- Update chart A, update chart B
-- Investigate logs, implement fix (both start immediately)
-- Search docs, write code
-
-**Shared context, efficient** → Same tab:
-- Investigate → analyze findings → propose solution
-- Read file → understand → modify same file
-- Sequential debugging steps
-
-**Not independent, but separate reduces confusion** → Separate:
-- Deep documentation analysis + implementation work
-- Load 40-page doc in Tab 1 (reference), implement in Tab 2
-- Investigation generating tons of output + clean implementation workspace
-
----
-
-## Advanced: Tab Templates
-
-Create reusable tab setups for common scenarios.
-
-### Template: Service Update
-```
-Tab 1: Helm chart updates
-  cd /company/SRE/helm/charts/[service]/
-  Color: Green
-
-Tab 2: Testing
-  cd /company/SRE/
-  Color: Blue
-
-Tab 3: Documentation
-  cd /company/SRE/notes/
-  Color: Yellow
-```
-
-### Template: Incident Response
-```
-Tab 1: Investigation
-  cd /company/SRE/
-  Color: Blue
-
-Tab 2: Execution
-  cd /company/SRE/[affected-component]/
-  Color: Red
-
-Tab 3: Documentation
-  cd /company/SRE/notes/incidents/
-  Color: Yellow
-  Start: Immediate (parallel)
-```
-
-### Template: Multi-Service Deployment
-```
-Tab 1-N: One per service
-  cd /company/SRE/helm/charts/[service-name]/
-  Color: Green
-
-Tab N+1: Master coordination
-  cd /company/SRE/
-  Color: Green
-  Purpose: Aggregate and create deployment plan
-```
-
-**Create a file**: `/company/SRE/notes/tab-templates.md` with your common patterns.
+**Shared context files**: Usually not needed with orchestrator pattern. If long-running workers need emerging decisions, create `/tmp/context.md` that all can reference. Better: include decisions in orchestrator's initial prompts.
 
 ---
 
 ## Session Persistence and Resume
 
-One of the most powerful features of modern AI coding assistants like Codex and Claude Code: **session persistence**.
-
-### The Problem: Human Context Loss
-
-**Scenario**: You're working on a complex migration. It's 5 PM, you need to leave.
-
-**Traditional approach**:
-- Close all tabs
-- Tomorrow: "What was I doing? Where did I leave off?"
-- Spend 20 minutes getting back into context
-- Lose momentum and mental state
-
-**Better approach**: Session persistence
-
----
-
-### What is Session Resume?
-
-Both Codex and Claude Code can save and resume sessions:
-- **Full conversation history preserved**
-- **Working directory remembered**
-- **File context maintained**
-- **Mental model retained**
-
-**Think of it as**: Hibernating your work, not closing it.
-
----
+Modern AI coding assistants can save and resume sessions - preserving conversation history, working directory, and context across days or weeks.
 
 ### When to Use Resume
 
-✅ **End of day**
-```
-Tab 1: Investigation in progress - 30 messages deep
-Tab 2: Implementation - partially complete
-Tab 3: Reference docs loaded
+**End of day**: Leave tabs open instead of closing them. Resume tomorrow where you left off.
 
-Don't close. Let them persist.
-Tomorrow: Resume all three tabs right where you left off.
-```
+**Context switching**: Pause current project tabs when interrupted. Resume later with full context intact.
 
-✅ **Context switching**
-```
-Working on migration project.
-Urgent production issue interrupts.
+**Long-running projects**: Keep tabs open for the entire week/project. No rebuilding context daily.
 
-Pause migration tabs (don't close).
-Open new tabs for incident.
-After incident: Resume migration tabs with full context intact.
-```
-
-✅ **Long-running projects**
-```
-Week-long migration project.
-Multiple tabs with accumulated knowledge.
-
-Each day: Resume tabs from yesterday.
-No rebuilding context.
-Continuous workflow.
-```
-
-✅ **Complex investigations**
-```
-Deep dive into codebase structure.
-Loaded multiple files, explored patterns, built understanding.
-
-Resume tomorrow: All that context is still there.
-No need to re-explore.
-```
-
----
-
-### The Real Benefit: Human Context Recovery
-
-**The AI isn't the only one lacking context** - humans forget too.
-
-**Example workflow**:
-
-**Friday 5 PM**:
-```
-Tab 1 (Investigation): 50 messages exploring helm chart dependencies
-Tab 2 (Implementation): 30 messages updating charts
-Tab 3 (Reference): Architecture docs loaded
-
-You: "I need to leave. We'll continue Monday."
-→ Tabs persist
-```
-
-**Monday 9 AM**:
-```
-You: "What was I working on again?"
-
-Resume Tab 1:
-- Scroll up through conversation history
-- "Oh right, we found that Chart A depends on ConfigMap X"
-- "And we determined Chart B needs updating first"
-- Full context restored
-
-Resume Tab 2:
-- "We were updating the values.yaml"
-- "We had decided to use 8Gi memory based on metrics"
-- Continue exactly where you left off
-```
-
-**The AI remembers what you've forgotten.**
-
----
-
-### Practical Patterns
-
-#### Pattern 1: Daily Resume
-
-```
-End of day:
-- Leave tabs open
-- Notes in tab names (if using terminal tab naming)
-- Color coding already in place
-
-Next morning:
-- Resume all tabs
-- Quick scroll through recent messages to remember context
-- Continue work immediately
-```
-
-#### Pattern 2: Multi-Project Management
-
-```
-Project A tabs (migration):
-- Tab 1-3: Migration work
-- Leave open/resumed when not active
-
-Project B tabs (optimization):
-- Tab 4-6: Optimization work
-- Leave open/resumed when not active
-
-Switch between projects:
-- Resume relevant tabs
-- Full context for each project maintained
-```
-
-#### Pattern 3: Investigation Preservation
-
-```
-Deep investigation:
-- Tab explores complex codebase
-- Builds understanding over 100+ messages
-- Loads many files for reference
-
-Without resume:
-- Would need to reload everything
-- Lose accumulated insights
-- Rebuild mental model
-
-With resume:
-- Return to investigation anytime
-- All context preserved
-- Reference what AI discovered last week
-```
-
----
+**Reference tabs**: Yellow tabs with docs loaded - keep resumed for days/weeks rather than reloading.
 
 ### Best Practices
 
-**1. Name your tabs/sessions meaningfully**
+**1. Request checkpoint summary before pausing**
 ```
-Bad: "Tab 1", "Session 2"
-Good: "Migration-HelmCharts", "Investigation-AuthFlow"
-```
+"I'm stopping for the day. Create a checkpoint summary:
+- What we've completed
+- Current state (what we're in the middle of)
+- Next steps
+- Key decisions I might forget
 
-**2. Add a summary comment before pausing**
-```
-Command-style:
-"Summarize where we are and what's next for when I resume this tomorrow."
-
-Natural language (more effective):
-"I need to stop for the day, but I'll be resuming this work tomorrow morning.
-Can you create a comprehensive checkpoint summary that will help me (and you)
-get back into context quickly?
-
-Include:
-1. What we've completed so far
-2. What we're in the middle of (current state)
-3. What's left to do (next steps)
-4. Any decisions we made that I might forget overnight
-5. Any blockers or questions that came up
-
-I want tomorrow-me to be able to read this summary and pick up exactly where
-we left off without having to scroll through our entire conversation.
-
-Also, if there's anything I should think about or research overnight (like that
-database migration question we had), flag it."
-
-AI provides comprehensive checkpoint summary.
-First thing you see when resuming.
+This helps me resume quickly tomorrow."
 ```
 
-**When you resume** (natural language):
+**2. Request refresher when resuming**
 ```
-Command-style resume:
-"Continue from yesterday"
-
-Natural language resume:
-"I'm resuming work on the cluster migration we were working on yesterday.
-Before we dive back in, can you:
-
-1. Give me a quick refresher on where we left off
-2. Remind me of any important decisions we made
-3. Let me know what our next step was going to be
-
-I've had a night's sleep and some context has faded - help me get back up to
-speed efficiently."
+"Resuming the cluster migration from yesterday. Quick refresher:
+- Where we left off
+- Important decisions we made
+- What the next step was"
 ```
 
-**3. Use resume for reference tabs**
-```
-Tab with 40-page architecture doc loaded:
-Don't close and reload daily.
-Keep resumed for the entire week/project.
-```
-
-**4. Resume trumps handoff for same session**
-```
-Same tab, continuing work tomorrow:
-→ Use Resume (preserves everything)
-
-Different tab, transferring context:
-→ Use Handoff (fresh start with summary)
-```
-
----
+**3. Use resume for same session, summaries for new sessions**
+- Same tab tomorrow → Resume
+- New tab/different session → Request summary and handoff
 
 ### When NOT to Resume
 
-❌ **Task completely finished**
-- Close and free up mental space
-
-❌ **Context is stale**
-- Week-old investigation, information changed
-- Better to start fresh
-
-❌ **You need a clean slate**
-- Previous approach didn't work
-- Want to rethink from scratch
-
----
-
-### Resume vs. Handoff: Decision Tree
-
-```
-Need to continue this exact conversation?
-├─ Yes → Resume the session
-└─ No → Need to transfer context to new session/tab?
-    ├─ Yes → Use Handoff
-    └─ No → Start fresh
-```
-
-**Examples**:
-
-**Resume**:
-- "Continue investigating this issue tomorrow"
-- "Come back to this implementation next week"
-- "Reference this analysis again later"
-
-**Handoff**:
-- "Move to new tab to implement findings"
-- "Share context with teammate"
-- "Context too full, need fresh session"
-
-**Fresh Start**:
-- "Previous approach failed, trying new direction"
-- "Task complete, starting different work"
-
----
-
-### Combining Resume with Other Patterns
-
-**Resume + Orchestrator**:
-```
-Orchestrator tab generates prompts for 5 worker tabs.
-All 6 tabs remain open/resumed throughout the project.
-Orchestrator tracks overall state.
-Workers handle specific subtasks.
-```
-
-**Resume + Reference Tabs**:
-```
-Yellow reference tab with docs loaded.
-Keep resumed for entire project (days/weeks).
-Query it whenever needed.
-Never reload the same docs.
-```
-
-**Resume + Investigation**:
-```
-Blue investigation tab.
-Resume daily as you explore.
-Builds accumulated knowledge.
-Review history to see how understanding evolved.
-```
-
----
-
-### Advanced: Session Libraries
-
-**Create a "shelf" of resumed sessions**:
-```
-Active Projects:
-- Migration project (3 tabs resumed)
-- Optimization work (2 tabs resumed)
-- Documentation update (1 tab resumed)
-
-Reference Sessions:
-- Architecture analysis (1 tab, resumed monthly)
-- Incident patterns (1 tab, updated weekly)
-
-On Ice:
-- Future projects (tabs saved, not actively resumed)
-```
-
-**Jump between projects**: Resume relevant tabs, pause others.
-
----
+- Task completely finished
+- Context is stale (week-old work, things have changed)
+- Need a clean slate (previous approach didn't work)
 
 ### Key Insight
 
-**You're not just preserving AI context - you're preserving YOUR context.**
-
-The conversation history in a resumed session is documentation of:
-- What you discovered
-- Decisions you made
-- Why you made them
-- What you tried
-- What worked and what didn't
-
-**Resume isn't just a feature - it's a knowledge management tool.**
+Session history preserves YOUR context as much as the AI's - it's documentation of what you discovered, decisions you made, and why. The AI remembers what you've forgotten.
 
 ---
 
