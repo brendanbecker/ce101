@@ -1,0 +1,86 @@
+apiVersion: monitoring.coreos.com/v1
+kind: ServiceMonitor
+metadata:
+  name: user-api
+  namespace: production
+  labels:
+    app: user-api
+    prometheus: kube-prometheus
+spec:
+  selector:
+    matchLabels:
+      app: user-api
+  endpoints:
+  - port: metrics
+    interval: 30s
+    path: /metrics
+---
+apiVersion: monitoring.coreos.com/v1
+kind: PrometheusRule
+metadata:
+  name: user-api-alerts
+  namespace: production
+  labels:
+    app: user-api
+    prometheus: kube-prometheus
+spec:
+  groups:
+  - name: user-api.rules
+    interval: 30s
+    rules:
+    # High error rate alert
+    - alert: UserAPIHighErrorRate
+      expr: |
+        (
+          sum(rate(http_requests_total{service="user-api",code=~"5.."}[5m]))
+          /
+          sum(rate(http_requests_total{service="user-api"}[5m]))
+        ) > 0.01
+      for: 5m
+      labels:
+        severity: critical
+        service: user-api
+      annotations:
+        summary: "User API has high error rate"
+        description: "User API error rate is {{ $value | humanizePercentage }} (threshold: 1%)"
+
+    # High latency alert (p99)
+    - alert: UserAPIHighLatency
+      expr: |
+        histogram_quantile(0.99,
+          sum(rate(http_request_duration_seconds_bucket{service="user-api"}[5m])) by (le)
+        ) > 0.5
+      for: 10m
+      labels:
+        severity: warning
+        service: user-api
+      annotations:
+        summary: "User API has high p99 latency"
+        description: "User API p99 latency is {{ $value }}s (threshold: 0.5s)"
+
+    # Low availability alert
+    - alert: UserAPILowAvailability
+      expr: |
+        (
+          sum(rate(http_requests_total{service="user-api",code!~"5.."}[30m]))
+          /
+          sum(rate(http_requests_total{service="user-api"}[30m]))
+        ) < 0.999
+      for: 5m
+      labels:
+        severity: critical
+        service: user-api
+      annotations:
+        summary: "User API availability below SLO"
+        description: "User API availability is {{ $value | humanizePercentage }} (SLO: 99.9%)"
+
+    # Pod restart alert
+    - alert: UserAPIPodRestarting
+      expr: rate(kube_pod_container_status_restarts_total{namespace="production",pod=~"user-api-.*"}[15m]) > 0
+      for: 5m
+      labels:
+        severity: warning
+        service: user-api
+      annotations:
+        summary: "User API pods are restarting"
+        description: "User API pod {{ $labels.pod }} is restarting frequently"

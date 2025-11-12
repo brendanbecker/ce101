@@ -1,0 +1,30 @@
+# Example tier-1 HTTP API deployment
+# Use this as input to the SLO builder
+
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: user-api
+  namespace: production
+  labels:
+    app: user-api
+    tier: tier-1
+    service-type: http-api
+spec:
+  replicas: 3
+  selector:
+    matchLabels:
+      app: user-api
+  template:
+    metadata:
+      labels:
+        app: user-api
+    spec:
+      containers:
+      - name: user-api
+        image: myregistry.io/user-api:2.4.0
+        ports:
+        - name: http
+          containerPort: 8000
+        - name: metrics
+          containerPort: 8080

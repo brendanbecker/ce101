@@ -1,0 +1,28 @@
+# Example tier-2 batch job
+# Use this as input to the SLO builder
+
+apiVersion: batch/v1
+kind: CronJob
+metadata:
+  name: data-sync
+  namespace: production
+  labels:
+    app: data-sync
+    tier: tier-2
+    service-type: batch-job
+spec:
+  schedule: "0 */6 * * *"  # Every 6 hours
+  jobTemplate:
+    spec:
+      template:
+        metadata:
+          labels:
+            app: data-sync
+        spec:
+          restartPolicy: OnFailure
+          containers:
+          - name: sync
+            image: myregistry.io/data-sync:1.2.0
+            ports:
+            - name: metrics
+              containerPort: 9090

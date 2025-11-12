@@ -1,0 +1,56 @@
+# Generated SLO specification for tier-2 batch job
+# Generated with: build-slos.py data-sync production --tier tier-2 --type batch-job
+
+version: prometheus/v1
+service: data-sync
+labels:
+  tier: tier-2
+  namespace: production
+  service_type: batch-job
+slos:
+- name: data-sync-success_rate
+  objective: 99.5
+  description: success_rate SLO for data-sync
+  sli:
+    events:
+      errorQuery: |
+        sum(rate(batch_job_completed{service="data-sync",status="success"}[{{window}}]))
+        /
+        sum(rate(batch_job_completed{service="data-sync"}[{{window}}]))
+  alerting:
+    name: data-sync-success_rate
+    labels:
+      service: data-sync
+      tier: tier-2
+      slo: success_rate
+    annotations:
+      summary: High error budget burn for success_rate
+    pageAlert:
+      annotations:
+        description: Fast burn rate alert - 6h window
+    ticketAlert:
+      annotations:
+        description: Slow burn rate alert - 48h window
+- name: data-sync-duration_p95
+  objective: 90.0
+  description: duration_p95 SLO for data-sync
+  sli:
+    events:
+      errorQuery: |
+        histogram_quantile(0.95,
+          sum(rate(batch_job_duration_seconds_bucket{service="data-sync"}[{{window}}])) by (le)
+        ) < (60 * 60)
+  alerting:
+    name: data-sync-duration_p95
+    labels:
+      service: data-sync
+      tier: tier-2
+      slo: duration_p95
+    annotations:
+      summary: High error budget burn for duration_p95
+    pageAlert:
+      annotations:
+        description: Fast burn rate alert - 6h window
+    ticketAlert:
+      annotations:
+        description: Slow burn rate alert - 48h window

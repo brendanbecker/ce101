@@ -154,6 +154,46 @@ Give me a handoff prompt I can copy into a new Codex session to continue this wo
 
 ---
 
+## Skills Pattern
+
+**What**: Filesystem-based packages combining automation + standards + AI reasoning
+
+**Structure**:
+```
+.ai-skills/skill-name/
+├── SKILL.md              # Metadata + AI instructions
+├── standards.yaml        # Team requirements/templates
+├── script.py            # Optional automation
+└── examples/            # Success/failure cases
+```
+
+**When to Use**:
+- ✅ Repeated team processes with edge cases
+- ✅ Standards enforcement with context
+- ✅ Partially automated, partially judgment
+- ❌ One-time tasks (just use script)
+- ❌ Pure deterministic checks (no AI needed)
+- ❌ Generic knowledge (LLM already knows)
+
+**Key Benefits**:
+- **Progressive disclosure**: Zero tokens until loaded
+- **Composable**: Skills work together through filesystem
+- **Versioned**: Git tracks team standards evolution
+- **Platform agnostic**: Works with any AI that reads files
+
+**Example Skills**:
+- `production-readiness-review`: Validate service meets launch requirements
+- `slo-builder`: Generate SLOs based on tier and type
+- `helm-values-validator`: Check values against conventions
+- `incident-postmortem-generator`: Create postmortem from notes
+
+**The Value Triangle**:
+```
+Scripts (deterministic) + AI (flexible) + Standards (versioned) = Skills
+```
+
+---
+
 ## Common Prompts
 
 ### Start Investigation
@@ -342,6 +382,7 @@ Show me the current limits first."
 - **Module 3**: MCP Servers - When to use, evaluation framework, context cost
 - **Module 4**: Multi-Tab Orchestration - One agent per job, orchestrator-worker pattern
 - **Module 5**: Patterns and Anti-Patterns - Dry-run, progressive verification, safety, common mistakes
+- **Module 6**: Skills Pattern - Package team expertise as discoverable capabilities
 
 **Quick Access**:
 - Full course materials in training repo

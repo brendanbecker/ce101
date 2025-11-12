@@ -8,13 +8,14 @@ Context Engineering is the practice of providing AI assistants with the right in
 
 ## Course Structure
 
-This training consists of five modules designed for SRE teams:
+This training consists of six modules designed for SRE teams:
 
 1. **[Core Concepts](01-core-concepts.md)** - The four context strategies and foundational principles
 2. **[Filesystem Organization](02-filesystem-organization.md)** - Using your directory structure as context architecture
 3. **[MCP Servers](03-mcp-servers.md)** - When and why to use Model Context Protocol servers
 4. **[Multi-Tab Orchestration](04-multi-tab-orchestration.md)** - Managing multiple specialized agents
 5. **[Patterns and Anti-Patterns](05-patterns-and-antipatterns.md)** - Real-world workflows and critical mistakes to avoid
+6. **[Skills Pattern](06-skills-pattern.md)** - Package team expertise as discoverable, composable capabilities
 
 ## Quick Start
 
@@ -47,7 +48,7 @@ If you're already using AI assistants:
 ## Time Commitment
 
 - **Core workshop**: 3 hours (modules 1-3)
-- **Full course**: 5-6 hours (all modules)
+- **Full course**: 6-7 hours (all modules)
 - **Ongoing practice**: Apply to daily work
 
 ## Additional Resources

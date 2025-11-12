@@ -1,0 +1,301 @@
+# Production Readiness Review Requirements
+# Version: 2.1.0
+# Last updated: 2024-11-11
+
+requirements:
+  # MONITORING & ALERTING
+  - id: MON-001
+    category: monitoring
+    name: Prometheus metrics endpoint
+    description: Service exposes /metrics endpoint in Prometheus format
+    check: automated
+    severity: blocker
+    rationale: Without metrics, we can't monitor service health or performance
+    tiers:
+      tier-1: required
+      tier-2: required
+      tier-3: required
+    validation:
+      type: kubernetes
+      check: deployment_has_port_named_metrics
+
+  - id: MON-002
+    category: monitoring
+    name: ServiceMonitor configured
+    description: ServiceMonitor resource exists to scrape metrics
+    check: automated
+    severity: blocker
+    rationale: Prometheus must be configured to scrape the service
+    tiers:
+      tier-1: required
+      tier-2: required
+      tier-3: recommended
+    validation:
+      type: kubernetes
+      check: servicemonitor_exists
+
+  - id: MON-003
+    category: monitoring
+    name: Alerting rules defined
+    description: PrometheusRule with at least one alert for the service
+    check: automated
+    severity: blocker
+    rationale: Team must be notified when service degrades
+    tiers:
+      tier-1: required
+      tier-2: required
+      tier-3: recommended
+    validation:
+      type: kubernetes
+      check: prometheusrule_exists
+
+  # DOCUMENTATION
+  - id: DOC-001
+    category: documentation
+    name: README exists
+    description: README.md in repository root with service description
+    check: automated
+    severity: blocker
+    rationale: Basic documentation is essential for team understanding
+    tiers:
+      tier-1: required
+      tier-2: required
+      tier-3: required
+    validation:
+      type: filesystem
+      check: file_exists
+      path: README.md
+
+  - id: DOC-002
+    category: documentation
+    name: Runbook exists
+    description: Runbook with common failure modes and remediation
+    check: automated
+    severity: blocker
+    rationale: On-call engineers need clear guidance during incidents
+    tiers:
+      tier-1: required
+      tier-2: required
+      tier-3: recommended
+    validation:
+      type: filesystem
+      check: file_exists
+      path: RUNBOOK.md
+
+  - id: DOC-003
+    category: documentation
+    name: Architecture documentation
+    description: Architecture diagram and design decisions documented
+    check: manual
+    severity: required
+    rationale: Team needs to understand system design for troubleshooting
+    tiers:
+      tier-1: required
+      tier-2: recommended
+      tier-3: optional
+
+  # SECURITY
+  - id: SEC-001
+    category: security
+    name: Security context configured
+    description: Pod security context with runAsNonRoot, readOnlyRootFilesystem
+    check: automated
+    severity: blocker
+    rationale: Defense in depth - limit container privileges
+    tiers:
+      tier-1: required
+      tier-2: required
+      tier-3: required
+    validation:
+      type: kubernetes
+      check: security_context_configured
+
+  - id: SEC-002
+    category: security
+    name: Secrets management
+    description: Secrets stored in Kubernetes Secrets or external vault, not env vars
+    check: automated
+    severity: blocker
+    rationale: Prevent credential exposure in configs or logs
+    tiers:
+      tier-1: required
+      tier-2: required
+      tier-3: required
+    validation:
+      type: kubernetes
+      check: no_plaintext_secrets
+
+  - id: SEC-003
+    category: security
+    name: Network policies defined
+    description: NetworkPolicy restricting ingress/egress
+    check: automated
+    severity: required
+    rationale: Limit blast radius of compromised pod
+    tiers:
+      tier-1: required
+      tier-2: recommended
+      tier-3: optional
+    validation:
+      type: kubernetes
+      check: networkpolicy_exists
+
+  # RELIABILITY
+  - id: REL-001
+    category: reliability
+    name: Multiple replicas
+    description: Deployment has replicas >= 2 for tier-1, >= 1 for others
+    check: automated
+    severity: blocker
+    rationale: Single instance is single point of failure
+    tiers:
+      tier-1: required  # >= 2 replicas
+      tier-2: recommended  # >= 2 replicas
+      tier-3: optional  # >= 1 replica ok
+    validation:
+      type: kubernetes
+      check: replica_count
+
+  - id: REL-002
+    category: reliability
+    name: Resource limits defined
+    description: CPU and memory requests/limits set
+    check: automated
+    severity: blocker
+    rationale: Prevent resource starvation and cluster instability
+    tiers:
+      tier-1: required
+      tier-2: required
+      tier-3: required
+    validation:
+      type: kubernetes
+      check: resources_defined
+
+  - id: REL-003
+    category: reliability
+    name: Liveness probe configured
+    description: Liveness probe configured to restart unhealthy pods
+    check: automated
+    severity: blocker
+    rationale: Automatic recovery from hung processes
+    tiers:
+      tier-1: required
+      tier-2: required
+      tier-3: recommended
+    validation:
+      type: kubernetes
+      check: liveness_probe_exists
+
+  - id: REL-004
+    category: reliability
+    name: Readiness probe configured
+    description: Readiness probe to remove pods from load balancing when not ready
+    check: automated
+    severity: blocker
+    rationale: Prevent traffic to pods that can't handle it
+    tiers:
+      tier-1: required
+      tier-2: required
+      tier-3: recommended
+    validation:
+      type: kubernetes
+      check: readiness_probe_exists
+
+  # OBSERVABILITY
+  - id: OBS-001
+    category: observability
+    name: Structured logging
+    description: Service logs in JSON format to stdout
+    check: manual
+    severity: required
+    rationale: Enables automated log parsing and analysis
+    tiers:
+      tier-1: required
+      tier-2: required
+      tier-3: recommended
+
+  - id: OBS-002
+    category: observability
+    name: Trace instrumentation
+    description: Distributed tracing integrated (Jaeger/OpenTelemetry)
+    check: manual
+    severity: recommended
+    rationale: Essential for debugging distributed systems
+    tiers:
+      tier-1: required
+      tier-2: recommended
+      tier-3: optional
+
+  - id: OBS-003
+    category: observability
+    name: Grafana dashboard
+    description: Grafana dashboard for key service metrics
+    check: manual
+    severity: required
+    rationale: Visual monitoring for operators
+    tiers:
+      tier-1: required
+      tier-2: required
+      tier-3: optional
+
+  # OPERATIONAL
+  - id: OPS-001
+    category: operational
+    name: On-call rotation defined
+    description: Service has assigned on-call rotation
+    check: manual
+    severity: blocker
+    rationale: Someone must be responsible for incidents
+    tiers:
+      tier-1: required
+      tier-2: required
+      tier-3: optional
+
+  - id: OPS-002
+    category: operational
+    name: Escalation policy
+    description: Documented escalation path for critical issues
+    check: manual
+    severity: required
+    rationale: Clear path when on-call can't resolve
+    tiers:
+      tier-1: required
+      tier-2: required
+      tier-3: optional
+
+  - id: OPS-003
+    category: operational
+    name: Backup procedures
+    description: Backup and restore procedures documented (if stateful)
+    check: manual
+    severity: required
+    rationale: Data loss prevention and recovery
+    tiers:
+      tier-1: required  # if stateful
+      tier-2: required  # if stateful
+      tier-3: recommended  # if stateful
+
+  # PERFORMANCE
+  - id: PERF-001
+    category: performance
+    name: Load test results
+    description: Load testing completed and results documented
+    check: manual
+    severity: required
+    rationale: Understand capacity limits before production
+    tiers:
+      tier-1: required
+      tier-2: recommended
+      tier-3: optional
+
+  - id: PERF-002
+    category: performance
+    name: Capacity planning
+    description: Expected load and scaling plan documented
+    check: manual
+    severity: required
+    rationale: Prevent outages from unexpected traffic
+    tiers:
+      tier-1: required
+      tier-2: recommended
+      tier-3: optional
