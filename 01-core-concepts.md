@@ -456,6 +456,59 @@ The deployment.yaml file has valid YAML syntax!
 
 **The AI did exactly what you asked** (check the deployment), but you got a syntax check instead of a scaling investigation.
 
+#### The Context Trap: Solutions Without Sufficient Context
+
+Here's the more dangerous pattern:
+
+**You're in a hurry. You need a solution. You ask AI for one immediately.**
+
+AI enthusiastically provides a solution based on the limited context you gave—and that solution might lead you down entirely the wrong path.
+
+**Example:**
+
+```
+You: "Write me a script to restart pods that are crashing"
+
+AI: "Sure! Here's a script that detects CrashLoopBackOff and deletes the pods..."
+```
+
+**The problem**: AI gave you exactly what you asked for, but you never established:
+- Why the pods are crashing
+- Whether restarting is the right solution
+- What the actual root cause might be
+- Whether this is a symptom of a bigger issue
+
+**The better approach:**
+
+```
+I have pods going into CrashLoopBackOff in the auth-service deployment. Before I
+decide how to handle this, can you help me:
+
+1. Analyze the pod events and logs to understand why they're crashing
+2. Determine if this is a configuration issue, resource constraint, or application bug
+3. Then suggest the appropriate fix based on what we find
+
+The deployment is at /k8s/apps/auth/deployment.yaml and I can grab logs if needed.
+```
+
+**Why this matters**: AI will happily generate solutions to the wrong problem if you push it toward solutions before establishing proper context.
+
+**The pattern to avoid:**
+1. Encounter problem
+2. Immediately ask for solution
+3. AI generates solution based on incomplete understanding
+4. You implement it
+5. Wrong solution for wrong problem
+
+**The pattern to follow:**
+1. Encounter problem
+2. Ask AI to help investigate and understand
+3. Establish context together
+4. Then ask for solution
+5. Right solution for right problem
+
+**Remember**: AI's eagerness to help can work against you if you encourage it to skip the investigation phase.
+
 #### Why This Matters for Context Engineering
 
 This is **why** context engineering matters:
