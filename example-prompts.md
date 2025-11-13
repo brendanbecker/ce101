@@ -432,6 +432,170 @@ Highlight any destructive operations
 
 ---
 
+## Visual Analysis
+
+### Dashboard Analysis
+```
+[Paste screenshot of Grafana/Datadog dashboard]
+
+Analyze this dashboard for anomalies.
+
+Context:
+- Normal baseline: [describe typical patterns]
+- Time period: Last 2 hours
+- What changed: [recent deployment/traffic spike/etc]
+- Service: [service-name]
+
+Identify:
+1. Which metrics look abnormal
+2. What correlation exists between anomalies
+3. Investigation priorities
+```
+
+### Error Message Screenshot
+```
+[Paste screenshot of error output]
+
+This error appeared after deploying version [version].
+
+Context:
+- Configuration: [helm chart path or config file]
+- Recent changes: [describe what changed]
+- Environment: [dev/staging/production]
+- When it started: [timestamp]
+
+Explain:
+1. What's failing
+2. Root cause (based on error and context)
+3. How to fix it
+4. How to prevent it
+```
+
+### Kubernetes Pod Error Analysis
+```
+[Screenshot of kubectl describe pod or kubectl logs output]
+
+Pod [pod-name] in namespace [namespace] is [symptom].
+
+Additional context:
+- Started: [when]
+- Helm chart: [path]
+- Recent changes: [deployments, config changes]
+- Affects: [scope - all pods, specific region, etc]
+
+Diagnose the issue and suggest remediation.
+```
+
+### Architecture Diagram Conversion
+```
+[Photo of whiteboard diagram or hand-drawn architecture]
+
+Convert this whiteboard architecture to Mermaid diagram format.
+
+Requirements:
+- Preserve all service names and relationships
+- Include data flow arrows as shown
+- Add technology labels (databases, message queues, etc)
+- Make it production-ready for our docs repo at [path]
+
+Context about the system:
+[Brief description of what this architecture represents]
+```
+
+### Terraform Plan Visual Analysis
+```
+[Screenshot of terraform plan output with colors]
+
+Review this terraform plan before I apply.
+
+Context:
+- Module: [module-name]
+- Environment: [environment]
+- Why changing: [reason]
+
+Check for:
+1. Unexpected resource destruction
+2. Security implications
+3. Dependencies I might have missed
+4. Whether this matches my intent
+
+Flag any concerns before I proceed.
+```
+
+### Monitoring Alert Screenshot
+```
+[Screenshot of PagerDuty/alert notification]
+
+This alert fired during [time period].
+
+Context:
+- Service: [service-name]
+- Recent changes: [deployments, traffic patterns]
+- Runbook: [path to runbook if exists]
+
+Based on the alert:
+1. What's the likely root cause?
+2. What should I check first?
+3. Is this a known issue? (check runbooks at /notes/runbooks/)
+4. Suggested investigation steps
+```
+
+### Dashboard Before/After Comparison
+```
+[Screenshot 1: Before deployment]
+[Screenshot 2: After deployment]
+
+These show metrics before and after deploying version [version].
+
+Service: [service-name]
+Deployment time: [timestamp]
+
+Compare and identify:
+1. What changed between the two states
+2. Whether changes are expected/healthy
+3. Any concerning patterns
+4. What to monitor going forward
+```
+
+### Log File Visual Analysis
+```
+[Screenshot of logs with color-coded levels]
+
+These logs appeared when [describe scenario].
+
+Context:
+- Service: [service-name]
+- Log file: [path]
+- Time period: [range]
+- What triggered this: [user action, deployment, etc]
+
+Analyze:
+1. Pattern of errors (frequency, timing)
+2. Root cause based on error sequence
+3. Whether this is cascading failure
+4. First error to investigate
+```
+
+### Cloud Console State Review
+```
+[Screenshot of Azure Portal/AWS Console showing resources]
+
+Review the current state of [resource type] in [environment].
+
+Expected state:
+- [Describe what should be there]
+
+Terraform/config location: [path]
+
+Identify:
+1. Resources that shouldn't exist
+2. Missing expected resources
+3. Configuration drift
+4. Security concerns
+```
+
+---
+
 ## Tips for Using These Templates
 
 1. **Replace bracketed placeholders** with your specific information

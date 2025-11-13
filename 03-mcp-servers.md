@@ -69,6 +69,76 @@ Deployment status across 3 clusters: 10-15 min SSH/kubectl workflow → 1 min si
 Internal service catalog: 5-10 min wiki search → immediate with dependency reasoning
 - **Verdict**: Worth it when it enables new capabilities
 
+---
+
+## SRE-Relevant MCP Servers (2025)
+
+These are MCP servers commonly used by SREs. Evaluate each using the framework above - don't install just because they're listed here.
+
+### High-value for daily use
+
+**Incident management:**
+- `pagerduty-mcp` - Query incidents, on-call schedules during rotations
+  - **When**: You're on-call weekly or more
+  - **Alternative**: PagerDuty web UI + screenshots to AI
+
+**Source control:**
+- `github-mcp` or `gitlab-mcp` - PR reviews, issue tracking, repository queries
+  - **When**: Managing many repos, frequent PR workflows
+  - **Alternative**: `gh` or `glab` CLI + AI (often better)
+
+### Evaluate carefully (high tool count)
+
+**Cloud providers:**
+- `aws-mcp`, `azure-mcp`, `gcp-mcp` - 30-50 tools each for cloud resource management
+  - **When MCP wins**: Cross-account queries, complex IAM analysis, resource discovery
+  - **Alternative**: `aws`, `az`, `gcloud` CLI + AI (usually simpler)
+  - **Watch for**: Using 1-2 tools from a 50-tool server → Just use CLI instead
+
+**Kubernetes:**
+- `kubernetes-mcp` - Direct cluster queries if managing many clusters
+  - **When**: Multi-cluster management, complex queries across namespaces
+  - **Alternative**: `kubectl` + AI (faster for single cluster work)
+
+### Specialized/occasional use
+
+**Infrastructure:**
+- `terraform-registry-mcp` - Finding and evaluating Terraform modules
+  - **When**: Weekly module research, complex dependency analysis
+  - **Alternative**: registry.terraform.io + AI analysis
+
+**Monitoring:**
+- `grafana-tempo-mcp`, `prometheus-mcp` - Querying metrics and traces
+  - **When**: Complex metric analysis, correlation queries
+  - **Alternative**: Dashboard screenshots + AI analysis (Pattern 5: Visual Troubleshooting)
+
+**Secrets management:**
+- `vault-mcp` - HashiCorp Vault queries
+  - **When**: Frequent secret rotation, complex policy management
+  - **Alternative**: `vault` CLI + AI
+
+**Browser automation:**
+- `playwright-mcp` - Automate web UIs for systems without APIs
+  - **When**: Vendor portals, legacy systems, automated screenshot capture
+  - **Alternative**: Manual clicking + screenshot to AI for analysis
+  - **Install if**: You automate web workflows weekly or more
+
+### Red flags
+
+**Installing AWS MCP but only using S3 commands:**
+- **Problem**: 50 tools in context, you use 1
+- **Solution**: Just use `aws s3 ls` with AI instead
+
+**Installing Notion/Confluence MCP "just in case":**
+- **Problem**: Forgot it was there, wasting context for 6 months
+- **Solution**: Only install when you have specific, frequent use case
+
+**Can't remember why you installed it:**
+- **Problem**: No clear use case, accumulated cruft
+- **Solution**: Remove immediately, reinstall if need emerges
+
+---
+
 ### Poor Use Cases
 
 **1. One-off tasks**: Format conversion server for single file → Just paste in AI (30 sec)

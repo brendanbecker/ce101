@@ -383,7 +383,209 @@ Please:
 
 ---
 
-### Pattern 5: The Handoff Chain
+### Pattern 5: Visual Troubleshooting
+
+**Use case**: Analyzing complex visual information (dashboards, errors, architectures) using multimodal AI.
+
+#### When Screenshots Beat Text
+
+Your AI assistant can analyze screenshots directly. This is often faster and more accurate than describing visual information in text.
+
+**Common SRE use cases:**
+- Grafana/Datadog dashboard analysis
+- Kubernetes error messages with formatting
+- Cloud console state (Azure Portal, AWS Console)
+- PagerDuty incident details
+- Architecture diagrams from whiteboards
+- Terraform plan output (colored diff)
+- Log files with color-coded output
+
+#### The Basic Pattern
+
+**Instead of this:**
+```
+The dashboard shows the blue line going up from 50 to 200 while the green
+line dropped from 100 to 30, and there's a red spike at 14:23...
+```
+
+**Do this:**
+```
+[Paste screenshot of Grafana dashboard]
+
+This dashboard started looking weird 20 minutes ago. I'm not sure what's
+normal vs abnormal here. Can you:
+
+1. Identify which metrics look problematic
+2. Suggest what correlation I should investigate
+3. Point me to which services to check first
+```
+
+**Why it works:**
+- Faster than describing complex visual relationships
+- Preserves visual relationships AI can interpret
+- Captures formatting/color/layout that text loses
+- Natural for dashboard and error analysis
+
+#### Screenshot + Context Pattern
+
+**More effective:**
+```
+[Screenshot of kubectl describe pod output]
+
+This pod is crashlooping. Screenshot shows the current state.
+
+Additional context:
+- Started after deploy 30 minutes ago
+- Only affecting pods in us-east-1
+- Helm chart: /company/SRE/helm/charts/user-api/
+
+What's the issue and how do I fix it?
+```
+
+**Less effective:**
+```
+[Just the screenshot with no context]
+```
+
+Always combine visual context with textual context for best results.
+
+#### Diagram Generation and Conversion
+
+**Whiteboard to Mermaid:**
+```
+[Photo of whiteboard architecture diagram]
+
+Convert this whiteboard sketch to a Mermaid diagram I can version control.
+
+Include:
+- All service names as I wrote them
+- The arrows showing data flow
+- The technology labels
+
+Make it clean and production-ready for our docs repo.
+```
+
+**Result:** Editable, version-controlled diagram from a photo
+
+**Screenshot to Documentation:**
+```
+[Screenshot of error message]
+
+Create a runbook entry for this error. Include:
+- The error as shown in the screenshot
+- What causes it (based on the context)
+- How to diagnose it
+- How to fix it
+
+Save to /company/SRE/notes/runbooks/[appropriate-name].md
+```
+
+#### Multi-Tab Visual Workflow
+
+**Tab 1 (Blue): Screenshot Analysis**
+```
+[Paste screenshot of monitoring dashboard]
+
+Analyze this dashboard. Error rate spiked 30 minutes ago.
+What services should I investigate?
+```
+
+**Tab 2 (Blue): Deep Investigation**
+```
+Based on Tab 1, investigating user-api service.
+[Screenshot of user-api logs]
+
+These are the logs. What's the root cause?
+```
+
+**Tab 3 (Green): Implementation**
+```
+Implementing fix from Tab 2 investigation.
+Update /company/SRE/helm/charts/user-api/values.yaml...
+```
+
+**Tab 4 (Yellow): Documentation**
+```
+Document incident with embedded screenshots:
+[Screenshots from Tabs 1-2]
+
+Create post-mortem with timeline and visual evidence.
+```
+
+#### Visual Evidence for Postmortems
+
+Screenshots provide evidence for incident documentation:
+
+```
+Create incident report for INC-2024-123
+
+Timeline with screenshots:
+1. 14:00 - Normal state [screenshot]
+2. 14:23 - Error rate spike [dashboard screenshot]
+3. 14:25 - Pod crashloop [kubectl screenshot]
+4. 14:40 - After fix [recovery screenshot]
+
+Generate comprehensive postmortem with embedded images.
+```
+
+#### Common Visual Analysis Requests
+
+**Dashboard anomaly detection:**
+```
+[Dashboard screenshot]
+What looks abnormal in these metrics for a typical Tuesday afternoon?
+```
+
+**Error interpretation:**
+```
+[Error message screenshot]
+This error is cryptic. Explain what it means and how to fix it.
+```
+
+**Architecture review:**
+```
+[Architecture diagram]
+Review this architecture for single points of failure and scaling bottlenecks.
+```
+
+**State comparison:**
+```
+[Screenshot 1: Before deployment]
+[Screenshot 2: After deployment]
+What changed? Any concerns?
+```
+
+#### When NOT to Use Screenshots
+
+**Use text instead when:**
+- Copying exact values (IDs, resource names, configuration)
+- Security-sensitive information (redact from screenshots or use text)
+- Large amounts of structured data (JSON, YAML better as text)
+- You need AI to edit the content directly
+
+**Use screenshots when:**
+- Visual relationships matter (dashboards, diagrams)
+- Formatting is significant (error messages, kubectl output)
+- Color-coding conveys meaning (terraform plan, log levels)
+- Describing in text would be tedious
+
+#### Security Note
+
+**Be careful with screenshots containing:**
+- API keys or tokens
+- Internal IP addresses or hostnames (if sensitive)
+- Customer data
+- Database credentials
+
+Redact sensitive information before pasting or use text-based descriptions instead.
+
+---
+
+> ⚠️ **Accountability**: Screenshots provide visual context for faster analysis, but AI's interpretation is still just a suggestion. You verify the diagnosis and implement fixes following normal safety patterns (dry-run, test in staging, peer review).
+
+---
+
+### Pattern 6: The Handoff Chain
 
 **Use case**: Long-running work that exceeds context window capacity.
 

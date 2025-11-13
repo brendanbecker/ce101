@@ -795,6 +795,136 @@ Explain what you changed and why."
 
 ---
 
+## Exercise 13: Screenshot-Based Troubleshooting (30 minutes)
+
+**Module/Concept**: Module 6 - Visual Context Pattern (Pattern 5)
+
+**Objective:** Use multimodal AI (already available in Chat-gpt5-codex) for faster visual diagnosis.
+
+**Context:** Your AI can analyze screenshots, diagrams, and dashboards directly. Use this capability instead of copy-pasting formatted output or trying to describe complex visual layouts in text.
+
+### Activity
+
+**Step 1: Capture Visual Context** (5 minutes)
+
+Take screenshots of current or recent work scenarios:
+- A Grafana/Datadog dashboard showing metrics
+- A kubectl error message or pod description
+- A cloud console showing resource state
+- A monitoring alert from PagerDuty
+- A terraform plan output (with colors)
+- An architecture diagram (whiteboard photo works)
+
+Pick 2-3 screenshots for this exercise.
+
+**Step 2: Visual Analysis Practice** (15 minutes)
+
+For each screenshot, paste it into an AI session and try different prompts:
+
+**Basic visual analysis:**
+```
+[Paste screenshot]
+
+What do you see in this screenshot? What looks abnormal?
+What would you investigate first?
+```
+
+**Analysis with context (more effective):**
+```
+[Paste screenshot of dashboard]
+
+This dashboard started looking weird 20 minutes ago after deploying version 2.1.0.
+
+Context:
+- Normal baseline: error rate < 1%, latency < 200ms
+- Service: user-api
+- Recent change: Updated database connection pool size
+
+Analyze:
+1. Which metrics are abnormal?
+2. Are they related to the pool size change?
+3. What should I investigate first?
+```
+
+**Compare:** Which prompt style gave you more actionable insights?
+
+**Step 3: Diagram Generation** (10 minutes)
+
+Try one of these:
+
+**Option A - Whiteboard to Mermaid:**
+Take a photo of any architecture diagram (drawn on whiteboard, paper, or existing diagram) and ask:
+```
+[Photo of architecture diagram]
+
+Convert this to a Mermaid diagram I can version control.
+Include all service names, arrows, and technology labels.
+```
+
+**Option B - Error to Runbook:**
+Use a screenshot of an error message and ask:
+```
+[Screenshot of error]
+
+Create a runbook entry for this error at /notes/runbooks/[error-name].md
+
+Include:
+- The error as shown
+- What causes it
+- How to diagnose it
+- How to fix it
+```
+
+### Success Criteria
+
+- [ ] Used screenshots instead of text description for 2+ scenarios
+- [ ] AI successfully identified issues from visual context
+- [ ] Diagnosis was faster than explaining visually in text
+- [ ] Generated useful output (diagram, runbook, analysis)
+- [ ] Understand when screenshots are better than text
+
+### Comparison: Visual vs Text
+
+**Document your experience:**
+
+**Task 1:**
+- Visual approach time: _____ minutes
+- Text description approach time: _____ minutes
+- Which was easier: _____
+- Which gave better results: _____
+
+**Task 2:**
+- Visual approach time: _____ minutes
+- Text description approach time: _____ minutes
+- Which was easier: _____
+- Which gave better results: _____
+
+### Reflection Questions
+
+1. What surprised you about AI's visual analysis capabilities?
+2. When would you use screenshots vs text in your daily work?
+3. Did visual context lead to faster problem diagnosis?
+4. What security considerations do you need for screenshots?
+5. How will you incorporate this into your troubleshooting workflow?
+
+### Real-World Application
+
+**This week, try:**
+- Screenshot your next dashboard anomaly instead of describing it
+- Photo a whiteboard session and convert to Mermaid
+- Use kubectl output screenshots for troubleshooting
+- Include screenshots in incident documentation
+
+**When NOT to use screenshots:**
+- Need exact text/values to copy (IDs, config values)
+- Security-sensitive information (credentials, tokens)
+- AI needs to edit the content directly
+- Large structured data (JSON/YAML better as text)
+
+**Key Insight:** Visual context is often clearer than text descriptions, especially for dashboards, architectures, and formatted output. Use screenshots to speed up communication with AI.
+
+---
+
 ## Bonus: Team Challenge
 
 **Collaborative Exercise** (90 minutes)

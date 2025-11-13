@@ -541,30 +541,77 @@ Tab 5: Aggregate and create documentation
 
 ---
 
-### 4. COMPRESS - Use Only When Forced
+### 4. COMPRESS - Rarely Needed in 2025
 
 **What it is**: Reduce context size through summarization or truncation.
 
 **When to use**: Rarely. Modern context windows are large enough that isolation is usually better.
 
-**When you might need it**:
-- Context window filling up (watch the usage meter)
-- Handoff prompts between sessions
-- Very large documents that must be in one session
+#### Context Windows in 2025: Bigger Than You Think
 
-**Our approach**:
+**Reality check:**
+- Chat-gpt5-codex, Claude Code: 200k tokens
+- GPT-4o: 128k tokens
+- Most codebases fit entirely in one session
+
+**What 200k tokens can hold:**
+- ~150,000 words of text
+- ~75-100 medium-sized source files
+- Entire helm charts, terraform modules, runbooks, incident logs
+- Long conversation histories (100+ exchanges)
+
+**What this means for you:**
+- Stop worrying about token counts for normal work
+- Compression is rarely needed
+- You can load entire runbooks, long log files, multiple related files
+- Handoffs are for CLARITY (clean slate), not capacity
+
+#### When You Still Need Compression
+
+**Extremely rare scenarios:**
+- Multiple very large files (50k+ lines each) in one session
+- Extremely long sessions (100+ messages with extensive file reads)
+- Combined large codebase + extensive conversation history
+
+**Even then, isolation is usually better than compression.**
+
+#### Our Approach
+
 - **Don't preemptively compress**. Tokens are cheap, clarity is expensive.
-- **Use handoff prompts** when context starts feeling cluttered (typically 40-60% as a guideline)
+- **Use handoff prompts** when context feels cluttered (typically 40-60% as a guideline for clarity, not capacity)
 - **Prefer isolation** over compression - split into multiple agents instead
+- **Monitor your context meter** - if below 60%, don't worry about it
 
-**Example of good compression**:
+#### The Clarity Threshold (Not Capacity)
+
+**Use handoffs when:**
+- Context feels messy (lots of different topics mixed together)
+- Hard to remember what was discussed
+- You want a clean slate for new approach
+- **NOT because you're running out of tokens**
+
+**Context at 40%:** Plenty of room, only handoff if it feels cluttered
+**Context at 60%:** Still fine, handoff for clarity if desired
+**Context at 80%:** Now it matters, consider handoff or new session
+**Context at 90%+:** Time to handoff or wrap up
+
+#### Example of Good Compression
+
+When you do need handoff, agent generates concise summary:
+
 ```
-Agent generates its own handoff:
-"We've updated the helm chart to version 4.8, modified resource limits, 
+Agent's handoff:
+"We've updated the helm chart to version 4.8, modified resource limits,
 and tested rendering. Remaining: update production values and document changes."
-
-vs. keeping the entire 30-message conversation history.
 ```
+
+vs. keeping the entire 30-message conversation history in new session.
+
+#### Key Insight
+
+**With 200k token windows, compression is a clarity tool, not a capacity requirement.**
+
+Focus on organizing your work (isolation, multiple tabs) rather than saving tokens.
 
 ---
 

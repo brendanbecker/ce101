@@ -87,16 +87,219 @@ Validates services meet production launch requirements.
 
 ---
 
-### SLO Builder
+### Kubernetes Pod Troubleshooting
 
-Generates Service Level Objectives based on service tier and type.
+Systematic pod failure diagnosis following team runbook patterns.
 
-**Contains**:
-- `slo-templates.yaml`: SLO templates for tiers (99.9%, 99.5%, 99%) and types (HTTP API, gRPC, batch job, data pipeline)
-- `build-slos.py`: Generates SLO definitions in preferred format
-- Composes with PRR skill - reads tier metadata from PRR output
+**Real-world problem:** Every SRE troubleshoots pods differently. Codify your team's diagnostic approach so AI can apply it consistently.
 
-**AI adds value**: Determines service type from architecture, adjusts templates, explains tradeoffs, validates measurability.
+**Skill structure:**
+```
+.ai-skills/k8s-troubleshooting/
+├── SKILL.md              # Metadata + AI instructions
+├── diagnostic-tree.yaml  # Decision tree for common failures
+├── check-pod.sh         # Automated diagnostic gathering
+└── examples/
+    ├── crashloop.md
+    ├── oomkilled.md
+    └── imagepullbackoff.md
+```
+
+**diagnostic-tree.yaml example:**
+```yaml
+symptoms:
+  CrashLoopBackOff:
+    checks:
+      - name: Application error in logs
+        command: kubectl logs {pod} --previous
+        look_for: "Exception|Error|panic|Fatal"
+        rationale: "Previous container logs show why it crashed"
+
+      - name: Liveness probe failing
+        command: kubectl describe pod {pod}
+        look_for: "Liveness probe failed"
+        rationale: "App running but health check endpoint failing"
+
+      - name: Missing dependencies
+        look_for: "connection refused|timeout|ECONNREFUSED"
+        rationale: "App can't reach database or other service"
+
+  OOMKilled:
+    checks:
+      - name: Memory limits too low
+        command: kubectl describe pod {pod}
+        look_for: "OOMKilled"
+        rationale: "Container exceeded memory limit"
+
+      - name: Memory leak pattern
+        guidance: "Check if restarts correlate with pod uptime"
+        rationale: "Leak causes gradual memory growth until OOM"
+
+      - name: Actual memory usage
+        command: kubectl top pod {pod}
+        rationale: "Compare actual usage to limits"
+
+  ImagePullBackOff:
+    checks:
+      - name: Image exists
+        command: kubectl describe pod {pod}
+        look_for: "Failed to pull image|manifest unknown"
+        rationale: "Image name typo or doesn't exist in registry"
+
+      - name: Registry authentication
+        look_for: "unauthorized|authentication required"
+        rationale: "Image pull secret missing or invalid"
+```
+
+**SKILL.md includes:**
+```markdown
+## AI Instructions
+
+When troubleshooting a pod:
+1. Identify the symptom (CrashLoopBackOff, OOMKilled, etc.)
+2. Load the appropriate section from diagnostic-tree.yaml
+3. Run checks in order, explaining what each check reveals
+4. Stop when root cause is identified
+5. Suggest fix with rationale from the tree
+6. Reference relevant example from examples/ directory
+
+Always explain WHY each check matters, not just WHAT it shows.
+```
+
+**AI adds value:**
+- Walks through diagnostic tree systematically (doesn't skip steps)
+- Explains which check found the issue and why it matters
+- Suggests fix with rationale from your team's decision tree
+- References similar past incidents from examples
+- Teaches junior SREs the troubleshooting process
+
+**How SREs use this:**
+```
+"Use the k8s-troubleshooting skill to diagnose why auth-service pods
+are crashlooping in production"
+
+AI response:
+"Identifying symptom: CrashLoopBackOff
+
+Running diagnostic checks:
+1. Application error check - kubectl logs auth-service-7d8f9 --previous
+   Found: 'Error: ECONNREFUSED connecting to postgres:5432'
+   Meaning: App can't reach database
+
+2. Checking database service...
+   Found: postgres service exists but endpoints are empty
+   Root cause: Database pods are down
+
+Suggested fix: Investigate postgres deployment. Check:
+- kubectl get pods -l app=postgres
+- Recent changes to postgres configuration
+- Database resource limits
+
+This matches example: examples/crashloop-db-connection.md"
+```
+
+**Why this is implementable:** SREs can create this skill today and immediately get value from codifying their troubleshooting knowledge.
+
+---
+
+### Terraform State Drift Detection
+
+Detect and explain infrastructure drift between Terraform state and actual cloud resources.
+
+**Real-world problem:** Manual changes to cloud resources cause Terraform state drift, leading to mysterious failures on next apply.
+
+**Skill structure:**
+```
+.ai-skills/terraform-drift/
+├── SKILL.md
+├── drift-checks.yaml     # What to check for each resource type
+├── detect-drift.py      # Automated state comparison
+└── remediation-guide.md  # How to fix common drift scenarios
+```
+
+**drift-checks.yaml example:**
+```yaml
+resource_types:
+  azurerm_kubernetes_cluster:
+    critical_fields:
+      - kubernetes_version
+      - default_node_pool.0.node_count
+      - default_node_pool.0.vm_size
+    warning_fields:
+      - tags
+    rationale: "Version/size drift breaks infrastructure assumptions"
+    common_causes:
+      - "Manual upgrade through Azure Portal"
+      - "Auto-scaling changed node count"
+
+  azurerm_storage_account:
+    critical_fields:
+      - account_tier
+      - account_replication_type
+      - min_tls_version
+    warning_fields:
+      - tags
+    sensitive: true  # May contain connection strings
+    rationale: "Storage tier affects cost and performance guarantees"
+
+  azurerm_postgresql_server:
+    critical_fields:
+      - sku_name
+      - storage_mb
+      - ssl_enforcement_enabled
+    warning_fields:
+      - backup_retention_days
+    rationale: "Database config affects availability and data safety"
+    common_causes:
+      - "DBA made emergency changes during incident"
+      - "Auto-scaling adjusted storage"
+```
+
+**detect-drift.py features:**
+- Compares `terraform show` output to `terraform plan`
+- Categorizes drift: critical, warning, cosmetic
+- Outputs structured report for AI to interpret
+
+**AI adds value:**
+- Interprets drift in business context (not just "field changed")
+- Prioritizes: "Critical - will break on next apply" vs "Cosmetic - safe to ignore"
+- Explains WHY drift matters for each resource type
+- Suggests remediation strategy from remediation-guide.md
+- Identifies common causes based on drift-checks.yaml
+
+**How SREs use this:**
+```
+"Use terraform-drift skill to check our Azure infrastructure state
+against actual resources in the production resource group"
+
+AI response:
+"Running drift detection...
+
+Critical drift found:
+1. azurerm_kubernetes_cluster.main
+   - kubernetes_version: 1.27.3 (state) → 1.28.5 (actual)
+   - Rationale: Someone manually upgraded via Azure Portal
+   - Impact: Next 'terraform apply' will attempt downgrade (will fail)
+   - Remediation: Update main.tf to version = 1.28.5, run plan, review
+
+Warning drift found:
+2. azurerm_storage_account.logs
+   - tags.Environment: 'prod' (state) → missing (actual)
+   - Rationale: Tag removed manually or via script
+   - Impact: Cost allocation tracking broken
+   - Remediation: Re-apply tags or update state
+
+Cosmetic drift:
+3. azurerm_postgresql_server.main
+   - backup_retention_days: 7 (state) → 14 (actual)
+   - Rationale: DBA increased during incident last week
+   - Impact: Higher backup costs, but safer
+   - Remediation: Either update terraform or revert to 7 days
+
+Recommendation: Address critical drift before next deployment."
+```
+
+**Why this is implementable:** Clear YAML structure, straightforward script, immediate value from codifying drift knowledge.
 
 ---
 
@@ -104,19 +307,71 @@ Generates Service Level Objectives based on service tier and type.
 
 Validates Helm values files against team conventions.
 
-**Checks**: Required fields, naming conventions, resource limits, environment overrides, no plaintext secrets.
+**Skill structure:**
+```
+.ai-skills/helm-validator/
+├── SKILL.md
+├── conventions.yaml      # Team standards
+├── validate-values.py   # Automated checks
+└── examples/
+    ├── good-values.yaml
+    └── bad-values.yaml
+```
 
-**AI adds value**: Explains conventions, suggests fixes, handles edge cases.
+**conventions.yaml example:**
+```yaml
+required_fields:
+  - replicaCount
+  - image.repository
+  - image.tag
+  - resources.requests.cpu
+  - resources.requests.memory
+  - resources.limits.cpu
+  - resources.limits.memory
+
+naming_conventions:
+  image_tag:
+    pattern: "^v?[0-9]+\\.[0-9]+\\.[0-9]+$"
+    rationale: "Semantic versioning only, no 'latest'"
+
+resource_limits:
+  memory_ratio:
+    rule: "limits.memory >= 1.2 * requests.memory"
+    rationale: "Buffer for memory spikes"
+  cpu_ratio:
+    rule: "limits.cpu >= requests.cpu"
+    rationale: "Allow burst capacity"
+
+security_checks:
+  - name: No plaintext secrets
+    check: "No 'password' or 'secret' keys in values files"
+    rationale: "Use sealed-secrets or external-secrets"
+
+  - name: Security context required
+    check: "securityContext.runAsNonRoot = true"
+    rationale: "Containers should not run as root"
+
+environment_consistency:
+  - name: Production has higher limits
+    check: "prod limits >= staging limits >= dev limits"
+    rationale: "Prevent resource contention in production"
+```
+
+**AI adds value**:
+- Explains conventions and why they exist
+- Suggests fixes that comply with team standards
+- Handles edge cases ("service-mesh sidecar exempt from memory limits")
+- Validates across all environment value files
 
 ---
 
 ### Dockerfile Security Scanner
 
-Checks Dockerfiles for security issues.
+Checks Dockerfiles for security issues and best practices.
 
-**Checks**: No `latest` tag, non-root user, no secrets in ENV, multi-stage builds, health checks.
+**Checks**: No `latest` tag, non-root user, no secrets in ENV, multi-stage builds, health checks, minimal base images.
 
-**AI adds value**: Explains security implications, suggests refactoring, provides secure pattern examples.
+**AI adds value**: Explains security implications, suggests refactoring, provides secure pattern examples from team standards.
 
 ---
 
