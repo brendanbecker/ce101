@@ -13,9 +13,9 @@ This training consists of six modules designed for SRE teams:
 1. **[Core Concepts](01-core-concepts.md)** - The four context strategies and foundational principles
 2. **[Filesystem Organization](02-filesystem-organization.md)** - Using your directory structure as context architecture
 3. **[MCP Servers](03-mcp-servers.md)** - When and why to use Model Context Protocol servers
-4. **[Multi-Tab Orchestration](04-multi-tab-orchestration.md)** - Managing multiple specialized agents
-5. **[Patterns and Anti-Patterns](05-patterns-and-antipatterns.md)** - Real-world workflows and critical mistakes to avoid
-6. **[Skills Pattern](06-skills-pattern.md)** - Package team expertise as discoverable, composable capabilities
+4. **[AI Skills](04-ai-skills.md)** - Package team expertise as discoverable, composable capabilities
+5. **[Multi-Tab Orchestration](05-multi-tab-orchestration.md)** - Managing multiple specialized agents
+6. **[Patterns and Anti-Patterns](06-patterns-and-antipatterns.md)** - Real-world workflows and critical mistakes to avoid
 
 ## Quick Start
 
@@ -28,8 +28,9 @@ If you're new to AI-assisted development:
 If you're already using AI assistants:
 
 1. Understand **MCP Servers** early to make informed tool decisions
-2. Jump to **Multi-Tab Orchestration** to level up your workflow
-3. Study **Patterns and Anti-Patterns** for real-world workflows and critical mistakes to avoid
+2. Learn **AI Skills** to package team expertise effectively
+3. Jump to **Multi-Tab Orchestration** to level up your workflow
+4. Study **Patterns and Anti-Patterns** for real-world workflows and critical mistakes to avoid
 
 ## Key Takeaways
 

@@ -410,7 +410,7 @@ When and why to use Model Context Protocol servers
 
 ---
 
-# Module 4: Multi-Tab Orchestration
+# Module 5: Multi-Tab Orchestration
 
 Managing multiple specialized agents
 
@@ -581,7 +581,7 @@ git worktree remove ../charts-worktree-feature-a
 
 ---
 
-# Module 5: Patterns and Anti-Patterns
+# Module 6: Patterns and Anti-Patterns
 
 Real-world workflows and critical mistakes
 

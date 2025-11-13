@@ -16,8 +16,9 @@ ce101/
 ├── 01-core-concepts.md                 # Module 1: Four context strategies
 ├── 02-filesystem-organization.md       # Module 2: Directory structure as context
 ├── 03-mcp-servers.md                   # Module 3: MCP server evaluation
-├── 04-multi-tab-orchestration.md       # Module 4: Multiple specialized agents
-├── 05-patterns-and-antipatterns.md     # Module 5: Real-world workflows and critical mistakes
+├── 04-ai-skills.md                     # Module 4: Package team expertise as AI skills
+├── 05-multi-tab-orchestration.md       # Module 5: Multiple specialized agents
+├── 06-patterns-and-antipatterns.md     # Module 6: Real-world workflows and critical mistakes
 ├── quick-reference.md                  # One-page cheat sheet
 ├── workshop-exercises.md               # Hands-on practice activities
 ├── example-prompts.md                  # Copy-paste starting points

@@ -1,4 +1,4 @@
-# Module 5: Patterns and Anti-Patterns
+# Module 6: Patterns and Anti-Patterns
 
 Real-world workflows and critical mistakes to avoid when working with AI assistants.
 
@@ -816,4 +816,4 @@ If the agent is struggling, confused, or giving poor results - you probably didn
 
 ---
 
-**[← Back to Multi-Tab Orchestration](04-multi-tab-orchestration.md)** | **[Quick Reference →](quick-reference.md)**
+**[← Back to Multi-Tab Orchestration](05-multi-tab-orchestration.md)** | **[Quick Reference →](quick-reference.md)**

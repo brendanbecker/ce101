@@ -380,9 +380,9 @@ Show me the current limits first."
 **By Module**:
 - **Module 1**: Core Concepts - Space Jam, Accountability, Natural Language
 - **Module 3**: MCP Servers - When to use, evaluation framework, context cost
-- **Module 4**: Multi-Tab Orchestration - One agent per job, orchestrator-worker pattern
-- **Module 5**: Patterns and Anti-Patterns - Dry-run, progressive verification, safety, common mistakes
-- **Module 6**: Skills Pattern - Package team expertise as discoverable capabilities
+- **Module 4**: AI Skills - Package team expertise as discoverable capabilities
+- **Module 5**: Multi-Tab Orchestration - One agent per job, orchestrator-worker pattern
+- **Module 6**: Patterns and Anti-Patterns - Dry-run, progressive verification, safety, common mistakes
 
 **Quick Access**:
 - Full course materials in training repo

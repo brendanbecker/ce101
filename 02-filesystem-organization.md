@@ -289,7 +289,7 @@ AI generates structured handoff:
 
 **Why this works**: Each agent gets the right AGENTS.md, right context, focused scope. No token waste loading entire codebase into wrong session.
 
-(Module 4 covers multi-tab orchestration in depth.)
+(Module 5 covers multi-tab orchestration in depth.)
 
 ---
 

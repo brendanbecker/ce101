@@ -1,4 +1,4 @@
-# Module 4: Multi-Tab Orchestration
+# Module 5: Multi-Tab Orchestration
 
 Managing multiple AI agents working on different aspects of complex tasks simultaneously.
 
@@ -888,4 +888,4 @@ Workflow:
 
 ---
 
-**[← Back to MCP Servers](03-mcp-servers.md)** | **[Patterns and Anti-Patterns →](05-patterns-and-antipatterns.md)**
+**[← Back to AI Skills](04-ai-skills.md)** | **[Patterns and Anti-Patterns →](06-patterns-and-antipatterns.md)**

@@ -1,4 +1,4 @@
-# Module 6: The Skills Pattern
+# Module 4: AI Skills
 
 Package team expertise as discoverable, composable capabilities that AI assistants can load on-demand.
 
@@ -17,9 +17,9 @@ Your team has expertise, but it's scattered:
 
 ---
 
-## The Skills Pattern
+## What Are AI Skills?
 
-### What is a Skill?
+### Defining a Skill
 
 A **skill** is a filesystem-based package containing:
 - **Metadata**: What the skill does (YAML frontmatter in SKILL.md)
@@ -226,9 +226,9 @@ git tag skill-skill-name-v1.0.0
 
 **Module 3 (MCP Servers)**: Skills for team standards, MCP for live external data. Skills can wrap MCP.
 
-**Module 4 (Multi-Tab)**: Skills work across tabs because they're filesystem-based, not in-memory.
+**Module 5 (Multi-Tab)**: Skills work across tabs because they're filesystem-based, not in-memory.
 
-**Module 5 (Patterns)**: Skills embody safety patterns - dry-run modes, progressive verification, read vs execute.
+**Module 6 (Patterns)**: Skills embody safety patterns - dry-run modes, progressive verification, read vs execute.
 
 ---
 
@@ -265,4 +265,4 @@ git tag skill-skill-name-v1.0.0
 
 ---
 
-**[← Back to Patterns and Anti-Patterns](05-patterns-and-antipatterns.md)** | **[Quick Reference →](quick-reference.md)**
+**[← Back to MCP Servers](03-mcp-servers.md)** | **[Multi-Tab Orchestration →](05-multi-tab-orchestration.md)**
