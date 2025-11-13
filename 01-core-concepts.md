@@ -253,9 +253,11 @@ This is the sweet spot: **Empowered but responsible.**
 
 ---
 
-## Natural Language Communication: Talk Like a Human
+## Effective Communication: How to Talk to AI
 
-### The Counterintuitive Truth
+### Natural Language Communication
+
+#### The Counterintuitive Truth
 
 Most people think AI needs:
 - Precise, formal language
@@ -266,7 +268,7 @@ The truth is the opposite.
 
 **AI works best when you talk to it like a knowledgeable coworker who needs context.**
 
-### Why This Works (The Technical Bit)
+#### Why This Works (The Technical Bit)
 
 Large Language Models (LLMs) are trained on human communication—documentation, Stack Overflow posts, GitHub issues, technical discussions. They learned to:
 
@@ -277,7 +279,7 @@ Large Language Models (LLMs) are trained on human communication—documentation,
 
 When you talk naturally, you're working **with** the model's training, not against it.
 
-### The Doubt Advantage
+#### The Doubt Advantage
 
 Here's something that surprises people:
 
@@ -291,7 +293,7 @@ Here's something that surprises people:
 
 This reduces hallucinations and increases the educational value of responses.
 
-### Examples: Command vs. Natural Language
+#### Examples: Command vs. Natural Language
 
 **Command-style (less effective)**:
 ```
@@ -314,7 +316,7 @@ rate-of-change would be better for our situation?
 
 What you get: Education + solution, not just a change.
 
-### The Context-First Pattern
+#### The Context-First Pattern
 
 Effective AI communication follows this structure:
 
@@ -328,7 +330,7 @@ Effective AI communication follows this structure:
 
 You don't need all five every time. But including more usually gets better results.
 
-### Real Examples from SRE Work
+#### Real Examples from SRE Work
 
 **Ineffective**:
 ```
@@ -388,7 +390,7 @@ me interpret the pod events and suggest whether to increase memory limits or
 if there's a different issue?
 ```
 
-### When to Be More Formal vs. More Conversational
+#### When to Be More Formal vs. More Conversational
 
 **Use formal/structured style when**:
 - Providing specifications or requirements
@@ -404,7 +406,7 @@ if there's a different issue?
 
 **Best approach**: Mix them. Context in natural language, specifications in structured format.
 
-### The Explanation Pattern
+#### The Explanation Pattern
 
 When you want to learn, not just get an answer:
 
@@ -422,7 +424,7 @@ This triggers the model to:
 - Use examples
 - Check your understanding
 
-### Common Mistakes to Avoid
+#### Common Mistakes to Avoid
 
 ❌ **Being too brief to save tokens**
 Tokens are cheap. Misunderstandings are expensive.
@@ -436,7 +438,7 @@ Confidence prompts confident (sometimes wrong) answers. Uncertainty prompts thor
 ❌ **Using jargon without context**
 Even if AI knows the jargon, explain how you're using it.
 
-### The Meta-Benefit
+#### The Meta-Benefit
 
 These communication patterns don't just work with AI.
 
@@ -450,19 +452,19 @@ They make you better at:
 
 ---
 
-## Meeseeks Theory: AI Does Exactly What You Ask
+### Meeseeks Theory: AI Does Exactly What You Ask
 
-### "Oooohh! Can Do!"
+#### "Oooohh! Can Do!"
 
 Like Mr. Meeseeks from Rick and Morty, AI enthusiastically does **exactly** what you request—even if that's not what you actually needed.
 
-### The Real Problem Isn't Hallucination
+#### The Real Problem Isn't Hallucination
 
 The common fear: "AI will make stuff up and mislead me."
 
 The actual problem: **AI will do precisely what you asked, even when your request was vague or incomplete.**
 
-### Examples of Literal Compliance
+#### Examples of Literal Compliance
 
 **Vague request:**
 ```
@@ -510,7 +512,7 @@ The deployment.yaml file has valid YAML syntax!
 
 **The AI did exactly what you asked** (check the deployment), but you got a syntax check instead of a scaling investigation.
 
-### Why This Matters for Context Engineering
+#### Why This Matters for Context Engineering
 
 This is **why** context engineering matters:
 
@@ -519,7 +521,7 @@ This is **why** context engineering matters:
 
 The solution isn't to avoid AI. The solution is to **be specific about what you want.**
 
-### How to Be Specific
+#### How to Be Specific
 
 Instead of vague commands, provide:
 
@@ -544,7 +546,7 @@ Can you:
 3. Suggest the correct connection string if it's wrong
 ```
 
-### The Counterintuitive Part
+#### The Counterintuitive Part
 
 Being more specific and providing more context feels like it takes longer.
 
@@ -552,7 +554,7 @@ Being more specific and providing more context feels like it takes longer.
 
 **It saves 10 minutes of back-and-forth clarification.**
 
-### Meeseeks Theory in Practice
+#### Meeseeks Theory in Practice
 
 When AI gives you an unhelpful response, don't think "AI is bad at this."
 
@@ -563,7 +565,7 @@ Most "hallucinations" and "wrong answers" are really:
 - Reasonable interpretation of ambiguous instructions
 - Best effort with insufficient context
 
-### The Fix
+#### The Fix
 
 **Don't fight the AI's eagerness to help. Channel it with clarity.**
 
@@ -763,26 +765,6 @@ Do the same for AI assistants. They need the same information to help effectivel
 | "What should I say?" | "What does the AI need to know?" |
 
 Context Engineering is the evolution of prompt engineering for production workflows.
-
----
-
-## Key Principles
-
-### 1. Specificity Over Cleverness
-Bad: "Fix the config"  
-Good: "Update /terraform/main.tf to change the VM size from Standard_D2s_v3 to Standard_D4s_v3"
-
-### 2. Context Over Brevity
-Don't: Minimal prompts to "save tokens"  
-Do: Rich context that enables accurate work
-
-### 3. Tools Over Memory
-Don't: Expect the AI to remember your infrastructure  
-Do: Give it access to files, APIs, and data stores
-
-### 4. Architecture Over Prompts
-Don't: Craft the perfect one-shot prompt  
-Do: Design a system of agents with clear responsibilities
 
 ---
 
