@@ -47,26 +47,19 @@ Your first thought: "This is too complex for AI to help with."
 
 That assumption is your biggest barrier to productivity. Not the complexity of the task. Not the limitations of AI. Your own self-imposed limit on what's possible.
 
-### The Truth About Complexity
+### How to Approach Complex Tasks
 
-Modern AI assistants can help with:
-- Multi-cluster Kubernetes migrations
-- Complex Terraform refactoring across cloud providers
-- Incident response for distributed systems
-- Database migration planning and execution
-- Security policy implementation
-- GitOps pipeline construction
+**Don't ask**: "Can AI handle this?"
+**Ask instead**: "How can AI help me break this down?"
 
-**The trick**: Don't assume the task is too complex. Just start the conversation.
+Complex tasks aren't single problems. They're collections of smaller problems that AI excels at:
+- Analyzing existing configurations
+- Generating migration scripts and automation
+- Creating test cases and validation logic
+- Documenting decisions and rationale
+- Researching best practices
 
-### How It Works in Practice
-
-**Ineffective approach**:
-```
-"This migration is too complicated. I'll just do it manually."
-```
-
-**Effective approach**:
+**Example approach:**
 ```
 I need to migrate 47 microservices from EKS to GKE. I've never done a
 cross-cloud Kubernetes migration at this scale before.
@@ -79,18 +72,6 @@ Let me start by asking AI to help me:
 
 I don't need AI to do it all. I need AI to help me think it through.
 ```
-
-### The Empowerment Mindset
-
-**Don't ask**: "Can AI handle this?"
-**Ask instead**: "How can AI help me break this down?"
-
-Complex tasks aren't single problems. They're collections of smaller problems that AI excels at:
-- Analyzing existing configurations
-- Generating migration scripts
-- Creating test cases
-- Documenting decisions
-- Researching best practices
 
 You're not replacing your expertise. You're **amplifying it**.
 
@@ -108,28 +89,12 @@ You're not replacing your expertise. You're **amplifying it**.
 - AI generates the YAML with proper least-privilege
 - You review for completeness and test
 
-**Terraform module refactoring**:
-- You understand the infrastructure patterns
-- AI helps identify duplicated code
-- AI generates the module structure
-- You validate the abstraction makes sense
-
 ### The Key Insight
 
 **You bring**: Domain knowledge, requirements, judgment, verification
 **AI brings**: Pattern recognition, code generation, documentation, research
 
 Together, you can tackle problems you'd never attempt alone—not because they're impossible, but because they'd take too long to do manually.
-
-### Start With Possibility
-
-The next time you think "this is too complex for AI":
-
-1. **Pause that thought**
-2. **Ask anyway**
-3. **See what happens**
-
-You might be surprised. And even if AI can only help with 30% of the task, that's 30% you didn't have to do manually.
 
 **If you can dream it, you can at least start it.** The rest is just breaking it down.
 
@@ -192,11 +157,17 @@ This isn't bureaucracy. This is **engineering discipline**.
 4. You apply to prod with proper change control
 5. You monitor the results
 
-### Why AI Makes This Easier, Not Harder
+### The Productivity Advantage: Verification is Faster Than Creation
 
-Here's the counterintuitive truth:
+Here's the counterintuitive truth: **Verification is easier than generation.**
 
-**Verification is easier than generation.**
+**Example:**
+- Writing a migration script from scratch: 4 hours
+- Reviewing an AI-generated migration script: 30 minutes
+- Testing it thoroughly: 1 hour
+- **Total time saved: 2.5 hours**
+
+**Why this works:**
 
 AI is great at:
 - Generating comprehensive scripts with error handling
@@ -210,19 +181,11 @@ You're great at:
 - Understanding business context
 - Knowing what "correct" looks like for your environment
 
-**This division of labor works.**
-
-### The Creation vs. Verification Advantage
-
-Writing a migration script from scratch: 4 hours
-Reviewing an AI-generated migration script: 30 minutes
-Testing it thoroughly: 1 hour
-
-**Total time saved: 2.5 hours**
-
-But more importantly: The AI-generated script probably has better error handling, more comprehensive logging, and clearer documentation than you'd write under time pressure.
+**The AI-generated script likely has better error handling, more comprehensive logging, and clearer documentation than you'd write under time pressure.**
 
 You still review every line. You still test thoroughly. But you didn't have to spend 4 hours writing it.
+
+**This division of labor is why AI assistance provides 4-7x productivity gains without sacrificing safety.**
 
 ### Accountability Callouts
 
@@ -231,25 +194,6 @@ Throughout this course, you'll see occasional reminders:
 > **⚠️ Accountability**: [Specific verification step for this pattern]
 
 These aren't nagging. They're checkpoints to ensure safe, professional practices.
-
-### The Standard You Should Hold
-
-**Same standard as human-written code.**
-
-- Would you run a coworker's script without reading it? No.
-- Would you deploy a configuration change without testing? No.
-- Would you skip peer review because you're in a hurry? No.
-
-Apply the same rigor to AI-generated artifacts.
-
-### The Empowerment + Accountability Balance
-
-**Space Jam Theory** says: Attempt complex things
-**Accountability Framework** says: Verify carefully
-
-**Together they mean**: You can work faster and tackle bigger problems, as long as you maintain professional standards.
-
-This is the sweet spot: **Empowered but responsible.**
 
 ---
 
@@ -741,33 +685,6 @@ Focus on organizing your work (isolation, multiple tabs) rather than saving toke
 
 ---
 
-## The Core Principle
-
-**Make questions easy to answer.**
-
-When you ask a human colleague for help, you provide:
-- What you're trying to do
-- What you've already tried  
-- Relevant context about your environment
-- What success looks like
-
-Do the same for AI assistants. They need the same information to help effectively.
-
----
-
-## Context Engineering vs. Prompt Engineering
-
-| Prompt Engineering | Context Engineering |
-|-------------------|---------------------|
-| Focus on wording | Focus on information architecture |
-| Single clever prompt | System of interconnected agents |
-| Static input | Dynamic context gathering |
-| "What should I say?" | "What does the AI need to know?" |
-
-Context Engineering is the evolution of prompt engineering for production workflows.
-
----
-
 ## Exercise: Transform Your Prompt
 
 Take a task you did recently. Write two versions:
@@ -802,32 +719,6 @@ Please:
 3. Verify syntax is valid
 4. Suggest any related alerts that should also be updated
 ```
-
----
-
-## Decision Framework
-
-When starting work with an AI assistant, ask yourself:
-
-1. **SELECT**: What files/data does it need to see?
-2. **WRITE**: What should be saved for later?
-3. **ISOLATE**: Should this be a separate agent/tab?
-4. **COMPRESS**: Am I approaching context limits?
-
-In practice, you'll mostly use SELECT and ISOLATE. WRITE comes naturally as you work. COMPRESS is rarely needed.
-
----
-
-## Common Mistakes
-
-❌ **Vague requests**: "Check the logs"  
-✅ **Specific requests**: "Check /var/log/app.log for errors between 14:00-15:00 UTC"
-
-❌ **Assuming knowledge**: "Fix the production issue"  
-✅ **Providing context**: "Production app is returning 500s. Error logs in /tmp/errors.log. Last successful deploy was 2 hours ago."
-
-❌ **Mixing concerns**: One tab doing investigation + fixes + documentation  
-✅ **Separating concerns**: Tab 1 investigates, Tab 2 implements fix, Tab 3 documents
 
 ---
 
