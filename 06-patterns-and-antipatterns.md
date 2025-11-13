@@ -715,9 +715,36 @@ Or worse:
 
 #### The Fix
 
-**Pattern 1: Intentional installation**
+**Pattern 1: Consider AI Skills first**
 
-Before installing, answer these questions:
+Before installing an MCP server, ask: "Could I build a skill instead?"
+
+**AI Skills advantages:**
+- **Zero context cost until loaded** - Progressive disclosure vs. MCP's constant overhead
+- **Team-specific** - Codify your standards, not generic APIs
+- **Version-controlled** - Git tracks changes, no external dependencies
+- **Works offline** - No API credentials or network needed
+
+**When to use Skills vs. MCP:**
+
+| Use Case | Solution | Why |
+|----------|----------|-----|
+| Team troubleshooting process | AI Skill | Zero context cost, captures tribal knowledge |
+| Live PagerDuty queries | MCP Server | Real-time external data needed |
+| Production readiness checklist | AI Skill | Team standards, occasional use |
+| Daily GitHub PR reviews | MCP Server | Frequent external API calls |
+| Terraform drift detection | AI Skill | Script + standards, periodic use |
+| Continuous Jira updates | MCP Server | Frequent external writes |
+
+**Rule of thumb**: If it's team knowledge or periodic tasks, build a skill. If it's frequent live external data, use MCP.
+
+**Example**: Kubernetes troubleshooting
+- ❌ Install k8s MCP server (50+ tools, 15k context tokens, always loaded)
+- ✅ Create k8s-troubleshooting skill (0 tokens until used, contains your team's runbook)
+
+**Pattern 2: Intentional installation**
+
+Before installing an MCP server, answer these questions:
 
 1. What specific, recurring task will this solve?
    ❌ "Might be useful"
@@ -728,11 +755,12 @@ Before installing, answer these questions:
    ✅ "Daily during incident response"
 
 3. Can I accomplish this another way?
+   ✅ Build an AI skill instead (Module 4)
    ✅ Check if built-in tools work
-   ✅ Consider local data store
+   ✅ Consider local data store (Module 3)
    ✅ Evaluate if CLI + AI works instead
 
-**Pattern 2: Monthly audit ritual**
+**Pattern 3: Monthly audit ritual**
 
 ```bash
 # First Monday of each month
@@ -749,9 +777,9 @@ cat ~/.claude-code/config.json | jq '.mcpServers | keys'
    - Can't remember: Remove
 ```
 
-> ⚠️ **Accountability**: Every MCP server you install consumes context in every session. If you can't justify the context cost with specific, frequent usage, you're wasting resources. Audit monthly. Be ruthless about removal.
+> ⚠️ **Accountability**: Every MCP server you install consumes context in every session. If you can't justify the context cost with specific, frequent usage, you're wasting resources. Consider AI skills for team knowledge and periodic tasks—they have zero context cost until loaded. Audit monthly. Be ruthless about removal.
 
-**See Module 3: MCP Servers for full evaluation framework**
+**See Module 3: MCP Servers for evaluation framework and Module 4: AI Skills for the zero-context alternative**
 
 ---
 
