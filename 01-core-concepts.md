@@ -450,6 +450,130 @@ They make you better at:
 
 ---
 
+## Meeseeks Theory: AI Does Exactly What You Ask
+
+### "Oooohh! Can Do!"
+
+Like Mr. Meeseeks from Rick and Morty, AI enthusiastically does **exactly** what you request—even if that's not what you actually needed.
+
+### The Real Problem Isn't Hallucination
+
+The common fear: "AI will make stuff up and mislead me."
+
+The actual problem: **AI will do precisely what you asked, even when your request was vague or incomplete.**
+
+### Examples of Literal Compliance
+
+**Vague request:**
+```
+Fix the config
+```
+
+**AI's enthusiastic response:**
+```
+Sure! I'll fix the syntax error in config.yaml.
+```
+
+**What you actually needed:** Update the database connection string in production config, not fix a YAML syntax error in the test config.
+
+**The AI did exactly what you asked** (fix "the" config), but it wasn't helpful because you didn't specify which config or what kind of fix.
+
+---
+
+**Vague request:**
+```
+Update the script
+```
+
+**AI's enthusiastic response:**
+```
+I've updated the script to use Python 3.11 syntax!
+```
+
+**What you actually needed:** Add error handling for database connection failures.
+
+**The AI did exactly what you asked** (update the script), just not the update you wanted.
+
+---
+
+**Vague request:**
+```
+Check the deployment
+```
+
+**AI's enthusiastic response:**
+```
+The deployment.yaml file has valid YAML syntax!
+```
+
+**What you actually needed:** Investigate why the deployment isn't scaling properly under load.
+
+**The AI did exactly what you asked** (check the deployment), but you got a syntax check instead of a scaling investigation.
+
+### Why This Matters for Context Engineering
+
+This is **why** context engineering matters:
+
+- ✅ **Clear context** → AI does useful work that solves your actual problem
+- ❌ **Vague context** → AI does technically correct but unhelpful work
+
+The solution isn't to avoid AI. The solution is to **be specific about what you want.**
+
+### How to Be Specific
+
+Instead of vague commands, provide:
+
+1. **What you're trying to accomplish** (the actual goal)
+2. **What specific thing needs attention** (file path, system, component)
+3. **What kind of change or investigation** (fix what? update how? check for what?)
+4. **Why you're doing this** (context helps AI understand intent)
+
+**Example transformation:**
+
+❌ **Vague:** "Fix the config"
+
+✅ **Specific:**
+```
+The API service can't connect to the database in production. I need to verify
+the connection string in /company/SRE/helm/charts/api/values/prod.yaml is
+correct. We recently changed the database endpoint last week.
+
+Can you:
+1. Show the current connection string
+2. Check if it matches the database endpoint format for our new Azure instance
+3. Suggest the correct connection string if it's wrong
+```
+
+### The Counterintuitive Part
+
+Being more specific and providing more context feels like it takes longer.
+
+**It does take 30 more seconds upfront.**
+
+**It saves 10 minutes of back-and-forth clarification.**
+
+### Meeseeks Theory in Practice
+
+When AI gives you an unhelpful response, don't think "AI is bad at this."
+
+Think: **"Did I give it enough context to understand what I actually need?"**
+
+Most "hallucinations" and "wrong answers" are really:
+- Literal compliance with vague requests
+- Reasonable interpretation of ambiguous instructions
+- Best effort with insufficient context
+
+### The Fix
+
+**Don't fight the AI's eagerness to help. Channel it with clarity.**
+
+- Specific requests → Specific helpful results
+- Vague requests → Vague technically-correct results
+
+**Meeseeks Theory + Context Engineering = AI does exactly the useful thing you needed**
+
+---
+
 ## The Four Context Strategies
 
 Context Engineering uses four fundamental strategies for managing information:
