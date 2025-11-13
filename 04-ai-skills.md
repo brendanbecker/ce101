@@ -60,7 +60,7 @@ A **skill** is a filesystem-based package containing:
            /  \
           /    \
          /      \
-        /__________\
+        /________\
     AI           Team Standards
 (Flexible)       (Versioned)
 ```
