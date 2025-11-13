@@ -149,17 +149,6 @@ This is how you safely promote new automation through environments, building con
 - Have rollback plan ready
 - Document what you learned
 
-#### Building Confidence Through Progression
-
-**After Dev**: "It works in principle"
-**After Review**: "It works with realistic conditions"
-**Before Prod**: "I'm confident this will work"
-
-Each stage builds on the previous:
-- Dev proves the logic
-- Review proves the scalability
-- Prod executes with confidence
-
 > ⚠️ **Accountability**: Skipping progressive verification for high-risk changes is professional negligence. Each stage exists to catch issues before production.
 
 ---
@@ -426,61 +415,11 @@ normal vs abnormal here. Can you:
 - Captures formatting/color/layout that text loses
 - Natural for dashboard and error analysis
 
-#### Screenshot + Context Pattern
+**Important:** Always combine screenshots with textual context. For example, include what changed recently, which environment, and what you've already tried. A screenshot alone is less effective than screenshot + relevant details.
 
-**More effective:**
-```
-[Screenshot of kubectl describe pod output]
+#### Multi-Tab Visual Workflow Example
 
-This pod is crashlooping. Screenshot shows the current state.
-
-Additional context:
-- Started after deploy 30 minutes ago
-- Only affecting pods in us-east-1
-- Helm chart: /company/SRE/helm/charts/user-api/
-
-What's the issue and how do I fix it?
-```
-
-**Less effective:**
-```
-[Just the screenshot with no context]
-```
-
-Always combine visual context with textual context for best results.
-
-#### Diagram Generation and Conversion
-
-**Whiteboard to Mermaid:**
-```
-[Photo of whiteboard architecture diagram]
-
-Convert this whiteboard sketch to a Mermaid diagram I can version control.
-
-Include:
-- All service names as I wrote them
-- The arrows showing data flow
-- The technology labels
-
-Make it clean and production-ready for our docs repo.
-```
-
-**Result:** Editable, version-controlled diagram from a photo
-
-**Screenshot to Documentation:**
-```
-[Screenshot of error message]
-
-Create a runbook entry for this error. Include:
-- The error as shown in the screenshot
-- What causes it (based on the context)
-- How to diagnose it
-- How to fix it
-
-Save to /company/SRE/notes/runbooks/[appropriate-name].md
-```
-
-#### Multi-Tab Visual Workflow
+Use screenshots across multiple tabs to investigate, fix, and document issues efficiently:
 
 **Tab 1 (Blue): Screenshot Analysis**
 ```
@@ -506,54 +445,11 @@ Update /company/SRE/helm/charts/user-api/values.yaml...
 
 **Tab 4 (Yellow): Documentation**
 ```
-Document incident with embedded screenshots:
-[Screenshots from Tabs 1-2]
-
-Create post-mortem with timeline and visual evidence.
+Create incident report with embedded screenshots from Tabs 1-2.
+Include timeline and visual evidence for post-mortem.
 ```
 
-#### Visual Evidence for Postmortems
-
-Screenshots provide evidence for incident documentation:
-
-```
-Create incident report for INC-2024-123
-
-Timeline with screenshots:
-1. 14:00 - Normal state [screenshot]
-2. 14:23 - Error rate spike [dashboard screenshot]
-3. 14:25 - Pod crashloop [kubectl screenshot]
-4. 14:40 - After fix [recovery screenshot]
-
-Generate comprehensive postmortem with embedded images.
-```
-
-#### Common Visual Analysis Requests
-
-**Dashboard anomaly detection:**
-```
-[Dashboard screenshot]
-What looks abnormal in these metrics for a typical Tuesday afternoon?
-```
-
-**Error interpretation:**
-```
-[Error message screenshot]
-This error is cryptic. Explain what it means and how to fix it.
-```
-
-**Architecture review:**
-```
-[Architecture diagram]
-Review this architecture for single points of failure and scaling bottlenecks.
-```
-
-**State comparison:**
-```
-[Screenshot 1: Before deployment]
-[Screenshot 2: After deployment]
-What changed? Any concerns?
-```
+**Why this works:** Screenshots flow through the investigation → fix → documentation pipeline. Each tab specializes while building on visual evidence from previous tabs.
 
 #### When NOT to Use Screenshots
 
@@ -800,33 +696,19 @@ Every MCP server consumes context tokens:
 - That's 20k-30k tokens before you type a single word
 - Less room for your actual work
 
-**2. Using 1 tool from a 50-tool server**
+**2. The "might need it someday" trap**
 
 ```
-AWS MCP provides:
-- EC2 tools (15 tools)
-- S3 tools (12 tools)
-- RDS tools (10 tools)
-- Lambda tools (8 tools)
-- VPC tools (5 tools)
+You install an AWS MCP server with 50 tools (EC2, S3, RDS, Lambda, VPC).
 
-You actually use: S3 bucket listing
+Reality check:
+- You actually use: S3 bucket listing (1 tool)
+- Context cost: 50 tool schemas, every session
+- Efficiency: Terrible
 
-Context cost: 50 tool schemas
-Value delivered: 1 tool's worth
-Efficiency: Terrible
-```
-
-**3. The "might need it someday" trap**
-
-```
-Thought process:
-"This weather API could be useful for on-call planning"
-"I'll install it just in case"
-
-Reality:
-- Installed: March
-- Last used: March (during testing)
+Or worse:
+- Installed a weather API "just in case"
+- Last used: During initial testing
 - Context cost: Every. Single. Session.
 - Actual value: Zero
 ```
@@ -941,46 +823,6 @@ Agent immediately knows context: SRE work, helm chart, specific service.
 ---
 
 ## Part 4: Key Takeaways and Next Steps
-
-### Safety Patterns Summary
-
-1. **Creation vs Verification**: AI generates fast (minutes), you verify thoroughly (same time as before) = 4-7x productivity boost
-2. **Dry-Run Everything**: Mandatory for operational scripts - see what will happen before it happens
-3. **Progressive Verification**: Dev → Review → Prod builds confidence at each stage
-4. **Read vs Execute**: AI reads and generates, you review and execute
-
-### Practical Patterns Summary
-
-1. **Emergency Rollback**: Separate tabs for execution, documentation, and investigation
-2. **Parallel Updates**: Multiple tabs for related changes, coordination tab for aggregation
-3. **Multi-Repo Investigation**: Fan out across repos, aggregate findings
-4. **Configuration Validator**: Validate across all environments before deploying
-5. **Handoff Chain**: Generate comprehensive handoffs to continue work in fresh context
-
-### Anti-Patterns to Avoid
-
-1. **Vague File References**: Always use absolute paths
-2. **The Everything Tab**: One tab per concern, use isolation
-3. **Blind Trust**: Verify all AI-generated code before production
-4. **Over-Installing MCP Servers**: Audit monthly, remove unused servers
-5. **No Handoff Strategy**: Generate handoffs when context fills
-6. **Starting in Wrong Directory**: Navigate to work location first
-
-### The Productivity Multiplier
-
-When you combine these patterns:
-
-**Old workflow**:
-- Write solution: Hours
-- Test and verify: Minutes
-- Total: Hours
-
-**AI-assisted workflow**:
-- AI generates: Minutes
-- You verify: Same testing time
-- Total: Minutes + testing
-
-**The result**: You're 4-7x more productive without sacrificing safety.
 
 ### Most Common Mistakes for Beginners
 

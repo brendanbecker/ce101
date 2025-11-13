@@ -88,19 +88,6 @@ scripts/     # Automation utilities
 - Document decisions in notes/decisions/
 ```
 
-**Example /company/SRE/terraform/AGENTS.md** (category level):
-```markdown
-# Terraform Repositories
-
-## Repos in this directory
-- `azure-infrastructure/` - Cloud resources (Platform team)
-- `kubernetes-clusters/` - AKS setup (SRE team)
-- `networking/` - VNets, DNS, load balancers (Network team)
-
-Each repo uses terraform workspaces for dev/staging/prod.
-State stored in Azure Storage. Always review plan before apply.
-```
-
 ### Why This Works
 
 **Without AGENTS.md**:
@@ -156,48 +143,16 @@ company/
     └── AGENTS.md
 ```
 
-**Why this works**:
-- **Team-based top level**: Clear ownership, natural context boundaries
-- **Tool-based second level**: Each tool has its namespace, prevents conflicts
-- **Category-level AGENTS.md**: Maps which repos exist in each category
-- **Separate repos**: Independent lifecycles, clear ownership
+Team-based top level gives clear ownership. Tool-based second level prevents conflicts. Category-level AGENTS.md maps which repos exist.
 
 ### The Notes Directory
 
 This is your context gold mine. Four subdirectories:
 
-**runbooks/** - Operational procedures
-```
-runbooks/
-├── database-failover.md
-├── disk-space-alerts.md
-└── pod-crashloop.md
-```
-
-**incidents/** - Post-mortems and historical learning
-```
-incidents/
-├── 2024-11.md
-├── 2024-10.md
-└── major-incidents/
-    └── 2024-09-15-database-outage.md
-```
-
-**inventory/** - Local caches of frequently-needed data
-```
-inventory/
-├── azure-resources.json
-├── work-items.json
-└── helm-charts-index.json
-```
-
-**decisions/** - Architecture Decision Records (ADRs)
-```
-decisions/
-├── 001-kubernetes-cluster-sizing.md
-├── 002-monitoring-strategy.md
-└── template.md
-```
+- **runbooks/** - Operational procedures (database-failover.md, pod-crashloop.md, etc.)
+- **incidents/** - Post-mortems organized by date (2024-11.md) or severity (major-incidents/)
+- **inventory/** - Local caches of frequently-needed data (JSON format preferred)
+- **decisions/** - Architecture Decision Records numbered sequentially (001-kubernetes-cluster-sizing.md)
 
 Keep formats consistent and searchable. The AI can parse structured markdown easily.
 
@@ -226,15 +181,8 @@ cd /company/SRE/
 
 **When to go deeper**: Only when you want to limit what the AI can access (large repos, prevent accidental changes to other services).
 
-### Example Prompts from SRE Level
+### Example: Cross-System Investigation
 
-**Focused task**:
-```
-Look in helm/charts/user-api/ and update resource limits to 1Gi memory.
-We're seeing OOMKilled pods at peak traffic. Check current limits first.
-```
-
-**Cross-system investigation**:
 ```
 Understand our database failover process:
 1. Search notes/runbooks/ for failover procedures
@@ -242,11 +190,7 @@ Understand our database failover process:
 3. Look in terraform/ for DB infrastructure setup
 ```
 
-**Exploratory search**:
-```
-Find all helm charts using nginx-ingress. We're upgrading to v1.5.
-Check Chart.yaml dependencies, ingress templates, and annotations.
-```
+Starting at team level lets you investigate across multiple systems in a single prompt.
 
 ---
 
@@ -254,40 +198,31 @@ Check Chart.yaml dependencies, ingress templates, and annotations.
 
 Sometimes SRE problems need dev repo investigation. Use **handoff prompts** to spawn focused subagents.
 
-### Quick Example
-
-From `/company/SRE/`:
+**Example**: From `/company/SRE/`, ask AI to draft a handoff prompt:
 ```
 We have 500 errors from user-api. Checked helm config (correct),
-DB is healthy, errors started after latest deploy. Seems like an
-application code issue with connection pooling.
+DB is healthy, errors started after latest deploy.
 
 Draft a handoff prompt for investigating /company/Dev/user-api/
 ```
 
-AI generates structured handoff:
+AI generates:
 ```markdown
 ## Problem: Database connection timeouts in user-api
 
 ## Ruled Out (SRE investigation)
 - Helm config correct (pool size: 50)
-- Database healthy
-- Started after deploy at 14:23 UTC
+- Database healthy, started after deploy at 14:23 UTC
 
 ## Investigate in Dev Repo
 - Database connection handling code
 - Recent changes to connection pooling
 - Hardcoded timeouts overriding config
-- Connection retry logic
 
-## Context
-- Deploy: commit abc123def
-- Error rate: 15% of requests
+## Context: commit abc123def, 15% error rate
 ```
 
-**Then**: Open new tab at `/company/Dev/user-api/`, paste handoff, investigate.
-
-**Why this works**: Each agent gets the right AGENTS.md, right context, focused scope. No token waste loading entire codebase into wrong session.
+Open new tab at `/company/Dev/user-api/`, paste handoff, investigate. Each agent gets the right AGENTS.md and focused scope.
 
 (Module 5 covers multi-tab orchestration in depth.)
 
@@ -295,28 +230,17 @@ AI generates structured handoff:
 
 ## Git Organization
 
-Use separate repos, organized by category in your filesystem:
+Use separate repos, organized by category. Category-level AGENTS.md files map which repos exist:
 
 ```
-/company/SRE/
-├── terraform/
-│   ├── AGENTS.md           # Maps the repos below
-│   ├── azure-infra/        (.git)
-│   ├── k8s-clusters/       (.git)
-│   └── networking/         (.git)
-├── helm/
-│   ├── AGENTS.md           # Maps the chart repos
-│   ├── service-a/          (.git)
-│   ├── service-b/          (.git)
-│   └── monitoring/         (.git)
-└── notes/                  (.git - shared)
+/company/SRE/terraform/
+├── AGENTS.md           # "We have azure-infra, k8s-clusters, networking repos"
+├── azure-infra/        (.git)
+├── k8s-clusters/       (.git)
+└── networking/         (.git)
 ```
 
-**Benefits**:
-- Clear ownership per repo
-- Independent versioning
-- Category-level AGENTS.md explains which repos exist
-- Work across multiple repos from category level
+This gives each repo independent versioning while letting you work across multiple repos from the category level.
 
 ---
 
@@ -361,46 +285,19 @@ Notice what questions AI asks repeatedly? Add those answers to AGENTS.md.
 
 ---
 
-## Quick Wins
+## Action Items
 
 1. **Create team-level AGENTS.md** - Single biggest impact. Takes 10 minutes, saves hundreds of tokens per session.
 
-2. **Create notes/ directory** - Even empty, it signals where docs should go.
+2. **Create notes/ structure** - Even empty, it signals where docs should go: `notes/{runbooks,incidents,inventory,decisions}`
 
-3. **Use consistent naming** - Pick a convention, stick to it.
+3. **Use consistent naming** - Pick a convention, stick to it across all directories.
 
-4. **Start at team level** - Stop navigating to specific subdirectories. Start at `/company/SRE/` and use explicit paths.
+4. **Start sessions at team level** - Stop navigating deep. Start at `/company/SRE/` and use explicit paths in prompts.
 
-5. **Add category AGENTS.md** - In terraform/, helm/, etc. Maps which repos exist.
+5. **Add category AGENTS.md** - In terraform/, helm/, etc. to map which repos exist.
 
----
-
-## Summary
-
-**Good filesystem organization**:
-- Mirrors team structure
-- Groups related files by tool/function
-- Has AGENTS.md at multiple levels
-- Uses consistent naming
-- Includes notes/ for operational knowledge
-
-**Benefits for Context Engineering**:
-- AI reads AGENTS.md automatically
-- Starting at team level gives broad access
-- Explicit paths in prompts direct AI precisely
-- No token waste on exploration
-- Natural isolation between teams
-
-**Key principle**: Start where relevant context lives (team/domain level), let AGENTS.md provide the map, use explicit paths to direct AI, only navigate deeper to limit scope.
-
----
-
-## Next Steps
-
-1. Create `/company/SRE/AGENTS.md` (or equivalent for your team)
-2. Add notes/ structure
-3. Test: start session at team level, ask AI to find something
-4. Iterate: add to AGENTS.md based on what AI asks for
+6. **Test and iterate** - Ask AI to find something. Notice what it asks for repeatedly? Add to AGENTS.md.
 
 ---
 

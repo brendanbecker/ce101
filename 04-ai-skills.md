@@ -166,39 +166,16 @@ When troubleshooting a pod:
 Always explain WHY each check matters, not just WHAT it shows.
 ```
 
-**AI adds value:**
-- Walks through diagnostic tree systematically (doesn't skip steps)
-- Explains which check found the issue and why it matters
-- Suggests fix with rationale from your team's decision tree
-- References similar past incidents from examples
-- Teaches junior SREs the troubleshooting process
-
-**How SREs use this:**
+**Example usage:**
 ```
-"Use the k8s-troubleshooting skill to diagnose why auth-service pods
-are crashlooping in production"
+"Use the k8s-troubleshooting skill to diagnose auth-service crashlooping"
 
-AI response:
-"Identifying symptom: CrashLoopBackOff
-
-Running diagnostic checks:
-1. Application error check - kubectl logs auth-service-7d8f9 --previous
-   Found: 'Error: ECONNREFUSED connecting to postgres:5432'
-   Meaning: App can't reach database
-
-2. Checking database service...
-   Found: postgres service exists but endpoints are empty
-   Root cause: Database pods are down
-
-Suggested fix: Investigate postgres deployment. Check:
-- kubectl get pods -l app=postgres
-- Recent changes to postgres configuration
-- Database resource limits
-
-This matches example: examples/crashloop-db-connection.md"
+AI walks through diagnostic tree:
+1. Checks previous logs → finds ECONNREFUSED to postgres:5432
+2. Verifies database service → postgres endpoints are empty
+3. Identifies root cause: Database pods are down
+4. Suggests remediation from team's decision tree
 ```
-
-**Why this is implementable:** SREs can create this skill today and immediately get value from codifying their troubleshooting knowledge.
 
 ---
 
@@ -260,46 +237,7 @@ resource_types:
 - Categorizes drift: critical, warning, cosmetic
 - Outputs structured report for AI to interpret
 
-**AI adds value:**
-- Interprets drift in business context (not just "field changed")
-- Prioritizes: "Critical - will break on next apply" vs "Cosmetic - safe to ignore"
-- Explains WHY drift matters for each resource type
-- Suggests remediation strategy from remediation-guide.md
-- Identifies common causes based on drift-checks.yaml
-
-**How SREs use this:**
-```
-"Use terraform-drift skill to check our Azure infrastructure state
-against actual resources in the production resource group"
-
-AI response:
-"Running drift detection...
-
-Critical drift found:
-1. azurerm_kubernetes_cluster.main
-   - kubernetes_version: 1.27.3 (state) → 1.28.5 (actual)
-   - Rationale: Someone manually upgraded via Azure Portal
-   - Impact: Next 'terraform apply' will attempt downgrade (will fail)
-   - Remediation: Update main.tf to version = 1.28.5, run plan, review
-
-Warning drift found:
-2. azurerm_storage_account.logs
-   - tags.Environment: 'prod' (state) → missing (actual)
-   - Rationale: Tag removed manually or via script
-   - Impact: Cost allocation tracking broken
-   - Remediation: Re-apply tags or update state
-
-Cosmetic drift:
-3. azurerm_postgresql_server.main
-   - backup_retention_days: 7 (state) → 14 (actual)
-   - Rationale: DBA increased during incident last week
-   - Impact: Higher backup costs, but safer
-   - Remediation: Either update terraform or revert to 7 days
-
-Recommendation: Address critical drift before next deployment."
-```
-
-**Why this is implementable:** Clear YAML structure, straightforward script, immediate value from codifying drift knowledge.
+**AI interprets results:** Explains drift in business context, prioritizes by impact, suggests remediation from team's guide.
 
 ---
 
@@ -474,44 +412,7 @@ git tag skill-skill-name-v1.0.0
 
 ---
 
-## Integration with Earlier Modules
-
-**Module 1 (Core Concepts)**: Skills use SELECT strategy through progressive disclosure.
-
-**Module 2 (Filesystem)**: Skills leverage filesystem as context - `.ai-skills/` is the discoverable location.
-
-**Module 3 (MCP Servers)**: Skills for team standards, MCP for live external data. Skills can wrap MCP.
-
-**Module 5 (Multi-Tab)**: Skills work across tabs because they're filesystem-based, not in-memory.
-
-**Module 6 (Patterns)**: Skills embody safety patterns - dry-run modes, progressive verification, read vs execute.
-
----
-
-## Summary
-
-### What Skills Solve
-
-1. Token budget constraints through progressive disclosure
-2. Inconsistent standards through version-controlled knowledge
-3. Scripts that can't explain through AI reasoning
-4. Generic LLM knowledge through team-specific practices
-5. Forgotten expertise through codified packages
-
-### When to Create a Skill
-
-**Create when**:
-- ✅ Explaining same standards repeatedly
-- ✅ Script needs context to interpret
-- ✅ Process is partially automated, partially judgment
-- ✅ Team does things inconsistently
-
-**Don't create when**:
-- ❌ Pure deterministic task
-- ❌ One-time automation
-- ❌ Generic knowledge
-
-### Key Takeaways
+## Key Takeaways
 
 1. **Progressive disclosure** - Load context only when needed
 2. **Value triangle** - Scripts + AI + Standards

@@ -14,51 +14,6 @@ Think of it like having a team of specialists rather than one generalist trying 
 
 ---
 
-## Why Multi-Tab Orchestration Works
-
-### The Problem with Single-Tab Everything
-
-```
-One tab trying to:
-- Investigate production issue
-- Update helm chart
-- Modify terraform
-- Test changes
-- Update documentation
-- Create work items
-- Write post-mortem
-```
-
-**What happens**:
-- Context becomes cluttered
-- Hard to track progress
-- Easy to lose focus
-- Can't parallelize work
-- Difficult to handoff
-- Context window fills faster
-
----
-
-### The Multi-Tab Solution
-
-```
-Tab 1 (Blue):  Investigation
-Tab 2 (Green): Helm updates
-Tab 3 (Green): Terraform updates
-Tab 4 (Yellow): Work item search (reference)
-Tab 5 (Green): Master coordination
-```
-
-**Benefits**:
-- Each agent stays focused
-- Parallel work on independent tasks
-- Clear separation of concerns
-- Easier to track what's done
-- Better handoffs
-- More efficient context usage
-
----
-
 ## Tab Types and Color Coding
 
 Use consistent colors to quickly identify tab purposes.
@@ -262,6 +217,31 @@ Based on these results, help me:
 - Summaries provide exactly the context needed for coordination
 - No context pollution from unrelated work
 
+### Advanced: Orchestrator Generates Prompts
+
+For complex tasks, use the orchestrator to analyze your work and generate optimized prompts for worker tabs.
+
+**Example:**
+```
+I need to migrate user-api, billing-api, and auth-api to the new cluster.
+Each needs helm updates, terraform changes, and testing.
+
+Analyze this task and break it down into subtasks that can be worked in parallel.
+
+For each subtask, generate a complete prompt I can paste into a new tab, including:
+- Working directory
+- Context about the overall migration
+- Specific changes needed
+- What summary to provide back
+```
+
+The orchestrator generates 9-10 detailed prompts (one per service + component). You paste these into new tabs and work in parallel.
+
+**Why this works:**
+- Reduces cognitive load (orchestrator designs the prompts)
+- Ensures consistency across workers
+- Orchestrator identifies optimal work breakdown
+
 ---
 
 ## Multi-Tab Patterns
@@ -292,36 +272,7 @@ Tab 3 (Green): Chart C - git worktree
 4. Workers execute in parallel (no blocking)
 5. Collect summaries when complete
 
-**Why it works**: Each chart update is independent. No need to wait for one to finish before starting another.
-
-**Example initial prompt for Tab 1:**
-```
-I'm working on a multi-service migration to a new Kubernetes cluster. This tab
-is dedicated to updating the service-a helm chart.
-
-Context:
-- This is one of three services being migrated (service-a, service-b, service-c)
-- Each service has its own tab working in parallel via git worktrees
-- New cluster: prod-cluster-v2 (larger nodes, new ingress domain)
-- Goal: All three charts ready for coordinated deployment
-
-For service-a specifically:
-- Update cluster endpoint in values.yaml
-- Update ingress hostname to *.v2.company.com
-- Increase memory limit from 2Gi to 4Gi (new nodes support this)
-- Verify chart renders successfully
-
-Watch for:
-- Shared ConfigMaps or dependencies that other services might need
-- Settings that should be consistent across all three services
-
-When complete, I'll need a summary including:
-- Files modified
-- Any shared dependencies discovered
-- Whether chart is deployment-ready
-```
-
-**After all three tabs complete**, collect summaries and bring to orchestrator for coordination.
+**Why it works**: Each chart update is independent. No need to wait for one to finish before starting another. Use git worktrees to work on same repo in parallel.
 
 ---
 
@@ -354,56 +305,7 @@ Tab 3 (Yellow): Documentation
 4. Tab 2: Generate implementation summary
 5. Tab 3: Start with both summaries, create documentation
 
-**Why it works**: Separation of concerns. Investigation context doesn't clutter implementation. Each tab focuses on its specific task.
-
-**Step 1: Request summary from investigation tab**
-```
-You've completed the investigation into the crashloop issue. Before I hand
-this off to an implementation tab, give me a comprehensive summary:
-
-1. What was the root cause?
-2. What evidence led to this conclusion?
-3. What needs to be fixed? (immediate mitigation vs long-term solution)
-4. Which files/components are involved?
-5. Any risks or considerations for the fix?
-```
-
-**Step 2: Start implementation tab with that summary**
-```
-I'm implementing a fix for a production issue. Another tab completed the
-investigation. Here's what they found:
-
-[Paste investigation summary]
-
-Based on this investigation, implement the immediate mitigation:
-- Reduce worker concurrency from 10 to 5 in values.yaml
-- Verify chart renders correctly
-- Note what still needs to be done for the long-term fix
-
-The investigation tab is still open if you need to reference it.
-```
-
-**Step 3: Start documentation tab with both summaries**
-```
-I need to document a production issue we just resolved. Here's what happened:
-
-Investigation findings:
-[Paste investigation summary]
-
-Fix implemented:
-[Paste implementation summary]
-
-Create:
-1. Runbook entry for this issue
-2. Incident log update
-3. TODO for long-term fix (connection pool management)
-```
-
-**Why this works**:
-- Each tab gets exactly the context it needs
-- No elaborate mid-work handoffs required
-- Summaries are reusable (documentation tab uses both)
-- Investigation and implementation contexts stay separate
+**Why it works**: Investigation context stays separate from implementation. Each tab gets exactly the context it needs via summaries.
 
 ---
 
@@ -444,95 +346,7 @@ Tab 5 (Green): Synthesis & Fix
 
 ---
 
-### Pattern 4: Master + Workers with Aggregation
-
-**Scenario**: Complex multi-component update
-
-**Tab Structure**:
-```
-Tab 1 (Green): Worker - Helm updates
-  Task: Update all helm charts
-  Output: Summary of changes
-
-Tab 2 (Green): Worker - Terraform updates
-  Task: Update infrastructure code
-  Output: Summary of changes
-
-Tab 3 (Blue): Worker - Testing validation
-  Task: Validate changes in staging
-  Output: Test results
-
-Tab 4 (Yellow): Reference - Work items
-  Task: Search related work items
-  Output: Context about requirements
-
-Tab 5 (Green): Master - Coordination
-  Task: Aggregate all work and create deliverables
-  Input: Summaries from Tabs 1-4
-  Output: PR descriptions, wiki docs, deployment plan
-```
-
-**Workflow**:
-1. Tabs 1-3: Work independently with rich initial prompts
-2. Tab 4: Provides reference context (stays open)
-3. Each worker generates summary when complete
-4. Collect summaries and bring to master tab
-5. Master creates final deliverables
-
-**Step 1: Request summary from each worker when complete**
-
-Ask Tab 1 (Helm):
-```
-You've completed the helm chart updates for this migration. Give me a summary
-for the master coordination tab:
-
-1. What charts did you update?
-2. What specific changes were made?
-3. Any shared dependencies or blockers discovered?
-4. Is everything ready for deployment?
-```
-
-Similarly for Tabs 2 (Terraform) and 3 (Testing).
-
-**Step 2: Aggregate summaries in master tab (Tab 5)**
-```
-I'm coordinating a cluster migration across multiple worker tabs. Each has
-completed its work and provided a summary. Help me synthesize these into
-final deliverables.
-
-**Tab 1 Summary - Helm updates:**
-[Paste summary from Tab 1]
-
-**Tab 2 Summary - Terraform changes:**
-[Paste summary from Tab 2]
-
-**Tab 3 Summary - Testing results:**
-[Paste summary from Tab 3]
-
-**Tab 4 Reference - Work items:**
-[Paste relevant findings from Tab 4]
-
-Based on these summaries:
-1. Flag any dependencies or risks across the work
-2. Determine the right deployment sequence
-3. Create a deployment checklist with proper ordering
-4. Draft comprehensive documentation
-5. Generate PR descriptions for each component
-
-I'm uncertain about:
-- Whether to deploy all at once or service-by-service
-- How to handle the ConfigMap dependency Tab 1 discovered
-```
-
-**Why this works**:
-- Workers provide structured summaries (you asked for specific info)
-- Master gets clean, focused context from each worker
-- You use natural language to ask for strategic synthesis
-- Expresses uncertainty so AI provides guidance, not just execution
-
----
-
-### Pattern 5: Emergency Response
+### Pattern 4: Emergency Response
 
 **Scenario**: Production incident requiring immediate action
 
@@ -559,219 +373,6 @@ Need to move fast but safely.
 ```
 
 **Why this works**: Execution tab focuses on speed, documentation tab captures timeline for post-mortem, investigation happens in parallel after mitigation starts
-
----
-
-### Pattern 6: Orchestrator Tab for Prompt Generation
-
-**Scenario**: Complex task that needs to be broken down into multiple parallel subtasks
-
-**Use case**: Instead of manually designing each tab's prompt, use one tab to analyze the task and generate optimized prompts for other tabs.
-
-**Tab Structure**:
-```
-Tab 1 (Blue): Orchestrator/Planner
-  Location: /company/SRE/
-  Task: Analyze overall task and generate prompts for worker tabs
-  Stays open: Yes - for coordination
-
-Tabs 2-N (Green): Worker tabs
-  Created based on orchestrator's recommendations
-  Each receives custom-generated prompt from Tab 1
-```
-
-**Workflow**:
-
-**Step 1: Task Analysis (Orchestrator Tab)**
-```
-I need to perform a blue-green cluster swap with infrastructure upgrades.
-
-Analyze this task and break it down into independent subtasks that can be worked on in parallel.
-
-For each subtask:
-1. Identify what needs to be done
-2. Determine the working directory
-3. List relevant files/contexts
-4. Generate a complete, context-rich prompt I can paste into a new tab
-
-Generate 3-5 prompts for me to open in new tabs.
-```
-
-**Step 2: Orchestrator Generates Prompts**
-```
-Based on your task, here are the subtasks:
-
-=== TAB 2: Helm Chart A Updates ===
-Working directory: /company/SRE/helm/charts/
-Setup: Create git worktree
-
-Prompt to paste:
----
-Set up git worktree for service-a helm chart updates:
-git worktree add ../charts-worktree-a
-
-Task: Update service-a chart for new cluster
-Changes needed:
-- Update cluster endpoints in values.yaml
-- Modify ingress for new domain
-- Update resource limits (new cluster has better nodes)
-
-Files to modify:
-- values.yaml
-- templates/ingress.yaml
-
-Color: Green
----
-
-=== TAB 3: Helm Chart B Updates ===
-[Similar detailed prompt]
-
-=== TAB 4: Sync Script Updates ===
-[Detailed prompt for script changes]
-
-=== TAB 5: Work Item Search ===
-[Prompt for finding related work items]
-```
-
-**Step 3: Create Worker Tabs**
-- Open new tabs
-- Paste generated prompts
-- Color code as recommended
-- Begin parallel work
-
-**Step 4: Collect Summaries from Workers**
-After each worker completes, ask for a summary:
-
-Tab 2 (Helm Charts):
-```
-You've finished the helm chart updates. Give me a summary to bring back
-to the orchestrator tab:
-
-1. What charts were updated?
-2. What changes were made?
-3. Any dependencies or issues discovered?
-4. Ready for deployment?
-```
-
-Similarly for Tabs 3 (Terraform), 4 (Sync Script), etc.
-
-**Step 5: Return to Orchestrator with Summaries**
-```
-The worker tabs have completed. Here are their summaries:
-
-**Tab 2 - Helm Chart Updates:**
-[Paste summary]
-
-**Tab 3 - Terraform Infrastructure:**
-[Paste summary]
-
-**Tab 4 - Sync Script:**
-[Paste summary]
-
-Based on these results, help me:
-1. Create deployment sequence accounting for dependencies
-2. Identify risks or gaps in our approach
-3. Draft documentation explaining the migration strategy
-4. Generate PR descriptions for each component
-
-I'm uncertain about:
-- How to handle the ConfigMap dependency (separate PR or fold in?)
-- Whether we need additional coordination steps
-```
-
-**Why this works**:
-- Orchestrator generates rich prompts (Step 1-2)
-- Workers execute with clear context (Step 3)
-- Summaries bring focused results back (Step 4-5)
-- Orchestrator synthesizes without context pollution
-
-**Why This Pattern Works**:
-- **Reduces cognitive load**: You don't have to design each prompt manually
-- **Consistency**: Orchestrator ensures all worker tabs have proper context
-- **Optimization**: Orchestrator can identify the best way to split the work
-- **Context preservation**: Orchestrator maintains the big picture while workers focus on details
-
-**Example: Real-World Usage**
-```
-Task given to orchestrator:
-"I need to migrate user-api, billing-api, and auth-api services to the new Kubernetes cluster. Each needs helm chart updates, terraform changes, and testing."
-
-Orchestrator generates 9 prompts:
-- 3 for helm updates (one per service)
-- 3 for terraform changes (one per service)
-- 3 for testing (one per service)
-
-Plus 1 coordination prompt for the master tab.
-
-You paste these into 10 tabs and work in parallel.
-```
-
-**Advanced: Iterative Refinement**
-```
-If worker tabs hit issues, return to orchestrator:
-
-"Tab 3 (billing-api helm) found an issue: chart depends on a shared ConfigMap that doesn't exist in new cluster.
-
-How should I handle this? Update the orchestration plan."
-
-Orchestrator:
-"Good catch. Here's the updated plan:
-1. Tab 3 should pause
-2. Open new Tab 10: Create shared ConfigMap
-3. Here's the prompt for Tab 10: [detailed prompt]
-4. After Tab 10 completes, Tab 3 can proceed"
-```
-
----
-
-## Setting Up Git Worktrees for Parallel Work
-
-When you need to work on the same repository in multiple tabs:
-
-### The Problem
-```
-One repo, multiple tasks:
-- Update chart A
-- Update chart B
-- Both in same repo
-- Can't have different branches checked out simultaneously
-```
-
-### The Solution: Git Worktrees
-```bash
-cd /company/SRE/helm/charts/
-
-# Create worktrees
-git worktree add ../charts-worktree-a main
-git worktree add ../charts-worktree-b main
-
-# Now you have:
-# /company/SRE/helm/charts/          (original)
-# /company/SRE/helm/charts-worktree-a (independent working directory)
-# /company/SRE/helm/charts-worktree-b (independent working directory)
-```
-
-**Each tab**:
-```
-Tab 1:
-cd /company/SRE/helm/charts-worktree-a/
-# Start AI agent
-"Update chart A..."
-
-Tab 2:
-cd /company/SRE/helm/charts-worktree-b/
-# Start AI agent
-"Update chart B..."
-```
-
-**AI can create worktrees for you**:
-```
-"Set up two git worktrees for this repository so I can work on chart A and chart B in parallel.
-
-Create:
-- Worktree A at ../charts-worktree-a for updating chart A
-- Worktree B at ../charts-worktree-b for updating chart B
-```
 
 ---
 
@@ -812,38 +413,15 @@ Modern AI coding assistants can save and resume sessions - preserving conversati
 
 ### Best Practices
 
-**1. Request checkpoint summary before pausing**
-```
-"I'm stopping for the day. Create a checkpoint summary:
-- What we've completed
-- Current state (what we're in the middle of)
-- Next steps
-- Key decisions I might forget
+Request a checkpoint summary before pausing: "Create a checkpoint summary: what we've completed, current state, next steps, key decisions."
 
-This helps me resume quickly tomorrow."
-```
-
-**2. Request refresher when resuming**
-```
-"Resuming the cluster migration from yesterday. Quick refresher:
-- Where we left off
-- Important decisions we made
-- What the next step was"
-```
-
-**3. Use resume for same session, summaries for new sessions**
-- Same tab tomorrow → Resume
-- New tab/different session → Request summary and handoff
+When resuming, ask for a quick refresher on where you left off and important decisions made.
 
 ### When NOT to Resume
 
 - Task completely finished
 - Context is stale (week-old work, things have changed)
 - Need a clean slate (previous approach didn't work)
-
-### Key Insight
-
-Session history preserves YOUR context as much as the AI's - it's documentation of what you discovered, decisions you made, and why. The AI remembers what you've forgotten.
 
 ---
 

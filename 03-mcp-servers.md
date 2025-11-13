@@ -8,7 +8,7 @@
 - Make informed decisions about installing and using MCP servers
 - Audit and manage your MCP server installations effectively
 
-## What is an MCP Server?
+## What is an MCP Server and How Does it Work?
 
 MCP (Model Context Protocol) servers extend AI assistants with additional capabilities—think of them as plugins for your AI:
 
@@ -17,13 +17,7 @@ MCP (Model Context Protocol) servers extend AI assistants with additional capabi
 - **Specialized data**: Company databases, internal APIs
 - **Third-party integrations**: Connect to tools your team uses
 
-**The promise**: Direct access to external systems from within AI conversations.
-
-**The trade-off**: Servers add tools to your context. This isn't a big deal, but forgotten servers accumulate.
-
-## How MCP Servers Work
-
-MCP servers run as **separate processes** that communicate with your AI via a standardized protocol:
+**How they work**: MCP servers run as **separate processes** that communicate with your AI via a standardized protocol:
 
 ```
 ┌─────────────────┐         ┌──────────────┐         ┌─────────────────┐
@@ -32,12 +26,9 @@ MCP servers run as **separate processes** that communicate with your AI via a st
 └─────────────────┘         └──────────────┘         └─────────────────┘
 ```
 
-**What happens at session start**:
-1. AI loads all configured MCP servers
-2. Each server announces its available tools
-3. Tool schemas appear in your context
+**At session start**: AI loads all configured servers → Each announces its tools → Tool schemas appear in your context
 
-**Context impact**: A few servers (10-30 tools) might use 5-10k tokens. Ten servers (50+ tools) might use 20-30k tokens. Not catastrophic with 200k token windows, but worth being aware of.
+**Context impact**: Tokens are cheap with 200k windows, but forgotten servers accumulate. A few servers (10-30 tools) use 5-10k tokens. Ten servers (50+ tools) might use 20-30k tokens.
 
 **Configuration is global**: All configured servers load in every session.
 
@@ -49,8 +40,6 @@ MCP servers run as **separate processes** that communicate with your AI via a st
 ## When to Use MCP Servers
 
 **Key principle**: Install when they solve a real, recurring problem. Remove when they don't.
-
-The real issue isn't context cost (tokens are cheap). The real issue is accumulating forgotten servers you installed months ago and never use.
 
 ### Good Use Cases
 
@@ -68,6 +57,22 @@ Deployment status across 3 clusters: 10-15 min SSH/kubectl workflow → 1 min si
 
 Internal service catalog: 5-10 min wiki search → immediate with dependency reasoning
 - **Verdict**: Worth it when it enables new capabilities
+
+### When NOT to Use MCP Servers
+
+**One-off tasks**: Format conversion server for single file → Just paste in AI (30 sec)
+
+**Redundant capabilities**: File-reading MCP when Read tool exists → Wasted context
+
+**Rarely-used "nice to haves"**: Weather API you thought you'd use → Forgot it was installed, monthly use at best
+
+**Simple scripts work fine**: Server monitoring MCP → 5-line `./check-disk.sh` is simpler
+
+**Installing AWS MCP but only using S3**: 50 tools in context, you use 1 → Just use `aws s3 ls` with AI instead
+
+**"Just in case" installations**: Notion/Confluence MCP you never actually use → Wasting context for months
+
+**Can't remember why you installed it**: No clear use case, accumulated cruft → Remove immediately, reinstall if need emerges
 
 ---
 
@@ -123,33 +128,7 @@ These are MCP servers commonly used by SREs. Evaluate each using the framework a
   - **Alternative**: Manual clicking + screenshot to AI for analysis
   - **Install if**: You automate web workflows weekly or more
 
-### Red flags
-
-**Installing AWS MCP but only using S3 commands:**
-- **Problem**: 50 tools in context, you use 1
-- **Solution**: Just use `aws s3 ls` with AI instead
-
-**Installing Notion/Confluence MCP "just in case":**
-- **Problem**: Forgot it was there, wasting context for 6 months
-- **Solution**: Only install when you have specific, frequent use case
-
-**Can't remember why you installed it:**
-- **Problem**: No clear use case, accumulated cruft
-- **Solution**: Remove immediately, reinstall if need emerges
-
 ---
-
-### Poor Use Cases
-
-**1. One-off tasks**: Format conversion server for single file → Just paste in AI (30 sec)
-
-**2. Redundant capabilities**: File-reading MCP when Read tool exists → Wasted context
-
-**3. Rarely-used "nice to haves"**: Weather API you thought you'd use → Forgot it was installed, monthly use at best
-
-**4. Simple scripts work fine**: Server monitoring MCP → 5-line `./check-disk.sh` is simpler
-
-**5. Local data stores better**: CMDB MCP (live queries) → Quarterly JSON export (fast, offline) when freshness isn't critical
 
 ## Evaluation Framework
 
@@ -212,18 +191,6 @@ For read-only data, consider whether you need live data or if periodic exports w
 
 Both are valid. Choose based on whether you need real-time data.
 
-## Red Flags
-
-**1. "Just trying it"**: Installed to explore, forgot about it → **Fix**: One-week trial, default to remove
-
-**2. "Might need someday"**: Installed "just in case" → **Fix**: Just-in-time installation when actually needed
-
-**3. "50 tools, use 1"**: AWS MCP (50 tools) but only S3 listing → **Fix**: Use `aws s3 ls` CLI instead
-
-**4. "Forgot it was installed"**: Notion MCP wasting context for 6 months → **Fix**: Monthly audit ritual
-
-**5. "AI keeps suggesting unwanted tools"**: Friction in workflow → **Fix**: Remove the server
-
 ## Best Practices
 
 **1. Start minimal**: Zero servers by default → Learn built-in tools → Install when friction emerges
@@ -249,17 +216,6 @@ Task → Built-in tools? → Frequent? → Real-time data? → Tool count & usag
 **Example**: GitHub PR status (daily, 10+ times, 15 tools, use 8) → Install, 2-week trial → Keep
 **Example**: Service inventory (weekly, static data) → Export to JSON instead → Fast and offline
 
-## Key Takeaways
-
-1. **MCP servers are plugins for your AI**: They add capabilities by connecting to external systems
-2. **Try them when you have a use case**: Daily/weekly tasks that save time → Install and test
-3. **Clean up forgotten servers**: The real problem is accumulation, not context cost
-4. **Consider alternatives first**: Sometimes built-in tools, CLI, or local data work fine
-5. **Task-specific installation works well**: Install for projects/on-call → Remove when done
-6. **Not a permanent commitment**: Try it, keep what helps, remove what doesn't
-
-**Don't overthink it. Install, try, clean up periodically.**
-
 ---
 
 ## Exercises
@@ -280,14 +236,4 @@ Apply framework: Frequency? Alternatives with CLI + AI? Time saved? Need all 30 
 
 ---
 
-## Next Steps
-
-**Try it**: Find an MCP server that might help with a recurring task → Install → Use for 2 weeks → Keep or remove
-
-**Clean up**: Audit installations periodically → Remove forgotten servers
-
 **Further reading**: [Module 5: Multi-Tab Orchestration](05-multi-tab-orchestration.md) | [Module 6: Patterns and Anti-Patterns](06-patterns-and-antipatterns.md)
-
----
-
-**Remember**: MCP servers are tools to experiment with. Install what might help, keep what does help, remove what doesn't. Don't overthink it.
