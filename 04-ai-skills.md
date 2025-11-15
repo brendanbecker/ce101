@@ -412,6 +412,22 @@ git tag skill-skill-name-v1.0.0
 
 ---
 
+## Real-World Examples
+
+### SREcodex
+
+Skills packaging and deployment system for Codex: **[github.com/brendanbecker/SREcodex](https://github.com/brendanbecker/SREcodex)**
+
+Provides:
+- Installer and CLI tools for managing skills
+- Runtime layout that AI assistants can read
+- Example skills (skill-builder, time-awareness)
+- Complete deployment workflow with Makefile
+
+Demonstrates how to package, version, and deploy skills in a team-shareable format.
+
+---
+
 ## Key Takeaways
 
 1. **Progressive disclosure** - Load context only when needed
