@@ -22,15 +22,13 @@ ce101/
 ├── quick-reference.md                  # One-page cheat sheet
 ├── workshop-exercises.md               # Hands-on practice activities
 ├── example-prompts.md                  # Copy-paste starting points
-├── docs/                               # Workflow documentation and handoff notes
-│   ├── SLIDE_WORKFLOW.md
-│   ├── MARP_SLIDE_STANDARD.md
-│   ├── HANDOFF_COMPLETE.md
-│   └── EMOJI_ANALYSIS_REPORT.md
-├── scripts/                            # Presentation generation scripts
-│   ├── generate-slides.sh
-│   ├── pptx-to-png.sh
-│   └── view-slides.sh
+├── presentations/                      # Slidedeck materials (separate from curriculum)
+│   ├── README.md                       # Presentation workflow overview
+│   ├── pptx/                           # PowerPoint files
+│   ├── sources/                        # Markdown sources for slides
+│   ├── scripts/                        # Generation and conversion tools
+│   └── docs/                           # Slide workflow documentation
+├── sources/                            # Reference materials and PDFs
 ├── archive/                            # Archived modules
 │   └── 04-local-data-stores.md         # Archived: Old module on searchable inventories
 └── drafts/                             # Work-in-progress concepts for future integration
@@ -118,11 +116,13 @@ Use clear before/after examples showing ineffective vs effective approaches:
 - Explain the "why" behind recommendations
 
 **Maintaining Slides**:
-- Slides are stored in `slides/` directory
-- Complete presentation deck: Sessions 1-7 correspond to modules 1-7
-- Source PowerPoint files for presentations
-- Keep slide content synchronized with markdown modules
-- Session files use consistent naming: CE101_SessionN_Topic_Name.pptx
+- All presentation materials are in `presentations/` directory
+- PowerPoint files: `presentations/pptx/`
+- Markdown sources: `presentations/sources/`
+- Generation scripts: `presentations/scripts/`
+- Workflow documentation: `presentations/docs/`
+- Keep slide content synchronized with curriculum markdown modules
+- See `presentations/README.md` for detailed workflow
 
 ### File Organization Principles
 
@@ -147,19 +147,27 @@ This repository practices what it preaches:
 - `concepts-overview.md` shows how all concepts relate to each other
 - Review these drafts before making major curriculum changes
 
-### Python Scripts
+### Presentation Tools
 
-Supporting Python scripts for PowerPoint analysis:
+Supporting tools for slide generation and analysis located in `presentations/scripts/`:
+
+**Python Scripts**:
 - `analyze_pptx_unicode.py`: Analyzes Unicode usage in presentations
 - `extract_pptx_text.py`: Extracts text content from slides
 - `read_pptx.py`: Basic PowerPoint reading utility
+- `combine_presentations.py`: Combine multiple PowerPoint files
 
-These are utility scripts for content management, not core curriculum.
+**Shell Scripts**:
+- `generate-slides.sh`: Generate slides from markdown
+- `pptx-to-png.sh`: Convert PowerPoint to PNG images
+- `view-slides.sh`: View slides in terminal
 
 **Virtual Environment**:
 - Python scripts require `python-pptx` package
 - Virtual environment located at: `~/venvs/pptx-tools`
-- Usage: `source ~/venvs/pptx-tools/bin/activate && python3 read_pptx.py <file>`
+- Usage: `source ~/venvs/pptx-tools/bin/activate && python3 presentations/scripts/read_pptx.py <file>`
+
+See `presentations/README.md` for detailed usage.
 
 ## Target Audience
 
